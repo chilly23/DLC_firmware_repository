@@ -1,6 +1,6 @@
 {
   "values": {
-    "brightness": 80,
+    "brightness": 61,
     "animations": true,
     "timeout": "5 minutes",
     "sound": false,
@@ -11,9 +11,60 @@
     "stabilisation": false,
     "scan_rate": "20 Hz",
     "logging": true,
-    "retention": "30 days"
+    "retention": "30 days",
+    "accent": "Orange",
+    "appearance": "Dark",
+    "font_family": "Roboto",
+    "font_scale": 1.0,
+    "ui_scale": 1.0,
+    "button_labels": false,
+    "sampling_rate": 20,
+    "idle_minutes": 0,
+    "idle_action": "sleep",
+    "laser1_color": "#D9D9D9",
+    "laser2_color": "#EF9338",
+    "graph1": {
+      "x_min": 48.2,
+      "x_max": 68.2,
+      "main_min": -1.0,
+      "main_max": 10.0,
+      "error_min": -2.5,
+      "error_max": 2.5,
+      "auto_bandwidth": false,
+      "max_points": 1001,
+      "line_width": 1.7,
+      "graph_color": "#C2C5C2",
+      "baseline_main": 0.0,
+      "baseline_error": 0.0
+    },
+    "graph2": {
+      "x_min": 48.2,
+      "x_max": 68.2,
+      "main_min": -1.0,
+      "main_max": 10.0,
+      "error_min": -2.5,
+      "error_max": 2.5,
+      "auto_bandwidth": false,
+      "max_points": 1001,
+      "line_width": 1.5,
+      "graph_color": "#C2C5C2",
+      "baseline_main": 0.0,
+      "baseline_error": 0.0
+    },
+    "alarms1": {
+      "enabled": false,
+      "main_high": 8.5,
+      "error_high": 2.0
+    },
+    "alarms2": {
+      "enabled": false,
+      "main_high": 8.5,
+      "error_high": 2.0
+    }
   },
   "history": [
-    "system"
+    "brightness",
+    "update",
+    "firmware"
   ]
 }
