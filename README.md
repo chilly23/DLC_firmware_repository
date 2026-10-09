@@ -1,6 +1,6 @@
-# Nexatom Digital Laser Controller — v1
+# Nexatom Digital Laser Controller — v1.2
 
-This checkout contains **v1**. The default branch contains the latest application only. Older apps are available through [version tags](https://github.com/chilly23/DLC_firmware_repository/tags) and [HISTORY.md](HISTORY.md).
+This checkout contains **v1.2**. The default branch contains the latest application only. Older apps are available through [version tags](https://github.com/chilly23/DLC_firmware_repository/tags) and [HISTORY.md](HISTORY.md).
 
 ## Download and run
 
