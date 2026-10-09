@@ -1,102 +1,219 @@
 {
-  "version": "1.15",
-  "application_version": "1.15.0",
-  "base_version": "1.14",
-  "base_commit": "0454731e838e1f5078239673d13ea7c22ee9b81f",
-  "created_utc": "2026-10-07T11:10:33.552956+00:00",
-  "title": "Packed Bento Lobby and native navigation restructure",
-  "more_source": "../v1.9/qml/RadialMenu.qml",
-  "more_changes_only": [
-    "Display destination becomes Logs",
-    "Diagnostics destination becomes Lobby"
+  "version": "1.16.0",
+  "base": "1.15.0",
+  "date": "2026-10-08",
+  "changed_files": [
+    {
+      "path": "controller/bridge.py",
+      "status": "modified",
+      "sha256": "890a3a2c03c28e14c2475fc2457b1a84b768e6e60170fe84e6283fa13309224c",
+      "base_sha256": "8357020f1ae8fc54cfe65e607dbebd8041e38e5b05ad809b4e267629c45c75c9"
+    },
+    {
+      "path": "controller/model.py",
+      "status": "modified",
+      "sha256": "3c33d1f033409f8457c6661790d0d20508716b43dd6492f62a38468c6b236dd6",
+      "base_sha256": "e8ce625a4443c8bb4f15f57eb72c05c4924f6f959709e9482a0027738046efe4"
+    },
+    {
+      "path": "controller/parameters.py",
+      "status": "added",
+      "sha256": "768b7750b9bb9caf2997e259fab07db82abe78638c229cdcaf94fac3e8013df8",
+      "base_sha256": null
+    },
+    {
+      "path": "interaction/diagnostics.py",
+      "status": "added",
+      "sha256": "44e1e4092fe77f50d49940bc7da1cb8be205a2c7d153be0991478a932d46ddfe",
+      "base_sha256": null
+    },
+    {
+      "path": "interaction/notification_art.py",
+      "status": "modified",
+      "sha256": "81154790b30d50980fd7ecb48a311249ab0278a36de12b4879c770e473bbc05a",
+      "base_sha256": "3c5604c81e32dc18742c39efa64a6cd58113fafb8fbf2871f024aa34f8e416e4"
+    },
+    {
+      "path": "interaction/notifications.py",
+      "status": "modified",
+      "sha256": "60231aec4d53c5b02c9710a1bce2e439bce0ced4136dbe874a2183f98bc76d81",
+      "base_sha256": "a1b3ed71cec3a7f93896b9479a3320b343859237461520a33e318aff2be6ac10"
+    },
+    {
+      "path": "interaction/router.py",
+      "status": "modified",
+      "sha256": "16d55c24edb8ad522e922b45f9e24408f82cea43511c27325b9a3810bd64829f",
+      "base_sha256": "cfe5146c05eb4940a667762010a1b554db0f7e3bd1b8a39a62e8cdcde6a9e9bd"
+    },
+    {
+      "path": "interaction/workspace.py",
+      "status": "modified",
+      "sha256": "2e3c1cc4116e9f0fcd9835823662eefd8336b56a04cf14f4c7b086d78e333b12",
+      "base_sha256": "1a6d33f631c601c3400e6559ce1d461b66c797c2b7bc4ce075d55e4f5ee87e7a"
+    },
+    {
+      "path": "main.py",
+      "status": "modified",
+      "sha256": "efe662e5e64249b1e76dfc240b9e1f1a374def29b3f53f146ecb39d8ba0aada2",
+      "base_sha256": "d9dc9d28b386e54e958c2fde82938396e52ca8cf69ddd5060a37064739ee8d0c"
+    },
+    {
+      "path": "qml/ButtonsPanel.qml",
+      "status": "modified",
+      "sha256": "56f318c0fb1abdf0c0c06ae23d378dc19931b784ce66a389685a68a1fab508d9",
+      "base_sha256": "39b795671a69f668ffa7bafbf96d0e83d2e204f6ddb8e20db745e1ec389c8833"
+    },
+    {
+      "path": "qml/ControlParameters.qml",
+      "status": "added",
+      "sha256": "095270156aeca7da316925558053dc8707b30c64cffff0c7a92fff2403832961",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/DiagnosticsPage.qml",
+      "status": "added",
+      "sha256": "e6a429b99d3ecf4c0dbc8a7d5f007d4aef27d66b5aecb683cb4a14e71bf36551",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/FileManager.qml",
+      "status": "added",
+      "sha256": "e556d197e66a3ba6a49d9e6c1b13b1018115801f132716cb8eef8c9ba6a31aac",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/HomeControls.qml",
+      "status": "added",
+      "sha256": "f96b0fffcf2ccfbd9a01e3160b8f1a5c828d202e158865dfdeaa4d52c3b1dba0",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/LaserConfig.qml",
+      "status": "added",
+      "sha256": "cd93f011fe7b32602b472ef120364a4f5a07df4b75f604b453eca35318109d76",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/Lobby.qml",
+      "status": "modified",
+      "sha256": "0c30abc1597cdc50ef024b65e37132c2418b2024dd191440308b76469f41ed05",
+      "base_sha256": "c331899586af91b6e7b9827886fac8663c2f1a8652bdbb41ef1ba3909c9f48e0"
+    },
+    {
+      "path": "qml/LobbyButton.qml",
+      "status": "modified",
+      "sha256": "874411ce352dffcc963e9ed918179352f29d1b0d4cc828354500bf52443ee8dd",
+      "base_sha256": "4221df33892d8f020c8a32c5785a00ca23656afce2c1bd336279997c2818133c"
+    },
+    {
+      "path": "qml/LobbyChoice.qml",
+      "status": "added",
+      "sha256": "c9020dafef3ceb362b36ce9fa8063338af36c24c606cf6f134b46bd992ecc2b6",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/LogsWindow.qml",
+      "status": "modified",
+      "sha256": "1e56155fe68d8784df15cdce5749b5cbb0a3a522d4c635b53573a2ea8077d645",
+      "base_sha256": "5cd5125b4e52010607b0ce9ec4f352fb5283a8e447979e567cb36f75b9e180d3"
+    },
+    {
+      "path": "qml/Main.qml",
+      "status": "modified",
+      "sha256": "e86c04aa40074496229d1d182cce69857cf9c0f68e9efba366a23c77f89f93d1",
+      "base_sha256": "f50871ac8276137416c8e2033c1ff7b5138127c8c90b58deaeb49d326d874c48"
+    },
+    {
+      "path": "qml/NotificationToast.qml",
+      "status": "modified",
+      "sha256": "c5eaec93cd63ff18fbaa269049e036b032d798205aec36eb871e9ef513b2c416",
+      "base_sha256": "58bc253122e778be989262335673acc3c99753ca5af22c5842355d3305b96920"
+    },
+    {
+      "path": "qml/ParameterRow.qml",
+      "status": "added",
+      "sha256": "51302ec4d5cb00101d68a185121326a5fca63f2e21eb0d65c36f12087d8eaf92",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/PlannedPage.qml",
+      "status": "added",
+      "sha256": "092d8042cdae811684fef55682402ed59460dad4197fe8f849b6b6de67bddd6a",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/SubParameters.qml",
+      "status": "added",
+      "sha256": "31265aebc1e114bf4c46132ab7d4baa8df5239bc2ad64f6d7e532424246d00d7",
+      "base_sha256": null
+    },
+    {
+      "path": "qml/SystemMonitor.qml",
+      "status": "added",
+      "sha256": "0ad31ee28ba187fb1bda93594dbafdb2b6facf126ba854779f6886629235f21b",
+      "base_sha256": null
+    },
+    {
+      "path": "README.md",
+      "status": "modified",
+      "sha256": "3a33d7a295cc30f11acfbce5e95335b10ec24ce143fa19a9ece793edf2094cf5",
+      "base_sha256": "055a9aaa7e58771e78f162ce71908f171ff7dbb874cdf9ee4beec5d7ef232911"
+    },
+    {
+      "path": "RELEASE.md",
+      "status": "modified",
+      "sha256": "1b0e8a449d8b2ec0337121f28def23308cf083149aa7f6e11498bb3b5350aefc",
+      "base_sha256": "c6a9850dcfaf22e420850597bf41a8e5710674bbd0bc9adcf041814e022876e3"
+    },
+    {
+      "path": "settings_ui/control_panel.py",
+      "status": "modified",
+      "sha256": "d6cb474bd4166c1229add52fcc4d0443172218afdfb75a4952a97e25d3d47e62",
+      "base_sha256": "adda48f1c6702a446a33f4d05cf6154c18668b30029307526771eb618e7585b7"
+    },
+    {
+      "path": "settings_ui/extended_controls.py",
+      "status": "modified",
+      "sha256": "b1361829a4a727550181f47190d62e916dc0b85bb488ec4120d0c78ae4f283e9",
+      "base_sha256": "e9a664f8822cbe0d777533d3c3e19040b02dca7f06cbb07a43639e8eb3becdaa"
+    },
+    {
+      "path": "settings_ui/integration.py",
+      "status": "modified",
+      "sha256": "e472d5045767741e289b1fbc5013c65267ddb6fd085eda45388ba1512a416605",
+      "base_sha256": "2e7427830db0b902373386f50a778fcda65e1d584666f027b2c67800a35eb4e5"
+    },
+    {
+      "path": "settings_ui/preferences.py",
+      "status": "modified",
+      "sha256": "f043be2d527eba6a6e664e41e4f5b8c3e95096a2ebe40c79484facd5807a5e8d",
+      "base_sha256": "44c977dc48f925fd4dc364325323dec063a6df700db76fa77d9630ac7ed0a766"
+    },
+    {
+      "path": "tests/test_lobby_services.py",
+      "status": "added",
+      "sha256": "6f49112ce7d8c4a4766e1de10fdf6bd2b831844860c0aae95605961c602730c9",
+      "base_sha256": null
+    },
+    {
+      "path": "tests/verify_lobby_v116.py",
+      "status": "added",
+      "sha256": "9d85039cfc5d2b267f4921859423a00e21f1035fc4df2c777e65bef8216a43b7",
+      "base_sha256": null
+    },
+    {
+      "path": "VALIDATION.json",
+      "status": "modified",
+      "sha256": "b45e79f2df84c8f92e0851552572e3a0f373c11dc58d45a6f1af7c840f340298",
+      "base_sha256": "eb10e8808ffe781391cb87bcea99610f419c16dcb652b66ebeca7969dae0e6c1"
+    },
+    {
+      "path": "VERSION",
+      "status": "modified",
+      "sha256": "8c2ab931eb719d5dc8926602fddf7f8436c50621352bb1d42470206da5a31dd4",
+      "base_sha256": "d5b1f46669d1cff3be556b1656732c8777ad8ad3f3d05459cfb11dadb1f17d19"
+    }
   ],
-  "bento": {
-    "columns": 8,
-    "rows": 6,
-    "tiles": 20,
-    "actions": 17,
-    "placeholders": 3,
-    "gutter": 8,
-    "corner_radius": 0
-  },
-  "file_changes": {
-    "added": [
-      "interaction/workspace.py",
-      "qml/ButtonsPanel.qml",
-      "qml/Lobby.qml",
-      "qml/LobbyButton.qml",
-      "qml/LogsWindow.qml",
-      "tests/verify_lobby.py"
-    ],
-    "modified": [
-      ".gitignore",
-      "README.md",
-      "RELEASE.json",
-      "RELEASE.md",
-      "VALIDATION.json",
-      "VERSION",
-      "controller/bridge.py",
-      "device/platform.py",
-      "hardware/config.py",
-      "interaction/icons.py",
-      "interaction/router.py",
-      "main.py",
-      "qml/ChannelPane.qml",
-      "qml/GraphDrag.qml",
-      "qml/Icon.qml",
-      "qml/Main.qml",
-      "qml/RadialMenu.qml",
-      "settings_ui/control_panel.py",
-      "settings_ui/extended_controls.py",
-      "settings_ui/help_content.py",
-      "settings_ui/integration.py",
-      "settings_ui/model.py",
-      "settings_ui/operational.py",
-      "settings_ui/preferences.py",
-      "settings_ui/refined.py",
-      "settings_ui/tour.py",
-      "settings_ui/window.py",
-      "setup.sh",
-      "start.sh",
-      "tests/verify_charts.py"
-    ],
-    "removed": []
-  },
-  "sha256": {
-    ".gitignore": "9a9fbf95b47a3424781ba167902c9807e24194d0ffacede29ba4e941f3a4855e",
-    "README.md": "055a9aaa7e58771e78f162ce71908f171ff7dbb874cdf9ee4beec5d7ef232911",
-    "RELEASE.md": "c6a9850dcfaf22e420850597bf41a8e5710674bbd0bc9adcf041814e022876e3",
-    "VALIDATION.json": "eb10e8808ffe781391cb87bcea99610f419c16dcb652b66ebeca7969dae0e6c1",
-    "VERSION": "d5b1f46669d1cff3be556b1656732c8777ad8ad3f3d05459cfb11dadb1f17d19",
-    "controller/bridge.py": "8357020f1ae8fc54cfe65e607dbebd8041e38e5b05ad809b4e267629c45c75c9",
-    "device/platform.py": "c8be02d6c90ea995b5a9050f4ba65c7096843f8856bd34a3d78649957e5eeb7f",
-    "hardware/config.py": "b6b49e9582b2680712f29c78a5db2e40eabc85791eedbf222e8c2736ed7fd283",
-    "interaction/icons.py": "8d1acdada361c719de6acf2e7895b147aab14dfa58ce606111c5286ecb38309e",
-    "interaction/router.py": "cfe5146c05eb4940a667762010a1b554db0f7e3bd1b8a39a62e8cdcde6a9e9bd",
-    "interaction/workspace.py": "1a6d33f631c601c3400e6559ce1d461b66c797c2b7bc4ce075d55e4f5ee87e7a",
-    "main.py": "d9dc9d28b386e54e958c2fde82938396e52ca8cf69ddd5060a37064739ee8d0c",
-    "qml/ButtonsPanel.qml": "39b795671a69f668ffa7bafbf96d0e83d2e204f6ddb8e20db745e1ec389c8833",
-    "qml/ChannelPane.qml": "bcfba101c9e873264fb111195041cc65e17b573a82375677a42e5a1718b1c471",
-    "qml/GraphDrag.qml": "ed7d71999ad16f8e1732d1a1043d7fc12146192ecd8340a44ca4abc956e3efd6",
-    "qml/Icon.qml": "117645caab7c67caf27a8c8988f0dadaf691225da8c72418f1ca9980c9a35eb7",
-    "qml/Lobby.qml": "c331899586af91b6e7b9827886fac8663c2f1a8652bdbb41ef1ba3909c9f48e0",
-    "qml/LobbyButton.qml": "4221df33892d8f020c8a32c5785a00ca23656afce2c1bd336279997c2818133c",
-    "qml/LogsWindow.qml": "5cd5125b4e52010607b0ce9ec4f352fb5283a8e447979e567cb36f75b9e180d3",
-    "qml/Main.qml": "f50871ac8276137416c8e2033c1ff7b5138127c8c90b58deaeb49d326d874c48",
-    "qml/RadialMenu.qml": "1db49cb424a89979004d07e44ce231b0faaa4d78ac99cecd57f4a58fbdfa03bf",
-    "settings_ui/control_panel.py": "adda48f1c6702a446a33f4d05cf6154c18668b30029307526771eb618e7585b7",
-    "settings_ui/extended_controls.py": "e9a664f8822cbe0d777533d3c3e19040b02dca7f06cbb07a43639e8eb3becdaa",
-    "settings_ui/help_content.py": "531e986b91e899d49027b967dee3e80cf9cfa3f4c01732a9022c08c3f3531770",
-    "settings_ui/integration.py": "2e7427830db0b902373386f50a778fcda65e1d584666f027b2c67800a35eb4e5",
-    "settings_ui/model.py": "23c6c5d632388ebde6637d16dba88cf5cb7b5f66faf89d983e0295bac48f82b3",
-    "settings_ui/operational.py": "6d836da29c4ac8cc4037d6515df4e118ef5958b674fe63d111fb2d3a76cb1d0a",
-    "settings_ui/preferences.py": "44c977dc48f925fd4dc364325323dec063a6df700db76fa77d9630ac7ed0a766",
-    "settings_ui/refined.py": "255a87ce0661d0f8c7e5ba48cb607d233fd1871cef4d01ba7b05ba177d6365d4",
-    "settings_ui/tour.py": "8b94adec5ded3a105a5f03558210cfc30b06ec1fd57de1a859664d2fde03cbdc",
-    "settings_ui/window.py": "be0c082d008fd21a839a5d223cdc2e793be74cc433efd3aef18d40b05942eaa6",
-    "setup.sh": "ad41fe1e56a415ca28d9cc92cd688f7f37534306ab4d91a31d5281a9f1bde57a",
-    "start.sh": "b5beb27d94680f4ebf03864e73c120bdc1670bcebf4b4ca5f2f4467089098335",
-    "tests/verify_charts.py": "e49ef60135b6d080a539e6208b403fe60c76d09066f11671088fcdc8c9715207",
-    "tests/verify_lobby.py": "06670b6f47b08224621adbc05216fc34f36e041d7907710e859f44e140e359ab"
-  }
+  "protected_sources_unchanged": true,
+  "validation": "VALIDATION.json"
 }

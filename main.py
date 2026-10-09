@@ -25,6 +25,8 @@ from interaction.notification_art import NotificationArt,NotificationImageProvid
 from interaction.session_lock import SessionLock
 from interaction.journal import Journal
 from interaction.workspace import Workspace
+from controller.parameters import ParameterCatalog
+from interaction.diagnostics import Diagnostics
 
 ROOT = Path(__file__).resolve().parent
 
@@ -42,8 +44,8 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     os.environ.setdefault('QT_QUICK_CONTROLS_STYLE', 'Basic')
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.15")
-    app.setApplicationVersion("1.15.0")
+    app.setApplicationName("NEXATOM v1.16")
+    app.setApplicationVersion("1.16.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
@@ -60,11 +62,19 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     controller.notice.connect(lambda text:notifications.post(text))
     system=SettingsCoordinator(app,controller,theme,device or make_device())
     controller.system_settings=system
-    system.message.connect(lambda text:notifications.post(text,getattr(system,'messageLevel','normal')))
+    def system_message(text):
+        level=getattr(system,'messageLevel','normal')
+        if level=='normal' and text.startswith(('Display detected:', 'Brightness:', 'Contrast:')):
+            journal.record(text,source='Display')
+        else:
+            notifications.post(text,level)
+    system.message.connect(system_message)
     knobs=KnobService(Path(data_dir or ROOT/'data')/'controls.json',app,worker_factory=gpio_factory,autostart=gpio_autostart)
     navigation=InputRouter(controller,knobs,app)
     controller.knobs=knobs;controller.navigation=navigation
     workspace=Workspace(controller,theme,app);controller.workspace=workspace
+    parameters=ParameterCatalog(controller,store,app);controller.parameters=parameters
+    diagnostics=Diagnostics(controller,workspace,app);workspace.diagnostics=diagnostics
     from copy import deepcopy
     last_gpio=[None];last_config=[deepcopy(knobs.store.config)]
     def gpio_status():
@@ -89,6 +99,8 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     engine.rootContext().setContextProperty("navigation",navigation)
     engine.rootContext().setContextProperty("notifications",notifications)
     engine.rootContext().setContextProperty("workspace",workspace)
+    engine.rootContext().setContextProperty("parameters",parameters)
+    engine.rootContext().setContextProperty("diagnostics",diagnostics)
     engine.load(QUrl.fromLocalFile(str(ROOT / "qml" / "Main.qml")))
     if not engine.rootObjects():
         raise RuntimeError("QML failed to load; see the messages above")
@@ -103,6 +115,8 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     app.aboutToQuit.connect(knobs.shutdown)
     app.aboutToQuit.connect(navigation.shutdown)
     app.aboutToQuit.connect(workspace.shutdown)
+    app.aboutToQuit.connect(parameters.shutdown)
+    app.aboutToQuit.connect(diagnostics.shutdown)
     return app, engine, controller, engine.rootObjects()[0]
 
 

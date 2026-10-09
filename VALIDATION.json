@@ -1,41 +1,137 @@
 {
-  "version": "1.15",
-  "checked_utc": "2026-10-07T11:10:33.429652+00:00",
+  "version": "1.16.0",
+  "base": "1.15.0",
+  "date": "2026-10-08",
   "platform": "Windows",
-  "unit_tests_passed": 54,
-  "baseline_checks_passed": 21,
-  "chart_checks_passed": 54,
-  "touch_zoom_paths_passed": 9,
-  "lobby_scenarios_passed": 9,
-  "qml_warnings": [],
-  "windows_startup": {
-    "visible": true,
-    "fullscreen": true,
-    "exposed": true,
-    "booting": false,
-    "platform": "windows",
-    "width": 1920,
-    "height": 1200,
-    "acquiring": true,
-    "timer_active": true,
-    "signal_levels": [
-      0.6252952747263751,
-      0.6252952747263751
-    ],
-    "elapsed": 0.8764947000308894
+  "unit_tests": {
+    "passed": 66,
+    "evidence": "tests/v116/unit.log"
   },
-  "python_compile": "passed",
-  "bash_syntax": "passed (Git Bash bash -n setup.sh start.sh)",
-  "physical_pi_tested": false,
-  "artifacts": [
-    "tests/lobby/results.json",
-    "tests/lobby/startup.json",
-    "tests/chart-validation.json",
-    "tests/zoom-validation.json"
+  "native_lobby_ui": {
+    "passed": 56,
+    "evidence": "tests/v116/validation.json",
+    "qml_warnings": 0
+  },
+  "charts": {
+    "passed": 54,
+    "evidence": "tests/chart-validation.json"
+  },
+  "touch_zoom": {
+    "passed": 9,
+    "evidence": "tests/zoom-validation.json"
+  },
+  "symmetry_and_idle_guards": {
+    "passed": 21,
+    "command": "runtime/python.exe tests/fixes.py"
+  },
+  "total_automated_checks": 206,
+  "windows_launcher": {
+    "passed": true,
+    "evidence": "tests/v116/startup.json",
+    "details": {
+      "visible": true,
+      "fullscreen": true,
+      "exposed": true,
+      "booting": false,
+      "platform": "windows",
+      "width": 1536,
+      "height": 864,
+      "acquiring": true,
+      "timer_active": true,
+      "signal_levels": [
+        0.6094901126972984,
+        0.6094901126972984
+      ],
+      "elapsed": 0.8602850000024773
+    }
+  },
+  "protected_sources": [
+    {
+      "path": "hardware/calibration.py",
+      "sha256": "c794294fe516227469c6919a3403718a35cac663576c574133674e08d95e7e0f",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/config.py",
+      "sha256": "b6b49e9582b2680712f29c78a5db2e40eabc85791eedbf222e8c2736ed7fd283",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/decoder.py",
+      "sha256": "d0cf9a9c334c9ee4c763441a6ef3aaa110d9e7e22af7d756a8975456592fed9c",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/gpio.py",
+      "sha256": "7273b20c2a1277c48df37823464cb349f01b5beeb0c60a96e0c941c905b59cb6",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/panel.py",
+      "sha256": "3bcfc21d6ad61aac624f1e2bda973967c3c3b4f4af247ab81ca3fa692edac0d7",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/service.py",
+      "sha256": "9647f0ed13e37e38726021771b1f8a15745f4ef3d8723f498f0381bfca0a180f",
+      "matches_v115": true
+    },
+    {
+      "path": "hardware/__init__.py",
+      "sha256": "5fc4126e22fc93016dffa53cf63357f4f2588f77bd1d12f38710633af421b0fb",
+      "matches_v115": true
+    },
+    {
+      "path": "device/platform.py",
+      "sha256": "c8be02d6c90ea995b5a9050f4ba65c7096843f8856bd34a3d78649957e5eeb7f",
+      "matches_v115": true
+    },
+    {
+      "path": "device/windows.py",
+      "sha256": "9997b077f69939a735367c2effc236da8e25c4123e61e534626a5636c4117b08",
+      "matches_v115": true
+    },
+    {
+      "path": "device/__init__.py",
+      "sha256": "29c20c3b4939e676e866256f2600a44d39ca36b1b9663dda1c55e16766d23571",
+      "matches_v115": true
+    },
+    {
+      "path": "boot.py",
+      "sha256": "dfe56f3332e7825249a371c6bd98db0c2f375d2e2e896ed9a71e3fe657f1def3",
+      "matches_v115": true
+    },
+    {
+      "path": "install.py",
+      "sha256": "fcb528555bc0c0fb9ea92b09da693878e4e96312b311f14381f4bdca9a3f98c8",
+      "matches_v115": true
+    },
+    {
+      "path": "setup.sh",
+      "sha256": "5555a0b13cfda84a2a20313e7a79b4f61934ceb1c014f3c32e2b47cae167e97f",
+      "matches_v115": true
+    },
+    {
+      "path": "startup.py",
+      "sha256": "c4e36f0abf1daa9cd6b1a46d61812345a9b7a46bab9ce61307b0a5534e004099",
+      "matches_v115": true
+    },
+    {
+      "path": "start.sh",
+      "sha256": "cf3fb43cf34fd327ae0efae1df342cda5186ef6e7e830e338a45b77b6c96f2a7",
+      "matches_v115": true
+    },
+    {
+      "path": "data/controls.json",
+      "sha256": "28ac9400eb403dbf1d8d826f93f765a614438799e4da75f994a3cc4d33dcdc50",
+      "matches_v115": true
+    }
   ],
+  "physical_raspberry_pi_tested": false,
   "limitations": [
-    "CM5 performance, GPIO and Wayland compositor capture require testing on the target device.",
-    "DLC 3D viewer remains a separate installed application.",
-    "Historical console/version UI scripts are superseded by verify_lobby.py for the changed navigation."
+    "Laser readbacks and acquisition remain simulated, as in the base.",
+    "Wayland grim capture and physical GPIO/display acceptance require the target Pi.",
+    "DLC View, Legal Information and Digital Manual are intentional placeholders.",
+    "TC I/D are persisted configuration values; no hardware PID implementation is added."
   ]
 }
