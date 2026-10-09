@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 from pathlib import Path
+from .panel import PANEL_DEFAULTS
 
 CONTACTS=('A','B','C','D','push')
 SIGNALS=('encoder_a','encoder_b',*CONTACTS)
@@ -39,7 +40,7 @@ def default_knob(index):
                 released=dict.fromkeys(CONTACTS,1),reverse_encoder=False,transitions_per_detent=2,
                 switch_debounce_ms=8,mapping=mapping)
 
-DEFAULTS=dict(schema=1,wiring_revision=2,chip='auto',knobs=[default_knob(i) for i in range(4)])
+DEFAULTS=dict(schema=1,wiring_revision=2,chip='auto',knobs=[default_knob(i) for i in range(4)],panel=deepcopy(PANEL_DEFAULTS))
 
 def migrate_wiring(config):
     """Move only the original stock Knob 3 wiring to the replacement Knob 4.
@@ -48,7 +49,8 @@ def migrate_wiring(config):
     shortcuts. The replacement knob must be calibrated as a new physical unit.
     """
     cfg=deepcopy(config)
-    if cfg.get('wiring_revision',1)>=2:return cfg
+    cfg.setdefault('panel',deepcopy(PANEL_DEFAULTS))
+    if cfg.get('wiring_revision',1)>=2:return validate(cfg)
     old,new=cfg['knobs'][2:4]
     if old['pins']==PIN_MAPS[3] and not new['pins']:
         replacement=default_knob(3)
@@ -79,6 +81,13 @@ def validate(config):
         if not 1<=knob['switch_debounce_ms']<=50:raise ValueError('Debounce must be 1–50 ms.')
         if set(knob['released'])!=set(CONTACTS) or any(v not in (0,1) for v in knob['released'].values()):raise ValueError('Invalid released-state calibration.')
         if set(knob['mapping'])!=set(OPERATIONS) or any(v not in ACTIONS for v in knob['mapping'].values()):raise ValueError('Unknown knob action.')
+    for name,contact in config.get('panel',{}).items():
+        if name not in PANEL_DEFAULTS:raise ValueError('Unknown panel contact.')
+        if type(contact['pin']) is not int or not 0<=contact['pin']<=27:raise ValueError('Panel pins must be BCM 0-27.')
+        if contact['active_level'] not in (0,1) or not 5<=contact['debounce_ms']<=100:raise ValueError('Invalid panel polarity/debounce.')
+        if contact['enabled']:
+            if contact['pin'] in used:raise ValueError(f'GPIO{contact["pin"]} is already assigned. Each physical control needs its own GPIO.')
+            used.add(contact['pin'])
     return config
 
 class ControlStore:
