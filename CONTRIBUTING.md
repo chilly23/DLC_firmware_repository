@@ -43,8 +43,10 @@ git push origin v1.18.0
 
 Create a GitHub Release at that tag. Attach a Windows ZIP containing just that release's source, assets, runtime and packages, plus its SHA256 checksum. Keep libraries' supplied licence notices in the bundle. Mark the completed release Latest. GitHub supplies source ZIP/tar archives for every tag automatically. Source Git excludes installed dependencies, calibration-generated state, logs, captures and caches.
 
-For v1.17, `v1.17` is the exact source checkpoint import; `v1.17.0` is its publication with standalone test portability, repository guidance, CI and the separately supplied firmware sketch. Application behaviour is identical. Earlier local version folders have not been changed.
+For v1.17, `v1.17` is the complete source checkpoint import; `v1.17.0` is its publication with standalone test portability, repository guidance, CI and the separately supplied firmware sketch. Application behaviour is identical. Earlier local version folders have not been changed.
 
 ## Requested activity checkpoints
 
 At the repository owner's explicit request, this publication includes labelled empty activity commits to reach 2,000 total commits. They contain no code changes, carry the actual publication date, and use `[skip ci]`. Version tags continue to identify real application checkpoints. This is a one-time activity batch, separate from normal development.
+
+The initial publication filter omitted `qml/Colors.js`. During this same publication session, affected tags were corrected to include the original file and its provenance hash. Local source versions were unchanged. Hosted-runner tests normalize Windows short-path aliases and allow a longer CI completion deadline; this does not change measured hardware latency or runtime behaviour.

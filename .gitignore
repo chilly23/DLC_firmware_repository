@@ -26,3 +26,7 @@ tests/**/*.log
 !.env.example
 .DS_Store
 Thumbs.db
+
+# Generated verification screenshots
+tests/**/*.png
+tests/**/*.webp

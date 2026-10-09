@@ -1,5 +1,6 @@
 """Real process/IPC/thread/Qt delivery under blocked GUI and burst input."""
 import sys
+import os
 import tempfile
 import time
 import unittest
@@ -17,6 +18,9 @@ APP=None
 
 
 def until(condition, timeout=15):
+    # Hosted Windows runners have variable scheduling; this is a completion
+    # deadline, not a realtime latency measurement. Exact event counts remain checked.
+    timeout *= 3 if os.environ.get('CI') == 'true' else 1
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         if condition():return

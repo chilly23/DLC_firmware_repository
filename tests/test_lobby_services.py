@@ -100,7 +100,7 @@ class LobbyContracts(unittest.TestCase):
 
     def test_file_categories_preview_and_sort(self):
         self.workspace.browse('recordings')
-        self.assertEqual(Path(self.workspace.folder), self.data/'recordings')
+        self.assertEqual(Path(self.workspace.folder).resolve(), (self.data/'recordings').resolve())
         self.workspace.browse('screenshots')
         self.assertEqual(Path(self.workspace.folder), self.data/'screenshots')
         (self.data/'b.txt').write_text('content')
