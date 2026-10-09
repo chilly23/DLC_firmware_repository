@@ -89,16 +89,8 @@
     {
       "name": "Knob 3",
       "location": "Top right",
-      "enabled": true,
-      "pins": {
-        "B": 26,
-        "encoder_b": 19,
-        "C": 13,
-        "D": 6,
-        "encoder_a": 5,
-        "A": 0,
-        "push": 21
-      },
+      "enabled": false,
+      "pins": {},
       "target": 2,
       "calibrated": false,
       "directions": {
@@ -131,8 +123,16 @@
     {
       "name": "Knob 4",
       "location": "Bottom right",
-      "enabled": false,
-      "pins": {},
+      "enabled": true,
+      "pins": {
+        "B": 26,
+        "encoder_b": 19,
+        "C": 13,
+        "D": 6,
+        "encoder_a": 5,
+        "A": 0,
+        "push": 21
+      },
       "target": 3,
       "calibrated": false,
       "directions": {
@@ -162,5 +162,6 @@
         "push": "graph.lock"
       }
     }
-  ]
+  ],
+  "wiring_revision": 2
 }
