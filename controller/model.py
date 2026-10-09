@@ -1,6 +1,8 @@
 """Pure Python simulation. No device transport or hardware commands."""
 from dataclasses import dataclass, field
-from math import isfinite, sin
+from math import isfinite
+from .simulation import SignalSimulation
+from .charts import ChartState
 
 
 @dataclass(frozen=True)
@@ -40,10 +42,15 @@ class Laser:
     top: str = ""
     bottom: str = ""
     locked: bool = False
+    emission: bool = True
     stabilised: bool = False
     selected: int = -1
-    show_error: bool = True
+    chart: ChartState = field(default_factory=ChartState)
     revision: int = 0
+    signal: SignalSimulation = field(init=False)
+
+    def __post_init__(self):
+        self.signal = SignalSimulation(self.values, self.number)
 
     def set_value(self, key: str, raw: str) -> str:
         """Validate before mutation; rejected edits leave accepted state intact."""
@@ -67,21 +74,10 @@ class Laser:
         return self.bottom or ("umax" if self.number == 1 else "pid")
 
     def drift(self, time: float) -> float:
-        if self.locked:
-            return 0.0
-        return sin(time * .65 + self.number - 1) * (.007 if self.stabilised else .055)
+        return self.signal.drift()
 
     def sample(self, x: float, time: float) -> tuple[float, float]:
-        drift = self.drift(time)
-        absorption, error = .48, 0.0
-        gain = 1 + (self.values["current"] - 229.547) * .0002
-        for center, amplitude, width in PEAKS:
-            u = (x - center - drift) / width
-            absorption += amplitude * gain / (1 + u * u)
-            error += amplitude * .24 * (-2 * u) / (1 + u * u) ** 2
-        noise = .002 if self.stabilised or self.locked else .014
-        error += noise * sin(x * 31 + time * 8 + self.number)
-        return absorption, error
+        return self.signal.sample(x)
 
 
 class Instrument:
