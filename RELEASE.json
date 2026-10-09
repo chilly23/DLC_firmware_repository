@@ -1,23 +1,117 @@
 {
-  "version": "1.8",
-  "application_version": "1.8.0",
+  "version": "1.9",
+  "application_version": "1.9.0",
   "original_version": "1.8.0",
-  "delivered_utc": "2026-09-30T11:01:15.643Z",
-  "delivered_ist": "2026-09-30T16:31:15.643000+05:30",
-  "title": "First delivered RKJXT v1.8",
+  "delivered_utc": "2026-09-30T11:37:25.655Z",
+  "delivered_ist": "2026-09-30T17:07:25.655000+05:30",
+  "title": "Corner colours, original green, zoom, shared-contact calibration and Knob 4",
   "changes": [
-    "First RKJXT integration: independent hardware decoding, configurable commands and digit editing.",
-    "Knob direction/push calibration, screen touch diagnostics and expanded guide/tooltips.",
-    "White large numeric values, restored CC/TC/PC selectors, graph gesture/display detection changes.",
-    "Knobs 1, 2 and 3 enabled; Knob 4 disconnected. This is the first delivery, before the reported corrections."
+    "Made all four corner foregrounds consistent: values, labels, units, dividers and icons.",
+    "Restored Green to #008622 and retained contrast adaptation for pale accents.",
+    "Added one pinch handler across both plots; second-finger pinch can take over a held graph drag.",
+    "Calibration learns centre push first, accepts direction plus shared push, and suppresses accidental push actions during a tilt.",
+    "Disabled Knob 3 and migrated its stock wiring/mappings to Knob 4 at the bottom right; replacement calibration resets."
   ],
   "file_changes": {
-    "added": [],
-    "modified": [],
+    "added": [
+      "tests/test_shared_contact.py",
+      "tests/test_wiring_migration.py",
+      "tests/verify_zoom_paths.py"
+    ],
+    "modified": [
+      "README.md",
+      "data/controls.json",
+      "hardware/calibration.py",
+      "hardware/config.py",
+      "hardware/service.py",
+      "qml/ChartPair.qml",
+      "qml/ParameterTile.qml",
+      "qml/PlotView.qml",
+      "settings_ui/control_panel.py",
+      "settings_ui/help_content.py",
+      "settings_ui/preferences.py",
+      "settings_ui/tour.py",
+      "tests/test_gpio_adapter.py",
+      "tests/test_knobs.py",
+      "tests/verify_v18.py"
+    ],
     "removed": []
   },
-  "last_record": -1,
-  "renumbered_files": [],
+  "last_record": 12,
+  "renumbered_files": [
+    {
+      "original_path": "desktop_launcher.py",
+      "published_path": "desktop_launcher.py"
+    },
+    {
+      "original_path": "device/platform.py",
+      "published_path": "device/platform.py"
+    },
+    {
+      "original_path": "hardware/gpio.py",
+      "published_path": "hardware/gpio.py"
+    },
+    {
+      "original_path": "install_pi_shortcut.py",
+      "published_path": "install_pi_shortcut.py"
+    },
+    {
+      "original_path": "main.py",
+      "published_path": "main.py"
+    },
+    {
+      "original_path": "qml/Main.qml",
+      "published_path": "qml/Main.qml"
+    },
+    {
+      "original_path": "README.md",
+      "published_path": "README.md"
+    },
+    {
+      "original_path": "run.sh",
+      "published_path": "run.sh"
+    },
+    {
+      "original_path": "settings_ui/help_content.py",
+      "published_path": "settings_ui/help_content.py"
+    },
+    {
+      "original_path": "settings_ui/integration.py",
+      "published_path": "settings_ui/integration.py"
+    },
+    {
+      "original_path": "settings_ui/operational.py",
+      "published_path": "settings_ui/operational.py"
+    },
+    {
+      "original_path": "settings_ui/translations.py",
+      "published_path": "settings_ui/translations.py"
+    },
+    {
+      "original_path": "Start Fullscreen v1.8.cmd",
+      "published_path": "Start Fullscreen v1.9.cmd"
+    },
+    {
+      "original_path": "Start Nexatom v1.8.cmd",
+      "published_path": "Start Nexatom v1.9.cmd"
+    },
+    {
+      "original_path": "tests/verify_desktop.py",
+      "published_path": "tests/verify_desktop.py"
+    },
+    {
+      "original_path": "tests/verify_v17.py",
+      "published_path": "tests/verify_v17.py"
+    },
+    {
+      "original_path": "tests/verify_v18.py",
+      "published_path": "tests/verify_v18.py"
+    },
+    {
+      "original_path": "VERSION",
+      "published_path": "VERSION"
+    }
+  ],
   "original_text_sha256": {
     ".gitignore": "cebfd97f1d9314afec542244d10c17149b4f4d07684e4d54f49c7b2f9902be57",
     "controller/__init__.py": "01d0f5a1ba35e0905f3d175dff46fd1fe80447c3165ffdedca520ba439cc7ef4",
@@ -27,18 +121,18 @@
     "controller/model.py": "9126dd62ecbe4bd9bbd017b053dd0e91e9fa3d5148fc954ab70fae4e91086af2",
     "controller/plot.py": "b86c2de334fba59bcfa1a383b96d6bfc1f2f7fb3b3bf57ffaf68d7a5f4d75a47",
     "controller/simulation.py": "b7ae0ac0860159b585808937b47b8a2d8f49015b67e480281d61de4d11d432b4",
-    "data/controls.json": "37ac4dddf826af9d6c5dc478034be51e3646c170f9daa55e9d04e38b27270e68",
+    "data/controls.json": "9d50d09c74cd504218f27c2bd7afc018a4702c5967b5c2c22f6fef2eb86d627f",
     "data/settings.json": "6d8a576d9e92337fd745d9bdf7458b41e6f387187f3687f86f3979fe39ffd659",
     "desktop_launcher.py": "8c011af72e4c65751eb875c56e9b88cbc82bfc6fba84a2e7c6c711e86cb241d4",
     "device/__init__.py": "cf11c3f95680ffeb3b9b96035c8da79db3ab84c7b3fe218097ecf140626453c4",
     "device/platform.py": "19a3b97ac10ce284a5bbcf9ca3f1c58bbc9bb95d8ee66c9cc89e4674a5b699c4",
     "device/windows.py": "eb77d5567b7dafa2b5c9c22f608776f4b8ccfbadfe11b9416111c854cf00a781",
     "hardware/__init__.py": "bc5a71c7b89c9e11ac5cb0ffe40e7aae547a848db82ca41fb5d9bb1d93be7253",
-    "hardware/calibration.py": "588bb67fcd382def296ba9d22cfbf16ccd48efec298c8c220315c8072d8814b6",
-    "hardware/config.py": "3f800059c6bcaa5a41df5759122580963b67b1f448cfe8e4b76e4005645221a9",
+    "hardware/calibration.py": "e997bb6b03d15d8fd748d6cbcee56f25edcdcf857f0fa703ca163272ebbcca0a",
+    "hardware/config.py": "71aaa3c365a8f2e3d2248fa8daa459c7d497ef3fcc23e1f1fa26f500b5bb4c17",
     "hardware/decoder.py": "46ca5adc947415dcb54a851f6f7da2ca0250b2a6466a23b6463d18947fbe6715",
     "hardware/gpio.py": "f6bd0db4048d2e94bc39d4965f575447ba13d8cbba73dd1f7bfe0b24b50be98c",
-    "hardware/service.py": "40aa919b6050b15345356b7b5974d23aa99ef2b72224558315bafb374f015a82",
+    "hardware/service.py": "6a9e52019211b1368f76e43f9fc85e838d5711e5da9af49ce0528a3550519d80",
     "install_pi_shortcut.py": "d47f26794ea91d0035eba0681317929a420da965fd773eb8d867b1857ed9cdb9",
     "interaction/__init__.py": "aa7bc350f17ac213ed2b4aa4f9322f34322efc46d26fdaeb676327faccfca605",
     "interaction/icons.py": "11199ea3a3ec6f981ed1b9925e9f6c7c88379054e10fb3dd2f02a961d8a12796",
@@ -47,7 +141,7 @@
     "main.py": "de320c10787348d4a045a1bc8c1f5aa3defaacad5b1c36cea0320e0a0d570dc2",
     "qml/AlarmPanel.qml": "4b267e27b6b45d28c9185bb5ff9c0c0d9d54c963b56dcddc331fd60c1bc8b1c2",
     "qml/ChannelPane.qml": "23be986e764516861c6b0fee8739fc2f2ca75b31b39b29d4a6a16a0ebf642d85",
-    "qml/ChartPair.qml": "74f26d091c096935356ec39c23ab007b664ccaf575ec366b3ce02f00dfc450f5",
+    "qml/ChartPair.qml": "4e10159f1c7329cc014768b6c6e8633c928527d57774dfd88de16f6ba89909e3",
     "qml/ChoiceButton.qml": "85b82f7dfd5bea9ee7953300e459ac3e7fcc16a1b6b1bbf55b05412771cecc46",
     "qml/Colors.js": "9c279c0c41bd9d08d73d79dfea63dc13b30c2f3b4155d82c623059dbd830f79c",
     "qml/FullscreenView.qml": "d3558fc0ed9aa0b34513ddc1e1935fc5c83279191509feed46b1bd093ee26acc",
@@ -56,8 +150,8 @@
     "qml/Main.qml": "c1105e08ff524a86fa4f0f9542b26116241996f2f9dd994252caa83622714b39",
     "qml/ModuleSelector.qml": "0b7c3c1eea62857361eaf6478985ef9ec3cedf32082f0aa2347cac5869f0bfce",
     "qml/NumberPad.qml": "62b803e683f6de73f8200e899a3f16cf834146f07e2f5360fa273d2eb20c7215",
-    "qml/ParameterTile.qml": "7641d3bef15a6a2496c0c0799b24ac52cfe683b304f1630bbf008b70d5393f88",
-    "qml/PlotView.qml": "7149ffa41b29de0ba2892aee30c3e1eeacfda2a053f943dbdbf8126b92295e9e",
+    "qml/ParameterTile.qml": "f00eaaaace1ce98220cf6bc6cb61e9eb6ba9c56bea02f630151387f3bd0e5242",
+    "qml/PlotView.qml": "61953ea14f45ce51ea1a0786270ac20c759dd33cf500dc02c3c285a7484fe573",
     "qml/RadialMenu.qml": "4877e79e0d12bd5fc694280f1294986b17c616a857cdd4fef64c36e66000675f",
     "qml/ReferenceSlider.qml": "54b4bbc694fd45b1311cccefed8ee420f99382193907d9965254734bddb93ee7",
     "qml/SignalsPanel.qml": "647d43db053f8bbc3f35121fd32dff021a2dd30e1bcc587233ae0a7b7c769a9d",
@@ -65,15 +159,15 @@
     "qml/TooltipOverlay.qml": "22872e293c136ca364f790c206c51bfde8b31c902abc83e1fbefa27897a053e0",
     "qml/TouchButton.qml": "066ad6ebe12ff48f1c88b6bbcdc68d09cc2bd0ba1ef7d062307940d7999916fd",
     "qml/TourOverlay.qml": "b66e7dab44436c659cf3b5db029848631773580783469755eea24d545acffb60",
-    "README.md": "0418a6313d94d871268cce5cc40b39dfaee15c29b9c3cf98eaad4580bc40b02f",
+    "README.md": "118372870bdf1b51c49d3f3e92aeb15f508c94771bfc2593e3438c6aeb88406d",
     "requirements.txt": "129485ccaf6841c05b23b317b90c4ba81a5326c134019044468e1bb006d53cbf",
     "run.sh": "ba77116d72ccb747874ac3eb91192c327e1fe78b7dba1d829782943a74f474be",
     "settings_ui/__init__.py": "e0967aa080f62462ff5d6eceae84b2c933c475dfc0b74d0876bd9df446859d6c",
-    "settings_ui/control_panel.py": "6a9b3ffce144b9a916648aacee5474a1b301e493ca97d2f32c420cd0a0bb687c",
+    "settings_ui/control_panel.py": "8e10852614cb02eca204c9b422e73b4c31288f984e90a934be2cb02f521e97e2",
     "settings_ui/controls.py": "0822fb757381f3777253a99a1367c91820d1e06e419f87b924d5c0ecf46273c0",
     "settings_ui/coordinator.py": "8b06f982dbaae9e5cc8609adae87b5d15ef36f78e446587256bd3086b4271207",
     "settings_ui/drawing.py": "e76b99908ed658cdd0c814678c9679c9b4da513c261f4647848986c62c330f6e",
-    "settings_ui/help_content.py": "f1ca397581186ebb8dafd0c76ba5e71c082fe9eafdb58103a2bc60a22d79911e",
+    "settings_ui/help_content.py": "92ee7cf5696c90a9b9342636f2f49f3c05be7c459ac5f1ca0c7380fbd438e3b2",
     "settings_ui/integration.py": "b0309f6beae22dfbdbcfdfda9097f5856338815f52a6cd204d895d24b4619846",
     "settings_ui/keyboard.py": "f106f9ed345219da875f00aa267f9978333a6e100e9db69eb5d876762ce009ea",
     "settings_ui/launch.py": "2f9e870ef26b2e03b9e6adcb0afc38ec045b60c5b9b9ab741a2bed30634e56f0",
@@ -82,11 +176,11 @@
     "settings_ui/model.py": "f7b375de8b57ab67537f5a38861152c8c02b7bf61191e3958c26910a96b58433",
     "settings_ui/motion.py": "b81a7a7a03422e2f6e2e68066bc15dd6a21c673dc018c01b3a0944381bc7486c",
     "settings_ui/operational.py": "9c667d957f0eb134c67bf208feea4e097baa6db9b618187dff95492c806e417b",
-    "settings_ui/preferences.py": "0d061c61617b6417cebe76764b315475837f4b002ceb821d3474c63330496c71",
+    "settings_ui/preferences.py": "fa5b5a2b6710147a9f3c063ce2b5361edfc8d5f837c9679f91d2bbf2550d24c2",
     "settings_ui/refined.py": "d2f29d6c13dc7730ed642fcbdee063676f6907c5c99242c0583aef9c468df0c6",
     "settings_ui/screen_check.py": "7f3476d043dc81821edbeeed801bfbc703f9392024097e57b5d5611616ed82eb",
     "settings_ui/tooltips.py": "8db5e8ec4fd224855b929923dd51abe8a7a98dbde2361a2fc62964cf8d291e7f",
-    "settings_ui/tour.py": "06a351cc735ebb704e6867ac61c2460f35ed72d1487c24a32dca20dc7cc30643",
+    "settings_ui/tour.py": "f79fffc414eacb45e959055c0fafc5cebdaa59b653700bdfc07a6e946accdba1",
     "settings_ui/translations.py": "90c2c1b0aec6725741143a08b8509ca6a5f7adf888d35f3ebfab9c388f761794",
     "settings_ui/window.py": "8db757352c6553cae28b1394f5982eb73d2501ea4f0502b3efef194f70352cd3",
     "setup_pi.sh": "77673c6071b988424c849522e15deed759617b6f488a37e90dd0562e1f42e02d",
@@ -95,8 +189,8 @@
     "tests/diagnose_v18.py": "76a730282bdfaf0d62d091c944bf74d9b97cf7da51af64f5fa9375df920609a1",
     "tests/inspect_v18.py": "b74b3dafb2c6610fa9ae2366e28979f799008ee2cffc4a46579ac61e66e8cd68",
     "tests/profile_frames.py": "2a7fb8f9bfe4d7388ab25be2a33cf9aeee42ffe262d91e47e56b1252aad35579",
-    "tests/test_gpio_adapter.py": "c172f067916dec139106e385bcd179e3f4b722bedb261c93bbbf422950d16aaf",
-    "tests/test_knobs.py": "863d06758f06b93413e388c59ed76d98ca43911b3c76fadd9c0a59bbe0504be7",
+    "tests/test_gpio_adapter.py": "b40eb93ef7b1bcf54d1993821f998ecb15305e552817098397cb8119049a7529",
+    "tests/test_knobs.py": "2289bd67ef46d45584de132e69f7e856040276940da29c5d70022da888c76eef",
     "tests/verify_charts.py": "bfc075a6cc73915799a77219b0a8b86d26a1bee4cde6abb71d83ea0bebd51397",
     "tests/verify_desktop.py": "77c42694905f9555275f71eccd84961ee545693ce019698be92547abf2e711aa",
     "tests/verify_linux_device.py": "8de0814da1da30f73c35d91814f9499544af17255e3c5c5e2d3660cff6370ded",
@@ -104,8 +198,11 @@
     "tests/verify_touch.py": "ab45d1d4db051032e2e0bd197b2211c994ec7167eeb38deac88e02d381cc37e0",
     "tests/verify_v16.py": "251be4a5a8b684a7cef4e18dbd52ea0765316635f2b8a236e1b4a14968a34322",
     "tests/verify_v17.py": "df222a4803bf280ad564d7f4577baf5cfadc9d1cea0b76beecc71d82f3f7ccc1",
-    "tests/verify_v18.py": "50a03dc8b2a76fe85909aa8357b1d68e498ad7e7175cb7eb25687f3f0bf4316a",
-    "VERSION": "3eb1ef94b5890ca727158b106142685c8733b0ace5bcb4cf3f0ac14f9f0643f4"
+    "tests/verify_v18.py": "dd485f00bdcc811d2c3599881321811188d3ddee2094aa1ce416192f25b7329f",
+    "VERSION": "3eb1ef94b5890ca727158b106142685c8733b0ace5bcb4cf3f0ac14f9f0643f4",
+    "tests/verify_zoom_paths.py": "9568e75008176744083a185fb597a535f487e136eab6aaf9a51e183e42f2bd5d",
+    "tests/test_shared_contact.py": "eb88b780db45e45a036dc384fbb1659ba748d11611d1975ac35fcc517a4f3d00",
+    "tests/test_wiring_migration.py": "73dd483de3bd5f4c5db7f49a014b520ff0ee1a3991477a1b0cda19aec1e6ef61"
   },
   "recovery_method": "Strict replay of recorded source changes; cosmetic version labels and uniform launch aliases added.",
   "physical_pi_tested": false

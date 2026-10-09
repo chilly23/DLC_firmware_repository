@@ -7,7 +7,7 @@ mkdir -p logs
 exec > >(tee -a logs/pi-startup.log) 2>&1
 fail() {
   echo "Nexatom launch failed. See $APP_DIR/logs/pi-startup.log"
-  if command -v zenity >/dev/null; then zenity --error --title='Nexatom v1.8' --text="Startup failed. See $APP_DIR/logs/pi-startup.log" || true;
+  if command -v zenity >/dev/null; then zenity --error --title='Nexatom v1.9' --text="Startup failed. See $APP_DIR/logs/pi-startup.log" || true;
   elif [[ -t 0 ]]; then read -r -p 'Press Enter to close.' _ || true; fi
 }
 trap fail ERR
@@ -30,5 +30,5 @@ if ! .venv/bin/python -c 'import PySide6,gpiod; from PySide6.QtQuick import QQui
   .venv/bin/python -m pip install -r requirements.txt
 fi
 .venv/bin/python install_pi_shortcut.py
-echo 'Starting Nexatom v1.8. Close the standalone RKJXT demo if it owns the pins.'
+echo 'Starting Nexatom v1.9. Close the standalone RKJXT demo if it owns the pins.'
 .venv/bin/python main.py "$@"

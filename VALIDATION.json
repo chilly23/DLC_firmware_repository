@@ -1,11 +1,11 @@
 {
-  "version": "1.8",
-  "unit_tests_passed": 18,
-  "ui_checks_passed": 41,
+  "version": "1.9",
+  "unit_tests_passed": 24,
+  "ui_checks_passed": 55,
   "windows_startup": "passed",
-  "python_files": 57,
+  "python_files": 60,
   "shell_syntax": "passed",
-  "source_text_files_verified": 86,
+  "source_text_files_verified": 89,
   "binary_asset_dependency_files_verified": 2617,
   "physical_pi_tested": false,
   "tests": [
@@ -18,7 +18,7 @@
       "exit_code": 0
     },
     {
-      "name": "diagnose_v18",
+      "name": "verify_zoom_paths",
       "exit_code": 0
     }
   ]

@@ -33,7 +33,7 @@ entry in your desktop session's startup applications if it keeps returning after
 reboot. v1.8 reports the owning process/driver instead of taking pins from it.
 
 **First use on the Pi:** More → Settings → Control Settings → Configure →
-Calibrate directions and push. Calibrate Knobs 1, 2 and 3 separately. Touch is
+Calibrate directions and push. Calibrate Knobs 1, 2 and 4 separately. Touch is
 needed for initial calibration; knob shortcuts are intentionally inactive until
 that knob is calibrated.
 
@@ -63,12 +63,12 @@ Use the active graphical session's `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR`.
 
 | Area | v1.8 implementation |
 |---|---|
-| Home readouts | White large values; pale Yellow/Mint/Teal/Cyan/White accents use dark numeric ink |
+| Home readouts | White values, labels, units, icons and dividers; pale Yellow/Mint/Teal/Cyan/White accents adapt all foreground elements together |
 | CC / TC / PC | v1.4/v1.5 module chooser geometry and dark selected/unselected surfaces restored; light appearance still adapts |
-| Graph gestures | Native touch pan/pinch verified; pointer delivery retained while locked; a locked-view message explains blocked gestures; smooth wheel/touchpad zoom |
+| Graph gestures | One pinch handler per laser spans both plots; pinch takes over a long-press drag; linked X ranges, lock guard and wheel/knob zoom retained |
 | Graph bounds | Existing overscroll and vertical trace-retention limits retained; knob pan/zoom use the same limits |
-| Physical inputs | One input-only libgpiod request for all 21 configured signals; three independent decoders; unused fourth slot stays disabled |
-| Calibration | Released-state capture, five independently learned contacts, clockwise/anticlockwise verification, review and atomic save |
+| Physical inputs | One input-only libgpiod request for all 21 configured signals; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
+| Calibration | Released-state capture, centre-only contact first, four directions with optional shared push, clockwise/anticlockwise verification and atomic save |
 | Assignment | Per-knob target corner plus seven operation dropdowns; live parameter preview; separate shortcut/calibration resets |
 | Navigation | Hold push for universal navigation; visible focus, modal-aware targets, dropdown scrolling, numeric digit stepping, Settings wheel/slider/keyboard control |
 | Touch diagnostics | Corner taps, continuous trace, drag targets, solid-color inspection and honest pass/not-completed results |
@@ -84,13 +84,45 @@ where a translation is not available. Upgrade remains the previously requested
 preview. Laser signals and laser parameter effects remain a visual simulation;
 the GPIO inputs and supported host display controls are real.
 
+## v1.8 corrections - 30 September 2026
+
+- All corner tile foreground elements now share one ink color. The original green
+  is restored to **`#008622`**; other accent choices are unchanged.
+- Pinch zoom now works with one finger on spectroscopy and the other on error,
+  including when the first finger has already started the graph-move gesture.
+  The shared gesture cancels that move without swapping signals. Both graphs
+  keep the same X range. One-finger pan and long-press swaps remain available.
+  Zoom requires an unlocked graph; touch pinch requires a multitouch screen.
+- Calibration identifies the centre-only contact before learning directions.
+  A direction plus centre is accepted as one tilt. Runtime decoding suppresses
+  the accompanying push shortcut and long-push navigation, regardless of contact
+  press/release order. Standalone centre presses still work normally.
+- **Knob 3 is disabled; Knob 4 is wired and targets the bottom right.** Existing
+  stock `controls.json` files migrate on startup (`wiring_revision: 2`). Knobs 1/2
+  retain all saved settings. Old Knob 3 shortcuts/encoder resolution move to
+  Knob 4, but its calibration resets because this is a replacement physical unit.
+  A custom non-stock pin layout is preserved for explicit configuration.
+
+For an existing Pi installation, copy the updated code into its v1.8 folder while
+keeping its existing `data` directory, then run `bash run.sh`. The saved wiring
+migrates automatically. Open **Control Settings > Knob 4 > Configure > Calibrate**.
+Recalibrate Knobs 1/2 if their previous calibration was incomplete or incorrect.
+No other version folder is changed.
+
+The original repro commands were `tests/test_shared_contact.py` (calibration rejected
+combined contacts; tilt fired hold-navigation) and `tests/verify_zoom_paths.py`
+(cross-plot and held-finger pinch left the range unchanged). Both now pass against
+the actual state machine and Qt touch paths. The fix uses Qt's documented
+[targetless PinchHandler](https://doc.qt.io/qt-6/qml-qtquick-pinchhandler.html)
+to change the data range without scaling the plot widget itself.
+
 ## Wiring — BCM GPIO numbers
 
 The letters refer to the RKJXT contacts, not assumed compass directions. Calibration
 learns which physical movement activates each contact. These numbers are **BCM**
 identifiers, not physical header pin positions.
 
-| Contact | Knob 1 · top left | Knob 2 · bottom left | Knob 3 · top right |
+| Contact | Knob 1 · top left | Knob 2 · bottom left | Knob 4 · bottom right |
 |---|---:|---:|---:|
 | A | 17 | 24 | 0 |
 | B | 10 | 15 | 26 |
@@ -101,7 +133,7 @@ identifiers, not physical header pin positions.
 | Push | 27 | 23 | 21 |
 | Common / GND | GND | GND | GND |
 
-Knob 4 is not connected. Keep its configuration disabled. Connect the relevant
+Knob 3 is not connected and stays disabled. Knob 4 now uses the former Knob 3 pins. Connect the relevant
 switch and encoder common contacts to GND, following the same working demo wiring.
 Inputs use pull-ups; a grounded contact normally reads LOW. The app never configures
 these lines as outputs. Do not connect signal contacts to 5 V.
@@ -124,12 +156,13 @@ pin multiplexing or silently stop another application.
 ### Calibration
 
 1. Release the stick and push button. Choose **Capture released** after readings settle.
-2. Move **Up**, release; then Right, Down, Left, and the centre push, releasing each.
+2. Press the **centre alone**, without tilting, then release. Move **Up**, Right, Down and Left as prompted, releasing fully after each movement.
 3. Rotate clockwise at least one click; choose Next. Rotate anticlockwise; Next.
 4. Review the learned contact/GPIO assignments and choose **Save calibration**.
 
-Duplicate contacts, simultaneous contacts and a second rotation with the same sign
-are rejected. Nothing is applied until Save. Cancel, Back or leaving Settings
+A direction may close its own contact and the learned centre contact together.
+Calibration waits for both to release before continuing. Two direction contacts,
+duplicate direction assignments and a second rotation with the same sign are rejected. Nothing is applied until Save. Cancel, Back or leaving Settings
 keeps the previous saved calibration. All shortcut dispatch is paused during
 calibration so test movements cannot edit the instrument.
 
@@ -144,7 +177,7 @@ knob calibration; use these dedicated controls for that.
 
 ### Default assignments
 
-| Operation | Knob 1 · top-left target | Knob 2 · bottom-left target | Knob 3 · top-right target |
+| Operation | Knob 1 · top-left target | Knob 2 · bottom-left target | Knob 4 · bottom-right target |
 |---|---|---|---|
 | Clockwise / anticlockwise | Increase / decrease selected digit | Focus next / previous | Increase / decrease selected digit |
 | Up / down | Focus previous / next | Pan graph up / down | Focus previous / next |
@@ -166,7 +199,8 @@ Hold-push navigation is reserved so a shortcut map cannot remove the escape rout
 
 ### Universal navigation
 
-Hold any calibrated knob's push for 700 ms. The hold does not also trigger its
+Hold any calibrated knob's centre push alone for 700 ms. A tilt that also closes
+the push contact runs only its direction action; it cannot trigger push or hold-navigation. The hold does not also trigger its
 short-push action. Rotate to move focus, short-push or stick right to activate,
 and stick left to go back. Up/down also move focus. Hold push again to exit.
 
@@ -291,19 +325,23 @@ data and injected host/GPIO contracts. No physical Pi was accessed:
 |---|---|
 | Decoder/calibration/config/service/decimal tests | 16 tests passed |
 | GPIO request and busy-owner contracts | 2 tests passed |
-| v1.8 commands, settings, keyboard, touchscreen diagnostics | 41 checks passed |
+| v1.8 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
 | Existing charts, swaps, signals, bounds and emission | 54 checks passed |
 | Existing reference controls, dropdowns, alarms and complete tour | 31 checks passed |
 | Existing settings/system/data behavior | 46 checks passed |
 | Existing native keyboard/settings touch behavior | 16 checks passed |
 | Linux sysfs/DDC/mode adapter contracts | 12 checks passed |
+| Shared direction/push calibration and event-order regressions | 4 tests passed, including 16 edge-order/batching combinations |
+| Knob 3 to 4 stored-wiring migration | 2 tests passed |
+| Native pinch across plots, held-finger takeover, both lasers, reverse zoom, lock, swapped/combined/fullscreen plots | 9 cases passed |
 | Direct pan, pinch and recovered-display repro | Passed |
 | Both actual Windows launchers | Fullscreen boot and live acquisition passed |
 | Python compilation and Bash syntax | Passed |
 
 Run the new focused checks with `runtime\python.exe` on Windows or `.venv/bin/python`
-on Pi, followed by `tests/test_knobs.py`, `tests/test_gpio_adapter.py`,
-`tests/verify_v18.py` or `tests/diagnose_v18.py`. Retained `verify_v17.py` checks the
+on Pi, followed by `tests/test_knobs.py`, `tests/test_shared_contact.py`,
+`tests/test_wiring_migration.py`, `tests/test_gpio_adapter.py`,
+`tests/verify_zoom_paths.py`, `tests/verify_v18.py` or `tests/diagnose_v18.py`. Retained `verify_v17.py` checks the
 inherited settings contract against v1.8; it is not another application. Validation
 JSON and useful screenshots are in `tests/`. `inspect_v18.py` regenerates the new
 screens with isolated data. Qt's offscreen plugin can report unsupported `raise()`;
