@@ -1,4 +1,12 @@
-# NEXATOM mock1 — PySide6 + Qt Quick
+# NEXATOM v1.2 — mock1 base
+
+**Start here: [v1.2 instructions, changes and verification](START-HERE.md).** Double-click `Start Nexatom v1.2.cmd` or `Start Fullscreen v1.2.cmd`. Windows dependencies are included.
+
+The text below is the archived v1 README, retained as source history. Its original control descriptions and test paths are superseded where changed by [START-HERE.md](START-HERE.md).
+
+---
+
+## Archived v1 instructions
 
 An executable recreation of the five supplied `mock1` frames. Scope is the three-second boot, two-channel home view, fullscreen graphs, numeric keypad, and expanding radial menu. All signals and values are simulated in memory; this app has no hardware transport.
 
