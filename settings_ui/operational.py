@@ -39,7 +39,7 @@ class OperationalSettingsWindow(SettingsWindow):
         super().__init__(58,theme.store)
         self.selected=self.order.index('about');self.motion.position=float(self.selected);self.content='about';self.last_index=self.selected
         self.editor=QLineEdit(self);self.editor.setObjectName('settingsValueEditor');self.editor.hide();self.editor.returnPressed.connect(self.commit_editor)
-        theme.changed.connect(self.appearance_changed);system.changed.connect(self.update);system.message.connect(self.notify)
+        theme.changed.connect(self.appearance_changed);system.changed.connect(self.update)
         self.appearance_changed()
 
     def appearance_changed(self):
@@ -181,7 +181,7 @@ class OperationalSettingsWindow(SettingsWindow):
     def draw_content(self,p):
         if self.content!=self.last_content:
             self.route='';self.route_stack=[];self.scroll=0;self.pick=None;self.editor_spec=None;self.editor.hide();self.last_content=self.content
-        title=self.route.split(':',1)[1] if self.route.startswith('help:') else {'limits':'X / Y limits','processing':'Signal processing','style':'Graph appearance','info':'System information','clock':'Date and time','power':'Automatic power'}.get(self.route,LABELS[self.content])
+        title=self.route.split(':',1)[1] if self.route.startswith('help:') else {'limits':'X / Y limits','processing':'Signal processing','style':'Graph appearance','info':'System information','clock':'Date and time','power':'Automatic power','lock':'Lock screen','startup':'Startup'}.get(self.route,LABELS[self.content])
         if self.route=='pick':title=self.pick['label']
         if self.route=='edit':title=self.editor_spec['label']
         if self.route=='confirm':title=self.confirm['label']
@@ -297,7 +297,7 @@ class OperationalSettingsWindow(SettingsWindow):
 
     def draw_info(self,p):
         import PySide6
-        rows=[('Application version','1.12.0'),('Firmware','V1.6.0'),('Operating system',platform.platform()),('Architecture',platform.machine()),('Python',platform.python_version()),('Qt / PySide6',PySide6.__version__),('Data location',str(self.store.path.parent)),('Display',self.system.caps.get('target','Detecting…'))]
+        rows=[('Application version','1.13.0'),('Firmware','V1.6.0'),('Operating system',platform.platform()),('Architecture',platform.machine()),('Python',platform.python_version()),('Qt / PySide6',PySide6.__version__),('Data location',str(self.store.path.parent)),('Display',self.system.caps.get('target','Detecting…'))]
         self.draw_document(p,rows)
 
     def draw_clock(self,p):
@@ -354,7 +354,7 @@ class OperationalSettingsWindow(SettingsWindow):
             chosen=min(modes,key=lambda m:abs(m[2]-(old[2] if old else 60)));self.system.change_mode(chosen)
         elif key=='refresh':self.system.change_mode(self.system.caps['current'][:2]+[value])
         elif key=='laser_color':self.theme.apply('laser'+str(self.laser_index+1)+'_color',value)
-        elif key in ('max_points','graph_color','line_width'):self.system.set_graph(self.laser_index,key,value)
+        elif key in ('max_points','graph_color','line_width','main_color','error_color','main_width','error_width','main_style','error_style'):self.system.set_graph(self.laser_index,key,value)
         else:self.theme.apply(key,value)
 
     def activate(self,action):

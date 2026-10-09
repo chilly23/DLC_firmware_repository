@@ -18,9 +18,13 @@ FUNCTION_ROWS=[
     ('toggle','Auto bandwidth','auto_bandwidth',[]),
     ('choose','Maximum points','max_points',[(str(n),n) for n in (256,512,1001,2001,4001)]),
 ]+[('number',label,key,[]) for label,key in LIMITS]+[
-    ('choose','Graph color','graph_color',[(k,c) for k,c in ACCENTS.items()]),
-    ('choose','Laser color','laser_color',[('Default white','#D9D9D9')]+list(ACCENTS.items())),
-    ('choose','Line width','line_width',[(f'{n:g} px',n) for n in (1.,1.5,1.7,2.,2.5,3.,4.)])]
+    ('choose','Main color','main_color',[('Default trace','#C2C5C2')]+list(ACCENTS.items())),
+    ('choose','Error color','error_color',[('Default trace','#C2C5C2')]+list(ACCENTS.items())),
+    ('choose','Laser color','laser_color',[('Default white','#D9D9D9'),('Default blue','#2362E5')]+list(ACCENTS.items())),
+    ('choose','Main width','main_width',[(f'{n:g} px',n) for n in (1.,1.5,1.7,2.,2.5,3.,4.)]),
+    ('choose','Error width','error_width',[(f'{n:g} px',n) for n in (1.,1.5,1.7,2.,2.5,3.,4.)]),
+    ('choose','Main stroke','main_style',[(k,k) for k in ('Solid','Dashed','Dotted')]),
+    ('choose','Error stroke','error_style',[(k,k) for k in ('Solid','Dashed','Dotted')])]
 
 
 class RefinedSettingsWindow(OperationalSettingsWindow):

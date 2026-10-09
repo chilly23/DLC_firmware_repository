@@ -4,17 +4,17 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Qt, Signal
 
 from .model import SettingsStore
-from .extended_controls import ExtendedSettingsWindow
+from .console import ConsoleWindow
 
 
-class AttachedSettings(ExtendedSettingsWindow):
+class AttachedSettings(ConsoleWindow):
     returned = Signal()
     valuesEdited = Signal(str)
 
     def __init__(self, data_dir,theme,system):
         super().__init__(theme,system)
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
-        self.setWindowTitle("NEXATOM v1.12 · Settings")
+        self.setWindowTitle("NEXATOM v1.13 · Settings")
         self.timer.stop()
 
     def open_search(self):
@@ -102,3 +102,4 @@ class SettingsHost(QObject):
     def shutdown(self):
         self.window.timer.stop()
         self.window.hide()
+        if getattr(self.controller,'journal',None):self.controller.journal.close()

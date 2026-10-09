@@ -38,7 +38,7 @@ class TouchKeyboard:
         font.setPixelSize(round(30*(theme.fontScale if theme else 1)))
         for rect,label,action in self.key_rects():
             active = action == self.pressed or (action=='shift' and self.shift)
-            box(p,rect,theme.accent if active and theme else '#FF8500' if active else theme.raised if theme else '#333333',min(rect.width(),rect.height())/2)
+            box(p,rect,'#FF8500' if active else theme.raised if theme else '#333333',min(rect.width(),rect.height())/2)
             p.setPen(QPen(QColor(ink),2.2))
             p.setBrush(Qt.BrushStyle.NoBrush)
             cx,cy=rect.center().x(),rect.center().y()
@@ -68,6 +68,6 @@ class TouchKeyboard:
             elif action=='close':
                 cross(p,cx,cy,15,'#FFFFFF')
             else:
-                p.setFont(font);p.setPen(QColor(theme.accentInk if active and theme else ink))
+                p.setFont(font);p.setPen(QColor('#FFFFFF' if active else ink))
                 p.drawText(rect,Qt.AlignmentFlag.AlignCenter,label)
             register(rect,('key',action))

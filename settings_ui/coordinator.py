@@ -19,7 +19,10 @@ class Job(QRunnable):
     def __init__(self,work):super().__init__();self.work=work;self.signals=JobSignals()
     def run(self):
         try:self.signals.finished.emit(self.work(),None)
-        except Exception as exc:self.signals.finished.emit(None,str(exc))
+        except Exception as exc:
+            import logging
+            logging.getLogger('nexatom').exception('Asynchronous device/settings operation failed')
+            self.signals.finished.emit(None,str(exc))
 
 
 from .tour import TOUR
@@ -60,12 +63,17 @@ class SettingsCoordinator(QObject):
         info.update(title=self.theme.trText(info['title']),body=self.theme.trText(info['body']),count=len(TOUR))
         return info
 
-    def tell(self,text):self.status=text;self.message.emit(text);self.changed.emit()
+    def tell(self,text,level='normal'):
+        self.status=text;self.messageLevel=level;self.message.emit(text);self.changed.emit()
 
     def submit(self,work,callback):
         job=Job(work);token=id(job);self.jobs[token]=job
         def finish(result,error):
             self.jobs.pop(token,None)
+            if error:
+                import logging
+                logging.getLogger('nexatom').error('Device operation failed: %s',error)
+                if getattr(self.ctl,'journal',None):self.ctl.journal.record(str(error),'Failed','critical','Device')
             callback(result,error)
             self.changed.emit()
         job.signals.finished.connect(finish);self.pool.start(job);self.changed.emit()
@@ -75,7 +83,7 @@ class SettingsCoordinator(QObject):
         if self.probed and not force and all(self.caps.get(k) is not None for k in ('brightness','contrast')):return
         self.probed=True
         def done(value,error):
-            if error:self.probed=False;self.tell(error);return
+            if error:self.probed=False;self.tell(error,'critical');return
             self.caps=value;self.tell('Display detected: '+value['target'])
         self.submit(self.device.probe,done)
 
@@ -87,7 +95,7 @@ class SettingsCoordinator(QObject):
     def set_level(self,key,value):
         if self.busy:self.levelFinished.emit(key);return
         def done(actual,error):
-            if error:self.tell(error)
+            if error:self.tell(error,'critical')
             else:self.caps[key]=actual;self.tell(f'{key.title()}: {actual}% (hardware readback)')
             self.levelFinished.emit(key)
         self.submit(lambda:self.device.set_level(key,value),done)
@@ -105,7 +113,7 @@ class SettingsCoordinator(QObject):
             self.mode_changing=False
             if result:self.mode_before,actual,error=result
             if error:
-                self.tell(error)
+                self.tell(error,'critical')
                 if self.mode_before:self.revert_mode()
             else:
                 self.caps['current']=actual;self.mode_deadline=time.monotonic()+15;self.changed.emit()
@@ -120,14 +128,14 @@ class SettingsCoordinator(QObject):
         if self.mode_before is None:return
         previous=self.mode_before;self.mode_deadline=0;self.mode_before=None
         def done(actual,error):
-            if error:self.tell('Display restore failed: '+error)
+            if error:self.tell('Display restore failed: '+error,'critical')
             else:self.caps['current']=actual;self.tell('Previous display mode restored.')
         self.submit(lambda:self.device.set_mode(previous),done)
 
     def change_time(self,text):
         try:datetime.datetime.fromisoformat(text)
         except ValueError:self.tell('Use YYYY-MM-DD HH:MM:SS.');return
-        self.submit(lambda:self.device.set_time(text),lambda value,error:self.tell(error or 'Host clock updated: '+value))
+        self.submit(lambda:self.device.set_time(text),lambda value,error:self.tell(error or 'Host clock updated: '+value,'critical' if error else 'normal'))
 
     def apply_live(self):
         self.app.setFont(QFont(self.theme.fontFamily))
@@ -136,14 +144,32 @@ class SettingsCoordinator(QObject):
         self.changed.emit()
 
     def set_graph(self,index,key,value):
+        from PySide6.QtGui import QColor
+        from math import isfinite
+        def reject(text):
+            self.tell(text,'warning')
+            if getattr(self.ctl,'journal',None):self.ctl.journal.record(text,'Failed','warning','Graph setting')
+            return False
+        if index not in (0,1) or key not in GRAPH_DEFAULTS:return reject('Unknown graph setting.')
+        if key.endswith('_color') and not QColor(str(value)).isValid():return reject('Invalid graph color.')
+        if key.endswith('_width'):
+            try:valid=isfinite(float(value)) and .5<=float(value)<=6
+            except (TypeError,ValueError):valid=False
+            if not valid:return reject('Line width must be 0.5 to 6 px.')
+            value=float(value)
+        if key.endswith(('_min','_max')) or key.startswith('baseline_'):
+            try:value=float(value)
+            except (TypeError,ValueError):return reject('Enter a finite graph value.')
+            if not isfinite(value):return reject('Enter a finite graph value.')
+        if key.endswith('_style') and value not in ('Solid','Dashed','Dotted'):return reject('Invalid stroke style.')
         settings=deepcopy(self.store.values['graph'+str(index+1)])
         settings[key]=value
         for lo,hi in [('x_min','x_max'),('main_min','main_max'),('error_min','error_max')]:
             if settings[hi]-settings[lo]<(.4 if lo=='x_min' else .04):
-                self.tell('Maximum must exceed minimum by a usable graph span.');return False
-        if settings['x_max']-settings['x_min']>80:self.tell('Maximum X span is 80 V.');return False
+                return reject('Maximum must exceed minimum by a usable graph span.')
+        if settings['x_max']-settings['x_min']>80:return reject('Maximum X span is 80 V.')
         if any(settings[hi]-settings[lo]>400 for lo,hi in [('main_min','main_max'),('error_min','error_max')]):
-            self.tell('Maximum Y span is 400 V (100 V/div).');return False
+            return reject('Maximum Y span is 400 V (100 V/div).')
         self.theme.apply('graph'+str(index+1),settings);return True
 
     def calibrate(self,index,reset=False):
@@ -204,16 +230,16 @@ class SettingsCoordinator(QObject):
         if self.power_deadline and now>=self.power_deadline:
             self.power_deadline=0;self.idle_since=now
             action=self.store.values['idle_action']
-            self.submit(lambda:self.device.power(action),lambda value,error:self.tell(error or 'Power action sent to host.'))
+            self.submit(lambda:self.device.power(action),lambda value,error:self.tell(error or 'Power action sent to host.','critical' if error else 'normal'))
         if self.mode_deadline or self.power_deadline:self.changed.emit()
 
     @Slot()
     def startTour(self):
-        self._tour_charts=[deepcopy(l.chart) for l in self.ctl.instrument.lasers]
+        self.save_tour_state()
         self._tour=0;self._tour_play=True;self.route_tour()
     @Slot()
     def startKnobTour(self):
-        self._tour_charts=[deepcopy(l.chart) for l in self.ctl.instrument.lasers]
+        self.save_tour_state()
         self._tour=next(i for i,s in enumerate(TOUR) if s.get('knob_intro'))
         self._tour_play=False;self.route_tour()
     def route_tour(self):
@@ -226,6 +252,11 @@ class SettingsCoordinator(QObject):
                 self.host.open();self.host.window.prepare_tour(TOUR[self._tour])
             else:self.host.window.hide();self.host.return_home()
         self.navigateTour.emit(self._tour)
+    def save_tour_state(self):
+        if not self.host or hasattr(self,'_tour_return'):return
+        w=self.host.window
+        self._tour_return=dict(visible=w.isVisible(),content=w.content,route=w.route,scroll=w.scroll,stack=deepcopy(w.route_stack),search=w.search.text())
+        self.host.home.saveGuide()
     @Slot()
     def tourNext(self):
         if self._tour>=len(TOUR)-1:self.stopTour()
@@ -237,13 +268,15 @@ class SettingsCoordinator(QObject):
     @Slot()
     def stopTour(self):
         self._tour=-1
-        if hasattr(self,'_tour_charts'):
-            for laser,chart in zip(self.ctl.instrument.lasers,self._tour_charts):laser.chart=chart
-            del self._tour_charts
-            self.ctl.changed.emit()
         if self.host:
             self.host.window.search.setEnabled(True);self.host.window.close_overlay()
         self.navigateTour.emit(-1);self.changed.emit();self.idle_since=time.monotonic()
+        if self.host and hasattr(self,'_tour_return'):
+            s=self._tour_return;del self._tour_return;w=self.host.window
+            w.select(w.order.index(s['content']));w.motion.position=w.selected;w.motion.target=None;w.last_index=w.selected;w.last_content=s['content'];w.route=s['route'];w.scroll=s['scroll'];w.search.setText(s['search'])
+            w.route_stack=s['stack']
+            if s['visible']:self.host.open()
+            else:w.hide();self.host.return_home()
 
     def shutdown(self):
         self.timer.stop()

@@ -13,7 +13,8 @@ ACCENTS={
 }
 GRAPH_DEFAULTS=dict(x_min=48.2,x_max=68.2,main_min=-1.,main_max=10.,error_min=-2.5,error_max=2.5,
                     auto_bandwidth=False,max_points=1001,line_width=1.7,graph_color='#C2C5C2',
-                    baseline_main=0.,baseline_error=0.)
+                    baseline_main=0.,baseline_error=0.,main_color='#C2C5C2',error_color='#C2C5C2',
+                    main_width=1.7,error_width=1.7,main_style='Solid',error_style='Dashed')
 THEMES={
     'Classic':dict(accent='Green',appearance='Dark'),
     'Lab Light':dict(accent='Blue',appearance='Light',light=['#EAF0F6','#FFFFFF','#D7E3EE','#172C42','#526579']),
@@ -23,7 +24,7 @@ THEMES={
     'Clay':dict(accent='Orange',appearance='Light',light=['#F1EAE1','#FFF9F0','#E3D5C4','#3C3025','#796756'])}
 NEW_DEFAULTS=dict(accent='Green',appearance='Dark',font_family='Roboto',font_scale=1.,ui_scale=1.,
                   theme_preset='Classic',corner_number_color='Automatic',corner_detail_color='Automatic',
-                  lock_shutdown_seconds=60,shortcut_left='none',shortcut_right='none',notification_actions=True,
+                  lock_shutdown_seconds=60,shortcut_left='none',shortcut_right='none',notification_actions=True,notification_size='Medium',
                   button_labels=False,language='English',sampling_rate=20,idle_minutes=0,idle_action='sleep',
                   laser1_color='#D9D9D9',laser2_color='#2362E5',graph1=deepcopy(GRAPH_DEFAULTS),graph2=deepcopy(GRAPH_DEFAULTS),
                   alarms1={'enabled':False,'main_high':8.5,'error_high':2.0},
@@ -102,6 +103,8 @@ class Appearance(QObject):
     @Property(bool,notify=changed)
     def buttonLabels(self):return self.get('button_labels')
     @Property(str,notify=changed)
+    def notificationSize(self):return self.get('notification_size')
+    @Property(str,notify=changed)
     def laser1Color(self):return self.get('laser1_color')
     @Property(str,notify=changed)
     def laser2Color(self):return self.get('laser2_color')
@@ -111,10 +114,14 @@ class Appearance(QObject):
         return translate(value,self.get('language'))
 
     def apply(self,key,value):
+        previous=deepcopy(self.store.values.get(key))
         if key=='theme_preset' and value in THEMES:
             self.store.values.update({k:THEMES[value][k] for k in ('accent','appearance')})
             color='#344F69' if THEMES[value]['appearance']=='Light' else '#C2C5C2'
             self.store.values['laser1_color']='#344F69' if THEMES[value]['appearance']=='Light' else '#D9D9D9'
-            for graph in ('graph1','graph2'):self.store.values[graph]['graph_color']=color
+            for graph in ('graph1','graph2'):
+                self.store.values[graph].update(graph_color=color,main_color=color,error_color=color)
         self.store.values[key]=value
-        self.store.save();self.changed.emit()
+        saved=self.store.save();self.changed.emit()
+        if getattr(self,'journal',None):
+            self.journal.record('Setting changed: '+key if saved else 'Setting save failed: '+key,'Passed' if saved else 'Failed','default' if saved else 'critical','Settings',{'before':previous,'after':value,'error':self.store.error})

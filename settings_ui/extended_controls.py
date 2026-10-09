@@ -168,23 +168,24 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
         super().paintEvent(event)
         entries=self.notifications.cards
         if not entries or self.overlay=='keyboard' or self.system.tourIndex>=0:return
-        from interaction.notification_art import buttons
+        from interaction.notification_art import buttons,metrics
         p=QPainter(self);p.setRenderHint(QPainter.RenderHint.Antialiasing);p.translate(self.offset);p.scale(self.scale,self.scale)
         if not self.notifications.toast['decision']:
             editor=self.drop_rect if self.dropdown else self.popup_rect() if self.overlay else None
             if editor is not None:p.setClipRegion(QRegion(0,0,1600,720).subtracted(QRegion(editor.toAlignedRect())))
         positions=getattr(self,'_notice_positions',{});new_positions={}
+        width,height,_=metrics(self.theme.notificationSize,True);left=1540-width
         for index,entry in enumerate(entries):
-            target=624-(len(entries)-1-index)*94
+            target=708-height-(len(entries)-1-index)*(height+10)
             y=positions.get(entry['id'],target);y+=min(1,.24)*(target-y)
             if abs(target-y)<.3:y=target
             new_positions[entry['id']]=y
             focused=''
             if self.knob_focus and len(self.knob_focus[1])>1 and self.knob_focus[1][1]==entry['id']:
                 focused={'notice_close':'close','notice_accept':'accept'}.get(self.knob_focus[1][0],'')
-            image=self.notifications.renderer.image(entry,860,84,focused)
-            p.setOpacity(entry['alpha']);p.drawImage(QRectF(680,y,860,84),image)
-            self.register(QRectF(680,y,860,84),('notice_body',entry['id']))
-            for rect,action in buttons(860,84,entry['decision']):
-                self.register(rect.translated(680,y),('notice_'+action if action=='accept' else 'notice_close',entry['id']))
+            image=self.notifications.renderer.image(entry,width,height,focused)
+            p.setOpacity(entry['alpha']);p.drawImage(QRectF(left,y,width,height),image)
+            self.register(QRectF(left,y,width,height),('notice_body',entry['id']))
+            for rect,action in buttons(width,height,entry['decision']):
+                self.register(rect.translated(left,y),('notice_'+action if action=='accept' else 'notice_close',entry['id']))
         self._notice_positions=new_positions;p.end()

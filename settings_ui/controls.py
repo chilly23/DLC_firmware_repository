@@ -24,8 +24,9 @@ def slider(p, rect, value, theme, label=None):
         for dx,dy in ((-12,0),(12,0),(0,-12),(0,12),(-9,-9),(9,9),(-9,9),(9,-9)):
             line(p,x+dx*.72,rect.center().y()+dy*.72,x+dx,rect.center().y()+dy,theme.muted,1.4)
     thumb=slider_geometry(rect,value)
-    box(p,thumb,theme.accent,6,theme.muted)
-    text(p,thumb.x(),thumb.y(),thumb.width(),thumb.height(),label or f'{round(value)}%',24,theme.accentInk,
+    box(p,thumb,theme.active,6,theme.muted)
+    for dx in (8,12,16):line(p,thumb.x()+dx,thumb.center().y()-8,thumb.x()+dx,thumb.center().y()+8,'#697069',1.2)
+    text(p,thumb.x()+17,thumb.y(),thumb.width()-20,thumb.height(),label or f'{round(value)}%',20,theme.activeInk,
          align=Qt.AlignmentFlag.AlignCenter,literal_color=True)
 
 def chevron(p, rect, theme):

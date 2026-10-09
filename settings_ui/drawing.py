@@ -76,7 +76,7 @@ class Icons:
         }
 
     def draw(self, p, key, cx, cy, size):
-        if key in ('control','alarm','knob','calibrate','screencheck','diagnostics','notifications'):
+        if key in ('control','alarm','knob','calibrate','screencheck','diagnostics','notifications','logs','retry'):
             from interaction.icons import paint_icon
             paint_icon(p,key,QRectF(cx-size/2,cy-size/2,size,size),STYLE.foreground if STYLE else WHITE)
             return

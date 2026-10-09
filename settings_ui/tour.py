@@ -10,7 +10,7 @@ step('Emission and stabilisation','Emission raises traces from zero. Stabilise r
 step('Inspect and arrange','Pan or pinch to inspect. Hold a plot for 550 ms: move vertically to swap signals, or across the divider to swap laser panels.',[122,100,680,511])
 step('Signals and axes','The signal labels open this panel. All changes belong to the laser, even when it appears on both sides.',[830,60,740,600],action='signals')
 step('Fullscreen charts','Expand one laser. Signal labels still open chart controls; Exit returns to the shared workspace.',[19,90,1564,603],action='fullscreen')
-step('More controls','The restored fan contains Alarms, Settings, Display and Diagnostics. Tap a sector directly, or rotate the knob to move the filled white highlight and push to open. Opening and closing each take 800 ms. The red X closes it.',[0,200,420,520],action='more')
+step('More controls','The fan contains Alarms, Settings, Logs and Diagnostics. Tap a sector or rotate the options through the white highlight. Stick left/right opens the selection. Push closes More. Opening and closing take 800 ms.',[0,200,420,520],action='more')
 step('Display preferences','Hardware controls report the connected screen capabilities. Unsupported controls explain why they are unavailable.',section='display')
 for side in (0,1):
     side_name='Left' if side==0 else 'Right'
@@ -51,8 +51,9 @@ function=[('Sampling rate','Sets simulated frame updates per second; this settin
  ('X maximum','Set the upper scan coordinate. Invalid or excessive spans are rejected.'),
  ('Main minimum','Set the lower spectroscopy voltage limit.'),('Main maximum','Set the upper spectroscopy voltage limit.'),
  ('Error minimum','Set the lower error voltage limit.'),('Error maximum','Set the upper error voltage limit.'),
- ('Graph color','Choose the trace color from the supplied palette.'),('Laser color','Choose the channel identity color.'),
- ('Line width','Adjust the rendered trace stroke width.')]
+ ('Main color','Choose the spectroscopy trace color.'),('Error color','Choose the error trace color independently.'),('Laser color','Choose the channel identity color.'),
+ ('Main width','Set spectroscopy stroke width.'),('Error width','Set error stroke width independently.'),
+ ('Main stroke','Solid, dashed or dotted spectroscopy.'),('Error stroke','Solid, dashed or dotted error trace.')]
 for i,(title,body) in enumerate(function):
     step(title,body+' Laser 1 and Laser 2 have adjacent controls in this table.',section='function',row=i)
 
@@ -62,6 +63,8 @@ system=[('Date and time','Send a valid local date and time to the host OS. This 
  ('Text size','Adjust the text scale across the instrument interface.'),
  ('Side buttons','Choose icons only or icon + name for Lock, Emission, Stabilise, Not set and More.'),
  ('Automatic power','Choose Sleep or Shutdown and an idle timeout. A 30-second countdown allows cancellation.'),
+ ('Lock screen','Lock the interface manually or adjust the physical-lock shutdown countdown.'),
+ ('Startup','Start automatically at login or repair the Pi setup.'),
  ('System information','Inspect application, firmware, OS, architecture, Python, Qt and data location.'),
  ('Restore defaults','Reset preferences and chart settings, preserving search history. Confirmation is required.'),
  ('Factory reset','Reset application preferences, chart session and history. It does not reflash the device.'),
@@ -98,3 +101,7 @@ step('Buttons and physical lock','Open Buttons & lock to view each GPIO input, s
 step('One pin per control','The right shortcut uses GPIO7 and the left shortcut uses GPIO16. Both are enabled and active when grounded through a button. GPIO8 stays on Knob 2 direction D. Software rejects duplicate assignments.',section='control',route='contact:left_shortcut')
 step('Locked screen and shutdown','GPIO20 defaults to locked when connected to ground. The blurred lock screen blocks touch and knobs. Unlock before the 60-second countdown ends to resume. The countdown is configurable; expiry requests actual OS shutdown.',section='control',route='panel')
 step('Notification history','New notices stack above older ones. Timed notices blur and fade; Close removes only that card immediately. Warnings use a yellow triangle; critical errors remain until dismissed. History keeps 200 entries. Clear asks for confirmation in its own card; Action updates can mute routine notices.',section='notifications')
+step('Notification size','Choose Small, Medium or Large. The choice applies to home and settings cards, including their icons and controls.',section='notifications')
+step('User logs','Logs retain up to 10,000 records with local timestamps, description, status and severity. Pause freezes this view; acquisition and recording continue. Filter by level, scroll, export CSV/Markdown, or clear with confirmation.',section='logs')
+step('Manual lock','Lock now blocks touch and knobs. Hold Unlock for one second to resume. A physical GPIO20 lock cannot be bypassed by touch. Never disables the shutdown countdown.',section='system',route='lock')
+step('Automatic startup','The Pi installer enables desktop login and app startup. Start on login can be disabled here. Repair repeats dependency and GPIO setup through the OS authentication dialog.',section='system',route='startup')
