@@ -32,7 +32,7 @@ def finish_jobs():
     while system.busy and time.monotonic()<end:QTest.qWait(20)
     assert not system.busy
 try:
-    QTest.qWait(250);check('v1.10 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.10.0')
+    QTest.qWait(250);check('v1.11 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.11.0')
     check('Default home values are white',ctl.theme.parameterInk.upper()=='#FFFFFF')
     ctl.theme.apply('accent','Cyan');check('Light accents use dark numeric ink',ctl.theme.parameterInk.upper()=='#111111');ctl.theme.apply('accent','Green')
     check('Earlier Green is restored exactly',ctl.theme.accent.upper()=='#008622')

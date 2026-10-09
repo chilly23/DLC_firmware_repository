@@ -19,7 +19,7 @@ class PanelTests(unittest.TestCase):
                 self.assertEqual(locks,[True])
             finally:service.shutdown()
     def test_gpio8_collision_is_rejected_without_breaking_other_inputs(self):
-        config=deepcopy(DEFAULTS);config['panel']['left_shortcut']['enabled']=True
+        config=deepcopy(DEFAULTS);config['panel']['left_shortcut'].update(pin=8,enabled=True)
         with self.assertRaisesRegex(ValueError,'GPIO8 is already assigned'):validate(config)
         config['panel']['left_shortcut']['pin']=16;validate(config)
     def test_bounce_produces_one_press_and_one_release(self):

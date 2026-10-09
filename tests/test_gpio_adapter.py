@@ -35,7 +35,7 @@ class AdapterTests(unittest.TestCase):
     def test_single_input_only_request_for_three_knobs(self):
         frames,states=self.run_fixture();self.assertEqual(len(self.requested),1)
         path,args=self.requested[0];pins,settings=next(iter(args['config'].items()))
-        self.assertEqual(len(set(pins)),25);self.assertTrue({1,7,12,20}.issubset(pins));self.assertEqual(settings,dict(direction='input',edge_detection='both',bias='pullup',active_low=False))
+        self.assertEqual(len(set(pins)),26);self.assertTrue({1,7,12,16,20}.issubset(pins));self.assertEqual(settings,dict(direction='input',edge_detection='both',bias='pullup',active_low=False))
         self.assertEqual(set(frames[0]),{0,1,3});self.assertTrue(states[0][0]);self.assertFalse(states[-1][0]);self.assertTrue(self.closed)
     def test_busy_gpio_reports_owner_and_never_requests(self):
         frames,states=self.run_fixture(4);self.assertFalse(self.requested);self.assertFalse(frames)
