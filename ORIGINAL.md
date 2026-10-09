@@ -67,7 +67,7 @@ Use the active graphical session's `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR`.
 | CC / TC / PC | v1.4/v1.5 module chooser geometry and dark selected/unselected surfaces restored; light appearance still adapts |
 | Graph gestures | One pinch handler per laser spans both plots; pinch takes over a long-press drag; linked X ranges, lock guard and wheel/knob zoom retained |
 | Graph bounds | Existing overscroll and vertical trace-retention limits retained; knob pan/zoom use the same limits |
-| Physical inputs | One input-only libgpiod request for 21 knob signals and 4 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
+| Physical inputs | One input-only libgpiod request for 21 knob signals and 5 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
 | Calibration | Released-state capture, centre-only contact first, four directions with optional shared push, clockwise/anticlockwise verification and atomic save |
 | Assignment | Per-knob target corner plus seven operation dropdowns; live parameter preview; separate shortcut/calibration resets |
 | Navigation | Hold push for universal navigation; visible focus, modal-aware targets, dropdown scrolling, numeric digit stepping, Settings wheel/slider/keyboard control |
@@ -135,7 +135,7 @@ the new panel inputs without discarding saved knob calibration or shortcuts.
 | Physical lock | GPIO20 captures and blurs the current screen, blocks touch/keyboard/knob commands and starts a real OS-shutdown countdown. Unlock cancels a pending request. |
 | Calibration | Buttons & lock page supports pin, enable, polarity, debounce and release/press calibration. Duplicate GPIO ownership is rejected. |
 
-### Additional wiring and the GPIO8 conflict
+### Additional wiring - GPIO7 and GPIO16
 
 All numbers below are **BCM GPIO**, with the contact common connected to GND.
 The application requests pull-ups. Defaults are active LOW (grounded).
@@ -146,14 +146,17 @@ The application requests pull-ups. Defaults are active LOW (grounded).
 | Button 1 | 12 | Enabled | Right displayed panel emission confirmation |
 | Button 2 | 1 | Enabled | Left displayed panel emission confirmation |
 | Button 3 | 7 | Enabled | Right side's configured shortcut |
-| Button 4 | 8 requested | **Disabled: pin conflict** | Left side's configured shortcut after reassignment |
+| Button 4 | 16 | Enabled | Left side's configured shortcut |
 
-**GPIO8 already belongs to Knob 2 D. Two independent contacts cannot be decoded
-separately on that same line.** The app keeps Knob 2 working and leaves Button 4
-disabled. GPIO16 is unused by this supplied map: if you choose it, physically move
-the button wire to GPIO16, then choose Control Settings > Buttons & lock > Left
-shortcut > GPIO pin > GPIO16, enable the input, and calibrate it. No wire is assumed
-to have moved automatically. You can instead choose another free pin.
+**Right shortcut = GPIO7; left shortcut = GPIO16.** Both inputs are enabled,
+active LOW, and use internal pull-ups. Wire each GPIO through its button to GND.
+GPIO8 remains connected to Knob 2 D.
+
+Wiring revision 3 automatically migrates the previous stock disabled GPIO8
+shortcut to enabled GPIO16 on startup, preserving knob calibration and mappings.
+Custom panel pin assignments are retained. The current folder's `controls.json`
+already contains this change. Keep your Pi's existing `data` directory when copying
+updated source; the migration updates that existing configuration on launch.
 
 For contact calibration: release it, select **Calibrate**, operate it once, then
 release completely. The measured active level is saved only after release. The
@@ -211,7 +214,7 @@ A stored history entry cannot repeat its earlier action.
 
 ### Verification of this update
 
-- **31 unit/contract tests** passed: edge decoding, combined contacts, calibration,
+- **33 unit/contract tests** passed: edge decoding, combined contacts, calibration,
   migration, GPIO ownership, full batch delivery, auxiliary debounce/polarity and
   independent navigation repeat guards.
 - **33 new Qt integration checks** passed: right margin, 160-step replay, side
@@ -405,7 +408,7 @@ runtime/ + packages/        bundled Windows runtime, not ARM binaries
 
 ```mermaid
 flowchart LR
-  Pins[25 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
+  Pins[26 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
   Capture --> Decode[Independent decoders: debounce and quadrature]
   Decode --> Service[KnobService: calibration, release guard, hold and mappings]
   Service -->|knob / command / count| Router[InputRouter]

@@ -18,6 +18,6 @@ if __name__ == "__main__":
         except Exception:
             traceback.print_exc()
             import ctypes
-            ctypes.windll.user32.MessageBoxW(None, "Nexatom could not start. Details are in logs/startup.log.\n\n" + traceback.format_exc()[-1600:], "Nexatom v1.10", 0x10)
+            ctypes.windll.user32.MessageBoxW(None, "Nexatom could not start. Details are in logs/startup.log.\n\n" + traceback.format_exc()[-1600:], "Nexatom v1.11", 0x10)
             code = 1
     raise SystemExit(code)

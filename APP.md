@@ -1,18 +1,18 @@
-> **Recovered release v1.10** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
+> **Recovered release v1.11** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
 > Run **start.cmd** on Windows or **bash start.sh** on Raspberry Pi OS.
 
-# Nexatom v1.10 — RKJXT control integration
+# Nexatom v1.11 — RKJXT control integration
 
-Application **1.10.0**, based on `mock1.7-pyside6`. Updated 1 October 2026.
+Application **1.11.0**, based on `mock1.7-pyside6`. Updated 1 October 2026.
 The original 1600 × 720 home layout, two lasers, chart tools, settings wheel and
 saved appearance preferences are retained. Earlier version folders were not edited.
 About still reports firmware **V1.6.0**, as requested.
 
 ## Start the application
 
-**Windows:** double-click [Start Nexatom v1.10.cmd](Start%20Nexatom%20v1.10.cmd).
+**Windows:** double-click [Start Nexatom v1.11.cmd](Start%20Nexatom%20v1.11.cmd).
 Python and Qt are included. The application opens fullscreen after its three-second
-boot screen. `Start Fullscreen v1.10.cmd` is an equivalent launcher.
+boot screen. `Start Fullscreen v1.11.cmd` is an equivalent launcher.
 Keep the source, `assets`, `runtime` and `packages` folders together.
 
 **Raspberry Pi OS Desktop, 64-bit:** copy this folder to a writable local folder,
@@ -23,7 +23,7 @@ bash run.sh
 ```
 
 The first run downloads and installs the Qt/GPIO/display dependencies, creates a
-local Python environment, grants GPIO and display access, and adds **Nexatom v1.10**
+local Python environment, grants GPIO and display access, and adds **Nexatom v1.11**
 to the desktop and application menu. It requests OS authentication through `pkexec`
 where available. Later launches reuse the installation and need no pip commands.
 Run as the normal desktop user; the application does not run as root. First setup
@@ -33,7 +33,7 @@ If the desktop asks whether to trust the generated shortcut, choose Allow Launch
 **Close the standalone RKJXT demo before starting GPIO control here.** It requests
 the same pins. Its old launcher also installed an autostart entry; disable that
 entry in your desktop session's startup applications if it keeps returning after
-reboot. v1.10 reports the owning process/driver instead of taking pins from it.
+reboot. v1.11 reports the owning process/driver instead of taking pins from it.
 
 **First use on the Pi:** More → Settings → Control Settings → Configure →
 Calibrate directions and push. Calibrate Knobs 1, 2 and 4 separately. Touch is
@@ -64,13 +64,13 @@ Use the active graphical session's `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR`.
 
 ## What changed
 
-| Area | v1.10 implementation |
+| Area | v1.11 implementation |
 |---|---|
 | Home readouts | White values, labels, units, icons and dividers; pale Yellow/Mint/Teal/Cyan/White accents adapt all foreground elements together |
 | CC / TC / PC | v1.4/v1.5 module chooser geometry and dark selected/unselected surfaces restored; light appearance still adapts |
 | Graph gestures | One pinch handler per laser spans both plots; pinch takes over a long-press drag; linked X ranges, lock guard and wheel/knob zoom retained |
 | Graph bounds | Existing overscroll and vertical trace-retention limits retained; knob pan/zoom use the same limits |
-| Physical inputs | One input-only libgpiod request for 21 knob signals and 4 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
+| Physical inputs | One input-only libgpiod request for 21 knob signals and 5 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
 | Calibration | Released-state capture, centre-only contact first, four directions with optional shared push, clockwise/anticlockwise verification and atomic save |
 | Assignment | Per-knob target corner plus seven operation dropdowns; live parameter preview; separate shortcut/calibration resets |
 | Navigation | Hold push for universal navigation; visible focus, modal-aware targets, dropdown scrolling, numeric digit stepping, Settings wheel/slider/keyboard control |
@@ -87,7 +87,7 @@ where a translation is not available. Upgrade remains the previously requested
 preview. Laser signals and laser parameter effects remain a visual simulation;
 the GPIO inputs and supported host display controls are real.
 
-## v1.10 corrections - 30 September 2026
+## v1.11 corrections - 30 September 2026
 
 - Automatic corner foregrounds use one adaptive ink; the October update adds independent number and detail overrides. The original green
   is restored to **`#008622`**; other accent choices are unchanged.
@@ -106,7 +106,7 @@ the GPIO inputs and supported host display controls are real.
   Knob 4, but its calibration resets because this is a replacement physical unit.
   A custom non-stock pin layout is preserved for explicit configuration.
 
-For an existing Pi installation, copy the updated code into its v1.10 folder while
+For an existing Pi installation, copy the updated code into its v1.11 folder while
 keeping its existing `data` directory, then run `bash run.sh`. The saved wiring
 migrates automatically. Open **Control Settings > Knob 4 > Configure > Calibrate**.
 Recalibrate Knobs 1/2 if their previous calibration was incomplete or incorrect.
@@ -121,7 +121,7 @@ to change the data range without scaling the plot widget itself.
 
 ## Control update - 1 October 2026
 
-This update remains **v1.10.0** in the same development folder. Keep the Pi's existing
+This update remains **v1.11.0** in the same development folder. Keep the Pi's existing
 `data` directory when replacing the application code: configuration migration adds
 the new panel inputs without discarding saved knob calibration or shortcuts.
 
@@ -138,7 +138,7 @@ the new panel inputs without discarding saved knob calibration or shortcuts.
 | Physical lock | GPIO20 captures and blurs the current screen, blocks touch/keyboard/knob commands and starts a real OS-shutdown countdown. Unlock cancels a pending request. |
 | Calibration | Buttons & lock page supports pin, enable, polarity, debounce and release/press calibration. Duplicate GPIO ownership is rejected. |
 
-### Additional wiring and the GPIO8 conflict
+### Additional wiring - GPIO7 and GPIO16
 
 All numbers below are **BCM GPIO**, with the contact common connected to GND.
 The application requests pull-ups. Defaults are active LOW (grounded).
@@ -149,14 +149,17 @@ The application requests pull-ups. Defaults are active LOW (grounded).
 | Button 1 | 12 | Enabled | Right displayed panel emission confirmation |
 | Button 2 | 1 | Enabled | Left displayed panel emission confirmation |
 | Button 3 | 7 | Enabled | Right side's configured shortcut |
-| Button 4 | 8 requested | **Disabled: pin conflict** | Left side's configured shortcut after reassignment |
+| Button 4 | 16 | Enabled | Left side's configured shortcut |
 
-**GPIO8 already belongs to Knob 2 D. Two independent contacts cannot be decoded
-separately on that same line.** The app keeps Knob 2 working and leaves Button 4
-disabled. GPIO16 is unused by this supplied map: if you choose it, physically move
-the button wire to GPIO16, then choose Control Settings > Buttons & lock > Left
-shortcut > GPIO pin > GPIO16, enable the input, and calibrate it. No wire is assumed
-to have moved automatically. You can instead choose another free pin.
+**Right shortcut = GPIO7; left shortcut = GPIO16.** Both inputs are enabled,
+active LOW, and use internal pull-ups. Wire each GPIO through its button to GND.
+GPIO8 remains connected to Knob 2 D.
+
+Wiring revision 3 automatically migrates the previous stock disabled GPIO8
+shortcut to enabled GPIO16 on startup, preserving knob calibration and mappings.
+Custom panel pin assignments are retained. The current folder's `controls.json`
+already contains this change. Keep your Pi's existing `data` directory when copying
+updated source; the migration updates that existing configuration on launch.
 
 For contact calibration: release it, select **Calibrate**, operate it once, then
 release completely. The measured active level is saved only after release. The
@@ -214,14 +217,14 @@ A stored history entry cannot repeat its earlier action.
 
 ### Verification of this update
 
-- **31 unit/contract tests** passed: edge decoding, combined contacts, calibration,
+- **33 unit/contract tests** passed: edge decoding, combined contacts, calibration,
   migration, GPIO ownership, full batch delivery, auxiliary debounce/polarity and
   independent navigation repeat guards.
 - **33 new Qt integration checks** passed: right margin, 160-step replay, side
   focus, infinite wheel, emission touch/knob confirmation, axis-editor ownership,
   color updates, global input lock, stale shutdown cancellation, one shutdown
   request on expiry, physical button routing and notification persistence.
-- Existing **54 chart checks**, **9 native pinch cases**, **46 v1.10 checks** and
+- Existing **54 chart checks**, **9 native pinch cases**, **46 v1.11 checks** and
   **31 reference-control/tour checks** passed. The guide now visits 97 steps.
 - Both actual Windows `.cmd` launchers reached fullscreen, completed boot and
   produced live simulated traces. No physical Pi was connected for these checks.
@@ -254,7 +257,7 @@ Inputs use pull-ups; a grounded contact normally reads LOW. The app never config
 these lines as outputs. Do not connect signal contacts to 5 V.
 
 The reported unconnected GPIO0–8 HIGH / GPIO9–27 LOW readings are boot/bias states,
-not a direction map. v1.10 requests pull-ups and records each contact's released
+not a direction map. v1.11 requests pull-ups and records each contact's released
 state during calibration. It never interprets the original boot pattern as a
 pressed joystick. After startup/reconnection, a calibrated knob must remain
 released for 250 ms before shortcuts can run.
@@ -263,7 +266,7 @@ The chip is selected by its RP1 label instead of assuming `gpiochip0`. Set `chip
 in `data/controls.json` only if automatic detection cannot identify one RP1 chip.
 Enabled peripherals can own shared pins: I2C on GPIO2/3, UART on 14/15, SPI and other
 overlays may conflict. The status names busy lines. Disable a conflicting peripheral
-through the OS, or disable that knob in Control Settings. v1.10 does not alter boot
+through the OS, or disable that knob in Control Settings. v1.11 does not alter boot
 pin multiplexing or silently stop another application.
 
 ## Calibrate, configure, operate
@@ -408,7 +411,7 @@ runtime/ + packages/        bundled Windows runtime, not ARM binaries
 
 ```mermaid
 flowchart LR
-  Pins[25 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
+  Pins[26 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
   Capture --> Decode[Independent decoders: debounce and quadrature]
   Decode --> Service[KnobService: calibration, release guard, hold and mappings]
   Service -->|knob / command / count| Router[InputRouter]
@@ -454,7 +457,7 @@ data and injected host/GPIO contracts. No physical Pi was accessed:
 |---|---|
 | Decoder/calibration/config/service/decimal tests | 16 tests passed |
 | GPIO request and busy-owner contracts | 2 tests passed |
-| v1.10 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
+| v1.11 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
 | Existing charts, swaps, signals, bounds and emission | 54 checks passed |
 | Existing reference controls, dropdowns, alarms and complete tour | 31 checks passed |
 | Existing settings/system/data behavior | 46 checks passed |
@@ -471,7 +474,7 @@ Run the new focused checks with `runtime\python.exe` on Windows or `.venv/bin/py
 on Pi, followed by `tests/test_knobs.py`, `tests/test_shared_contact.py`,
 `tests/test_wiring_migration.py`, `tests/test_gpio_adapter.py`,
 `tests/verify_zoom_paths.py`, `tests/verify_v18.py` or `tests/diagnose_v18.py`. Retained `verify_v17.py` checks the
-inherited settings contract against v1.10; it is not another application. Validation
+inherited settings contract against v1.11; it is not another application. Validation
 JSON and useful screenshots are in `tests/`. `inspect_v18.py` regenerates the new
 screens with isolated data. Qt's offscreen plugin can report unsupported `raise()`;
 these messages are unrelated to runtime exceptions.

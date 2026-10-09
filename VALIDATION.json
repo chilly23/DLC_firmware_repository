@@ -1,6 +1,6 @@
 {
-  "version": "1.10",
-  "unit_tests_passed": 31,
+  "version": "1.11",
+  "unit_tests_passed": 33,
   "ui_checks_passed": 33,
   "windows_startup": "passed",
   "python_files": 67,
