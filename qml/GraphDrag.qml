@@ -21,11 +21,14 @@ Item {
     }
     property int targetSide: pointerX < 800 ? 0 : 1
     property bool wholeChannel: targetSide !== sourceSide || sourceChart.mode === "combined"
-    property real upperHeight: 493*(sourceChart.mainUpper ? sourceChart.mainRatio : 1-sourceChart.mainRatio)
-    property bool targetUpper: pointerY < 100+upperHeight+9
+    property var geometry:workspace.graphLayout
+    property real traceHeight:geometry.height-geometry.gap
+    function panelX(side){return side===0?geometry.x:1600-geometry.x-geometry.width}
+    property real upperHeight: traceHeight*(sourceChart.mainUpper ? sourceChart.mainRatio : 1-sourceChart.mainRatio)
+    property bool targetUpper: pointerY < geometry.y+upperHeight+geometry.gap/2
     property bool sourceUpper: errorSignal ? !sourceChart.mainUpper : sourceChart.mainUpper
     property bool destinationLocked: (targetSide === 0 ? leftData : rightData).locked
-    property bool validDrop: (targetSide===0?pointerX>=122&&pointerX<=778:pointerX>=822&&pointerX<=1478) && pointerY >= 100 && pointerY <= 611 && !destinationLocked
+    property bool validDrop: pointerX>=panelX(targetSide) && pointerX<=panelX(targetSide)+geometry.width && pointerY>=geometry.y && pointerY<=geometry.y+geometry.height && !destinationLocked
     function begin(side, index, error, x, y) {
         sourceSide = side;
         channelIndex = index;
@@ -124,21 +127,21 @@ Item {
         Rectangle {
             required property int index
             objectName:"dropPanel"+index
-            x: index === 0 ? 122 : 822; y:100; width:656;height:511
+            x:drag.panelX(index);y:drag.geometry.y;width:drag.geometry.width;height:drag.geometry.height
             radius:12;color:theme.surface
             border.width: drag.wholeChannel && drag.targetSide===index ? 2 : 0
             border.color: drag.destinationLocked ? "#A92621" : theme.foreground
             property int paneSide: index
             property var paneChart: (index===0?drag.leftData:drag.rightData).chart
-            property real paneUpperHeight: 493*(paneChart.mainUpper?paneChart.mainRatio:1-paneChart.mainRatio)
+            property real paneUpperHeight: drag.traceHeight*(paneChart.mainUpper?paneChart.mainRatio:1-paneChart.mainRatio)
             Repeater {
                 model: parent.paneChart.mode==="combined"?1:2
                 Rectangle {
                     required property int index
                     property bool highlighted:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper
                     property color itemInk:highlighted?theme.activeInk:theme.foreground
-                    x:8;y:index===0?8:parent.paneUpperHeight+18
-                    width:parent.width-16;height:parent.paneChart.mode==="combined"?495:index===0?parent.paneUpperHeight-8:493-parent.paneUpperHeight-8
+                    x:8;y:index===0?8:parent.paneUpperHeight+drag.geometry.gap
+                    width:parent.width-16;height:parent.paneChart.mode==="combined"?parent.height-16:index===0?parent.paneUpperHeight-8:drag.traceHeight-parent.paneUpperHeight-8
                     radius:8
                     color:highlighted?theme.active:theme.raised
                     border.width:highlighted?2:0
@@ -153,10 +156,10 @@ Item {
         }
     }
     Rectangle {
-        x: Math.max(122, Math.min(1478-width, (drag.sourceSide === 0 ? 135 : 835) + drag.pointerX - drag.anchorX))
-        y: Math.max(102, Math.min(610-height, (drag.sourceUpper?110:118+drag.upperHeight) + drag.pointerY - drag.anchorY))
-        width: 630
-        height: drag.wholeChannel ? 475 : Math.max(100,493*(drag.errorSignal?1-drag.sourceChart.mainRatio:drag.sourceChart.mainRatio)-12)
+        x: Math.max(drag.geometry.x, Math.min(1600-drag.geometry.x-width, drag.panelX(drag.sourceSide)+13+drag.pointerX-drag.anchorX))
+        y: Math.max(drag.geometry.y+2, Math.min(drag.geometry.y+drag.geometry.height-height, drag.geometry.y+(drag.sourceUpper?10:drag.geometry.gap+drag.upperHeight)+drag.pointerY-drag.anchorY))
+        width: drag.geometry.width-26
+        height: drag.wholeChannel ? drag.geometry.height-36 : Math.max(100,drag.traceHeight*(drag.errorSignal?1-drag.sourceChart.mainRatio:drag.sourceChart.mainRatio)-12)
         radius: 0
         color: theme.surface
         border.width: 1

@@ -8,6 +8,8 @@ Item {
     property int channelIndex: 0
     property int revision: 0
     property bool mirrored: side === 1
+    property var buttonOrder: {workspace.graphSize;return workspace.panelOrder(side)}
+    function buttonY(key){return 124+Math.max(0,buttonOrder.indexOf(key))*97}
     function mirrorX(left,w) {return mirrored?width-left-w:left}
     property var channel: { revision; return ctl.channel(channelIndex) }
     property real idleOpacity: channel.emission ? 1 : Colors.idleOpacity
@@ -53,7 +55,8 @@ Item {
     ChartPair {
         id: charts; objectName: "charts" + pane.side
         opacity:pane.idleOpacity
-        x: pane.mirrorX(122,width); y: 100; width: 656; height: 511
+        x: pane.mirrorX(workspace.graphLayout.x,width);y:workspace.graphLayout.y
+        width:workspace.graphLayout.width;height:workspace.graphLayout.height;gap:workspace.graphLayout.gap
         channelIndex: pane.channelIndex; revision: pane.revision; suffix: String(pane.side)
         labelOnRight: pane.side === 1
         onSignalsRequested: pane.signalsRequested(pane.side,pane.channelIndex)
@@ -64,30 +67,31 @@ Item {
     }
     Rectangle { objectName:"sideBar"+pane.side;opacity:pane.idleOpacity;x:pane.mirrorX(105,width);y:111;width:5;height:494;color:pane.channelIndex===0?theme.laser1Color:theme.laser2Color }
     TouchButton {
-        objectName: "lock" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Lock") : ""; x:pane.mirrorX(7,width);y:124;width:88;height:88;radius:24;enabled:pane.channel.emission
+        objectName: "lock" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Lock") : ""; x:pane.mirrorX(7,width);y:pane.buttonY("lock");width:88;height:88;radius:24;enabled:pane.channel.emission
         opacity:pane.idleOpacity
         iconName: pane.channel.locked ? "lock" : "unlock"; iconSize: 64; ink: pane.channel.locked ? theme.activeInk : theme.foreground; normalColor: pane.channel.locked ? theme.active : "transparent"; selected: pane.channel.locked
         onClicked: ctl.toggleLock(pane.channelIndex)
     }
     TouchButton {
-        objectName: "emission" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Emission") : ""; x:pane.mirrorX(7,width);y:221;width:88;height:88;radius:24
+        objectName: "emission" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Emission") : ""; x:pane.mirrorX(7,width);y:pane.buttonY("emission");width:88;height:88;radius:24
         iconName: "emission"; iconSize: 64; ink: pane.channel.emission ? theme.activeInk : theme.foreground; normalColor: pane.channel.emission ? theme.active : "transparent"
         onClicked: pane.emissionRequested(pane.side,pane.channelIndex)
     }
     TouchButton {
-        objectName: "stabilise" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Stabilise") : ""; x:pane.mirrorX(7,width);y:318;width:88;height:88;radius:24;enabled:pane.channel.emission
+        objectName: "stabilise" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Stabilise") : ""; x:pane.mirrorX(7,width);y:pane.buttonY("stabilise");width:88;height:88;radius:24;enabled:pane.channel.emission
         opacity:pane.idleOpacity
         iconName: "stabilise"; iconSize: 64; ink: pane.channel.stabilised ? theme.activeInk : theme.foreground; normalColor: pane.channel.stabilised ? theme.active : "transparent"
         onClicked: ctl.toggleStabilisation(pane.channelIndex)
     }
     TouchButton {
-        objectName: "shortcut" + pane.side; x:pane.mirrorX(7,width);y:415;width:88;height:88
+        objectName: "shortcut" + pane.side; x:pane.mirrorX(7,width);y:pane.buttonY("shortcut");width:88;height:88
         opacity:pane.idleOpacity
-        iconName:"";text:theme.translate(theme.language,ctl.shortcutLabel(pane.side));textSize:16;ink:theme.muted;normalColor:"transparent"
+        iconName:"";text:{pane.revision;return theme.translate(theme.language,ctl.shortcutLabel(pane.side))}
+        textSize:16;ink:theme.muted;normalColor:"transparent"
         onClicked: ctl.runShortcut(pane.side)
     }
     TouchButton {
-        objectName: "more" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"More") : ""; x:pane.mirrorX(7,width);y:512;width:88;height:88
+        objectName: "more" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"More") : ""; x:pane.mirrorX(7,width);y:pane.buttonY("more");width:88;height:88
         opacity:pane.idleOpacity
         iconName: "more"; iconSize: 64; onClicked: pane.moreRequested(pane.side)
     }

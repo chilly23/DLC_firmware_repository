@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: theme.background; title: "NEXATOM · v1.14"
+    visible: true; color: theme.background; title: "NEXATOM · v1.15"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -14,15 +14,18 @@ Window {
     property string notice: ""
     property alias keypad: keypad
     property alias radial: radial
+    property alias logsWindow: logsWindow
+    property alias lobby: lobby
     property var guideState:null
     function saveGuide(){
         if(guideState)return
-        guideState={fullscreen:fullscreenSide,left:leftPane.viewRange(),right:rightPane.viewRange(),full:fullscreenView.viewRange(),
+        guideState={lobbyVisible:lobby.visible,lobbyPage:lobby.page,fullscreen:fullscreenSide,left:leftPane.viewRange(),right:rightPane.viewRange(),full:fullscreenView.viewRange(),
             signals:signalsPanel.visible,side:signalsPanel.side,index:signalsPanel.channelIndex,axes:signalsPanel.axisPage,error:signalsPanel.errorAxis}
     }
     function restoreGuide(){
         if(!guideState)return
         let s=guideState;guideState=null;leftPane.setViewRange(s.left[0],s.left[1]);rightPane.setViewRange(s.right[0],s.right[1]);fullscreenView.setViewRange(s.full[0],s.full[1]);fullscreenSide=s.fullscreen
+        lobby.page=s.lobbyPage;lobby.visible=s.lobbyVisible
         if(s.signals){signalsPanel.open(s.side,s.index);signalsPanel.axisPage=s.axes;signalsPanel.errorAxis=s.error}
     }
     function openEditor(index,key,side,bottom) {keypad.open(index,key,side,bottom)}
@@ -78,18 +81,26 @@ Window {
         if(alarmPanel.visible){alarmPanel.visible=false;return}
         if(radial.visible){radial.dismiss("");return}
         if(selector.visible){if(!selector.modules)selector.modules=true;else selector.visible=false;return}
+        if(lobby.visible){lobby.back();return}
         if(fullscreenSide>=0){closeFullscreen();return}
         showNotice("Home · hold a knob push to exit navigation")
     }
     function beginMove(side,errorSignal,x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.begin(side,side===0?ctl.leftChannel:ctl.rightChannel,errorSignal,p.x,p.y)}
     function updateMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.move(p.x,p.y)}
     function finishMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.finish(p.x,p.y)}
-    function cancelInputForLock(){graphDrag.visible=false;if(emissionConfirm.visible)emissionConfirm.cancel();if(radial.visible)radial.dismiss("")}
+    function cancelInputForLock(){graphDrag.visible=false;lobby.visible=false;logsWindow.dismiss();if(emissionConfirm.visible)emissionConfirm.cancel();if(radial.visible)radial.dismiss("")}
+    Connections {target:workspace
+        function onPageRequested(page){ctl.closeSettings();lobby.open(page)}
+        function onLogsRequested(){ctl.closeSettings();logsWindow.open()}
+        function onCloseLogsRequested(){logsWindow.dismiss()}
+    }
+    LogsWindow {id:logsWindow;homeWindow:window}
     Connections { target: ctl; function onChanged() { window.revision++ }  }
     Connections {target:systemSettings;function onNavigateTour(step){
         radial.visible=false;selector.visible=false;keypad.visible=false;signalsPanel.visible=false;alarmPanel.visible=false;window.fullscreenSide=-1
         signalsPanel.tourMode=""
         if(step<0){restoreGuide();return}
+        lobby.visible=false
         let info=systemSettings.tour, action=info.action, side=info.side||0
         let index=side===0?ctl.leftChannel:ctl.rightChannel
         if(["signals","combined","axes","error_axes"].indexOf(action)>=0){
@@ -111,7 +122,7 @@ Window {
         clip: true
         Rectangle { anchors.fill: parent; color: theme.background }
         Item {
-            anchors.fill: parent; visible: !window.booting && window.fullscreenSide < 0
+            anchors.fill: parent; visible: !window.booting && window.fullscreenSide < 0 && !lobby.visible
             ChannelPane {
                 id: leftPane
                 side: 0; channelIndex: ctl.leftChannel; revision: window.revision
@@ -146,14 +157,14 @@ Window {
         }
         FullscreenView {
             id: fullscreenView
-            anchors.fill: parent; visible: !window.booting && window.fullscreenSide>=0
+            anchors.fill: parent; visible: !window.booting && window.fullscreenSide>=0 && !lobby.visible
             channelIndex: window.fullscreenSide===1 ? ctl.rightChannel : ctl.leftChannel
             revision: window.revision
             onClosed: window.closeFullscreen()
             onSignalsRequested: signalsPanel.open(window.fullscreenSide,channelIndex)
         }
         GraphDrag {id:graphDrag;objectName:"graphDrag";anchors.fill:parent;visible:false;revision:window.revision}
-        ModuleSelector {id:selector;objectName:"selector";anchors.fill:parent;visible:false;onClosed:visible=false}
+        ModuleSelector {z:25;id:selector;objectName:"selector";anchors.fill:parent;visible:false;onClosed:visible=false}
         SignalsPanel {id:signalsPanel;objectName:"signalsPanel";anchors.fill:parent;visible:false;revision:window.revision;onEditAxis:function(i,k,s){keypad.open(i,k,s===0?1:0,false);keypad.ownerSide=s}}
         NumberPad { z: 30; id: keypad; objectName: "keypad"; anchors.fill: parent; visible: false; onClosed: visible=false }
         RadialMenu {
@@ -163,10 +174,18 @@ Window {
                 visible=false
                 if(option==="Alarms") alarmPanel.open(side,index)
                 else if(option==="Settings") ctl.openSettings()
-                else if(option==="Logs") ctl.openSection("logs")
+                else if(option==="Logs") logsWindow.open()
+                else if(option==="Lobby") lobby.open("lobby")
                 else if(option==="Notifications")ctl.openSection("notifications")
                 else ctl.openSection("control")
             }
+        }
+        Lobby {
+            id:lobby;z:18;anchors.fill:parent;visible:false
+            onClosed:visible=false
+            onLogsRequested:logsWindow.open()
+            onEditParameter:function(index,key){keypad.open(index,key,index,false)}
+            onChooseHomeField:function(side,bottom){let index=side===0?ctl.leftChannel:ctl.rightChannel;let ch=ctl.channel(index);selector.open(index,bottom?ch.bottom:ch.top,side,bottom,true)}
         }
         AlarmPanel {
             id: alarmPanel; objectName: "alarmPanel"; anchors.fill: parent; visible: false
