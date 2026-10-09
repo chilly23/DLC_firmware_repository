@@ -560,8 +560,7 @@ class SettingsWindow(QWidget):
                 line(p, 804, y - 4, 1160, y - 4, "#858c90", 0.7)
             label = data if action == "history_item" else data[1]
             text(p, 804, y, 350, 43, label, 21, "#111617")
-            if self.overlay != "history":
-                self.register_popup(QRectF(795, y - 3, 376, 51), (action, data))
+            self.register_popup(QRectF(795, y - 3, 376, 51), (action, data))
 
     def popup_rect(self):
         if self.overlay == "keyboard":
@@ -632,7 +631,8 @@ class SettingsWindow(QWidget):
             self.query_dirty = False
             self.persist()
         elif kind == "history_item":
-            return  # History is a read-only viewer; only Clear changes it.
+            self.search.setText(action[1])
+            self.submit_search()
         elif kind == "result":
             self.store.remember(self.search.text())
             self.select(self.order.index(action[1][0]))

@@ -303,7 +303,7 @@ class RefinedSettingsWindow(OperationalSettingsWindow):
         if not self.tip_target:return
         rect,action=self.tip_target
         label=str(action[3] if action[0]=='table' else action[1] if len(action)>1 else action[0]).replace('_',' ').title()
-        descriptions={'history':'View recent searches. Clear removes the saved list.',
+        descriptions={'history':'Tap a recent search to fill the search bar and search again. Clear removes the saved list.',
                       'search':'Search settings. Tap outside the keyboard to dismiss it.',
                       'calibrate':'Use the current live frame as the zero reference.',
                       'brightness':'Change the actual display brightness. Release to apply.',

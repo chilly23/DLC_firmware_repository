@@ -26,6 +26,8 @@ NEW_DEFAULTS=dict(accent='Green',appearance='Dark',font_family='Roboto',font_sca
                   theme_preset='Classic',corner_number_color='Automatic',corner_detail_color='Automatic',
                   lock_shutdown_seconds=60,shortcut_left='none',shortcut_right='none',notification_actions=True,notification_size='Medium',
                   button_labels=False,language='English',sampling_rate=20,idle_minutes=0,idle_action='sleep',
+                  home_graph_size='Large',panel_order_left=['lock','emission','stabilise','shortcut','more'],
+                  panel_order_right=['lock','emission','stabilise','shortcut','more'],
                   laser1_color='#D9D9D9',laser2_color='#2362E5',graph1=deepcopy(GRAPH_DEFAULTS),graph2=deepcopy(GRAPH_DEFAULTS),
                   alarms1={'enabled':False,'main_high':8.5,'error_high':2.0},
                   alarms2={'enabled':False,'main_high':8.5,'error_high':2.0})

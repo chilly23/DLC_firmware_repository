@@ -48,8 +48,8 @@ TOPICS={
  ('Local data','Storage shows actual disk usage for the application data location. Preferences and recent searches are saved there in settings.json.'),
  ('Export settings','Export writes the current settings and graph preferences as JSON in the application exports folder.'),
  ('Export graph frame','Capture frame writes the current X, spectroscopy and error samples for both lasers to CSV. This is a snapshot, not continuous data logging.'),
- ('Search history','The history button beside Search shows the eight most recent non-empty queries. Queries are saved on Return or dismissal. Clear removes the persisted list.'),
- ('Version scope','Application v1.14 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.14.0.')]
+ ('Search history','The history button beside Search shows the eight most recent non-empty queries. Tap a query to fill the search bar and automatically search again. Clear removes the persisted list.'),
+ ('Version scope','Application v1.15 uses v1.14 as its base and adds the Lobby, fullscreen Logs, screen capture, graph sizing and side-button customization. Laser signals remain simulated. Firmware V1.6.0 remains the About identifier.')]
 }
 
 TOPICS["Logs and startup"]=[
@@ -60,3 +60,12 @@ TOPICS["Logs and startup"]=[
  ("Startup","The first Pi setup installs dependencies and enables automatic desktop login and app startup. System Settings > Startup controls Start on login and Repair setup. Setup uses the desktop user and requests OS authentication for installation. GPIO boot changes require one restart."),
  ("Trace styles","Function Settings has separate Main and Error color, width and stroke dropdowns for both lasers. Their voltage limits are also independent. Each pair shares one horizontal scale. Choosing a theme preset reapplies its coordinated trace colors."),
  ("Notification size","Small, Medium and Large adjust cards and text on home and Settings. Routine feedback can be muted; operator logging continues.")]
+
+TOPICS["Lobby and Home layout"]=[
+ ("Lobby","Open More > Lobby for tools, configuration and information. Home returns to the two graphs; Lobby returns from an individual tool to the tile grid."),
+ ("Buttons Panel","Choose a left and right shortcut action, including Screenshot. Drag a row or use its arrow buttons to reorder that Home side panel. Changes save immediately. Reset button order restores the order without erasing assigned shortcuts."),
+ ("Screenshot","Capture saves the entire current display as a PNG in data/screenshots, named phototype_<date>_<time>_<microseconds>. The Lobby tile and assigned shortcut use the same capture action. Raspberry Pi Wayland capture uses grim."),
+ ("Graph Size","Small, Medium and Large resize both Home graphs. Large is the default and reduces the central and stacked-graph gaps. Signal values, view ranges and per-laser split ratios are preserved."),
+ ("Logs","More > Logs opens a separate fullscreen window with the existing journal, live/pause, level filters, export and confirmed clear. Close returns to the previous page."),
+ ("Diagnostics and files","Diagnostics opens the existing control diagnostics. File Manager browses folders, screenshots and exports. System Monitoring reports real host measurements and marks unavailable readings explicitly."),
+ ("DLC","The DLC page opens the separately installed HMI-3D-RPi model viewer, or the existing laser configuration and controller information.")]

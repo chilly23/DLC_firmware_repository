@@ -19,7 +19,7 @@ LABELS = {
 }
 ORDERS = {
     32: ["display", "system", "function", "storage", "about", "help", "upgrade"],
-    58: ["display", "function", "control", "system", "notifications", "logs", "storage", "help", "upgrade", "about"],
+    58: ["display", "function", "control", "system", "notifications", "storage", "help", "upgrade", "about"],
     59: ["system", "function", "storage", "help", "upgrade", "display", "about"],
 }
 DEFAULTS = {
@@ -37,7 +37,6 @@ DEFAULTS = {
     "retention": "30 days",
 }
 SEARCH = [
-    ("logs","Logs","User activity description timestamp passed failed default warning critical monitor clear export"),
     ("notifications","Notifications","Action history warning critical error permission notifications clear"),
     ("display", "Display Settings", "Screen brightness contrast resolution refresh rate UI scale accent color theme dark light appearance recommended preset corner number label font colors"),
     ("system", "System Settings", "Language font text size side button icons names date time clock automatic sleep shutdown idle factory reset restore defaults information tour tutorial guide lock startup boot login repair setup"),
@@ -80,6 +79,12 @@ class SettingsStore:
                     if prefix+'_color' not in loaded:self.values[key][prefix+'_color']=loaded.get('graph_color',GRAPH_DEFAULTS['graph_color'])
                     if prefix+'_width' not in loaded:self.values[key][prefix+'_width']=loaded.get('line_width',1.7)
         if self.values.get('notification_size') not in ('Small','Medium','Large'):self.values['notification_size']='Medium'
+        if self.values.get('home_graph_size') not in ('Small','Medium','Large'):self.values['home_graph_size']='Large'
+        from interaction.workspace import PANEL_BUTTONS
+        for key in ('panel_order_left','panel_order_right'):
+            order=self.values.get(key)
+            if not isinstance(order,list) or len(order)!=5 or any(not isinstance(value,str) for value in order) or set(order)!=set(PANEL_BUTTONS):
+                self.values[key]=list(PANEL_BUTTONS)
         if self.values.get('sampling_rate') not in (5,10,20,30,60):self.values['sampling_rate']=20
         if self.values.get('language') not in ('English','Français','Deutsch','Español','Italiano','Português'):
             self.values['language']='English'

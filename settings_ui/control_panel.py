@@ -201,7 +201,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
             if self.number_drop:return [(r,a) for r,a in self.hits if a[0]=='inline_key']
             # Materialize every dropdown option; focus navigation scrolls it into view.
             return [(QRectF(),('dropdown_value',v)) for label,v in self.dropdown['items']]
-        if self.overlay:return [(r,a) for r,a in self.hits if (a[0] in ('key','suggest','clear') if self.overlay=='keyboard' else a[0] in ('clear_history','history','result'))]
+        if self.overlay:return [(r,a) for r,a in self.hits if (a[0] in ('key','suggest','clear') if self.overlay=='keyboard' else a[0] in ('clear_history','history','history_item','result'))]
         hits=[(QRectF(15,306,577,108),('knob_menu',))]
         hits.extend((r,a) for r,a in self.hits if a[0] not in ('hardware_slider',) or not self.system.busy)
         if self.content_height>487:hits.append((QRectF(1525,185,35,480),('knob_scroll',)))

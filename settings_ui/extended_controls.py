@@ -21,8 +21,7 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
         if self.content=='control' and self.route=='panel':
             return [('nav',label,'contact:'+key) for key,label in PANEL_LABELS.items()]+[
                 ('choose','Lock shutdown countdown','lock_shutdown_seconds',[(f'{n} seconds',n) for n in (30,60,120,300)]),
-                ('choose','Left shortcut','shortcut_left',list((v,k) for k,v in ACTIONS.items())),
-                ('choose','Right shortcut','shortcut_right',list((v,k) for k,v in ACTIONS.items())),
+                ('action','Configure Home buttons in Lobby','lobby_buttons'),
                 ('action','Knob guide','knob_guide')]
         if self.content=='control' and self.route.startswith('contact:'):
             key=self.route.split(':')[1]
@@ -114,7 +113,8 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
         p.restore()
     def activate(self,action):
         kind=action[0]
-        if kind=='panel_open':self.navigate('panel')
+        if kind=='settings_action' and action[1]=='lobby_buttons':self.system.ctl.workspace.openPage('buttons')
+        elif kind=='panel_open':self.navigate('panel')
         elif kind=='notice_body':return
         elif kind=='notice_close':self.notifications.dismissId(action[1]) if len(action)>1 else self.notifications.dismiss()
         elif kind=='notice_accept':self.notifications.acceptId(action[1]) if len(action)>1 else self.notifications.accept()

@@ -92,7 +92,7 @@ step('Check touchscreen coverage','Screen check tests four corner taps, a contin
 step('Upgrade','Update is a preview. No firmware is installed and no download source is configured.',section='upgrade')
 step('About','Model, firmware, organization, serial number and the supplied QR identify the instrument.',section='about')
 step('Search keyboard','Tap Search to open the custom keyboard. Suggestions complete words. Hold Backspace to clear; tap outside to dismiss.',[255,228,1090,456],section='display',action='keyboard')
-step('Search history','The history button shows real saved queries in a read-only list. Clear removes the saved list from disk.',[480,90,640,320],section='display',action='history')
+step('Search history','Tap a saved query to fill the search bar and search again. Clear removes the saved list from disk.',[480,90,640,320],section='display',action='history')
 step('Touch help','Hold a supported control for 850 ms to show its tooltip without activating it. Backspace keeps its 650 ms clear action.',[0,124,96,90])
 
 step('Side-specific focus','The two left knobs navigate the left home half. Knob 4 navigates the right half. A knob cannot take over the opposite-side open panel. Shared Settings is accessible from either side.',[7,100,786,510])
