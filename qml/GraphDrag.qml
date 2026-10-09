@@ -134,18 +134,16 @@ Item {
                 model: parent.paneChart.mode==="combined"?1:2
                 Rectangle {
                     required property int index
-                    property bool highlighted:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper
-                    property color itemInk:highlighted?theme.activeInk:theme.foreground
                     x:8;y:index===0?8:parent.paneUpperHeight+18
                     width:parent.width-16;height:parent.paneChart.mode==="combined"?495:index===0?parent.paneUpperHeight-8:493-parent.paneUpperHeight-8
                     radius:8
-                    color:highlighted?theme.active:theme.raised
-                    border.width:highlighted?2:0
+                    color:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? theme.active : theme.raised
+                    border.width:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? 2:0
                     border.color:theme.foreground
                     Column {
                         anchors.centerIn:parent;spacing:2
-                        Image {objectName:"dropArtwork";anchors.horizontalCenter:parent.horizontalCenter;width:Math.min(100,parent.parent.height-37);height:width;source:"image://outline/drag/"+parent.parent.itemInk.toString().replace("#","");fillMode:Image.PreserveAspectFit;smooth:true}
-                        Text { font.family:theme.fontFamily;anchors.horizontalCenter:parent.horizontalCenter;text:parent.parent.parent.paneChart.mode==="combined"?"Combined":index===0?"Upper":"Lower";font.pixelSize: theme.fontSize(20);color:parent.parent.itemInk}
+                        Image {objectName:"dropArtwork";anchors.horizontalCenter:parent.horizontalCenter;width:Math.min(100,parent.parent.height-37);height:width;source:"../assets/dragndrop-white.png";fillMode:Image.PreserveAspectFit;smooth:true}
+                        Text { font.family:theme.fontFamily;anchors.horizontalCenter:parent.horizontalCenter;text:parent.parent.parent.paneChart.mode==="combined"?"Combined":index===0?"Upper":"Lower";font.pixelSize: theme.fontSize(20);color:theme.active}
                     }
                 }
             }

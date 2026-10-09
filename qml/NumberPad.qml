@@ -5,7 +5,6 @@ Item {
     property int channelIndex: 0
     property string fieldKey: "current"
     property int side: 0
-    property int ownerSide: 0
     property bool lower: false
     property alias draft: editor.text
     property alias cursor: editor.cursorPosition
@@ -16,7 +15,7 @@ Item {
     signal closed()
 
     function open(index, key, paneSide, isBottom) {
-        channelIndex=index; fieldKey=key; side=paneSide; ownerSide=paneSide; lower=isBottom
+        channelIndex=index; fieldKey=key; side=paneSide; lower=isBottom
         acceptedValue=ctl.value(index,key)
         draft=Number(acceptedValue).toFixed(spec.decimals)
         cursor=draft.length; replaceDraft=true; errorMessage=""; visible=true
