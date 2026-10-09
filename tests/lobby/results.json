@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "v1.9 More source identical except the two destination substitutions",
+    "three graph sizes persist, with an enlarged default and narrow centre gap",
+    "packed square-corner Bento: 17 tools plus 3 placeholders, all 48 grid cells filled without overlap",
+    "shortcut dropdown, mouse/touch reorder, immediate Home update and preference persistence",
+    "File Manager, monitoring, graph sizing, parameter editors, Home Controls, Legal and DLC pages open",
+    "Diagnostics moved to Lobby and returns there from its existing interface",
+    "history tap fills query and executes single-match or no-match search",
+    "fullscreen Logs retains live/pause, level filter, reading position, export, confirmed clear and knob navigation",
+    "real full-display PNG captured from Lobby and the assigned shortcut button"
+  ],
+  "qml_messages": [],
+  "graph_gap": 12.0
+}
