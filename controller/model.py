@@ -2,7 +2,6 @@
 from dataclasses import dataclass, field
 from math import isfinite
 from .simulation import SignalSimulation
-from .charts import ChartState
 
 
 @dataclass(frozen=True)
@@ -45,7 +44,7 @@ class Laser:
     emission: bool = True
     stabilised: bool = False
     selected: int = -1
-    chart: ChartState = field(default_factory=ChartState)
+    show_error: bool = True
     revision: int = 0
     signal: SignalSimulation = field(init=False)
 
