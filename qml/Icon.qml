@@ -5,7 +5,7 @@ Canvas {
     property string kind: "lock"
     property color ink: theme.foreground
     property bool active: false
-    property bool shared: ["control","alarm","knob","calibrate","screencheck","diagnostics","notifications"].indexOf(kind)>=0
+    property bool shared: ["control","alarm","knob","calibrate","screencheck","diagnostics","notifications","logs","retry"].indexOf(kind)>=0
     property real strokeWidth: 2.2
     onKindChanged: requestPaint()
     onInkChanged: requestPaint()

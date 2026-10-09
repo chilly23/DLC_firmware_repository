@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: theme.background; title: "NEXATOM · v1.12"
+    visible: true; color: theme.background; title: "NEXATOM · v1.13"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -14,6 +14,17 @@ Window {
     property string notice: ""
     property alias keypad: keypad
     property alias radial: radial
+    property var guideState:null
+    function saveGuide(){
+        if(guideState)return
+        guideState={fullscreen:fullscreenSide,left:leftPane.viewRange(),right:rightPane.viewRange(),full:fullscreenView.viewRange(),
+            signals:signalsPanel.visible,side:signalsPanel.side,index:signalsPanel.channelIndex,axes:signalsPanel.axisPage,error:signalsPanel.errorAxis}
+    }
+    function restoreGuide(){
+        if(!guideState)return
+        let s=guideState;guideState=null;leftPane.setViewRange(s.left[0],s.left[1]);rightPane.setViewRange(s.right[0],s.right[1]);fullscreenView.setViewRange(s.full[0],s.full[1]);fullscreenSide=s.fullscreen
+        if(s.signals){signalsPanel.open(s.side,s.index);signalsPanel.axisPage=s.axes;signalsPanel.errorAxis=s.error}
+    }
     function openEditor(index,key,side,bottom) {keypad.open(index,key,side,bottom)}
     function openFullscreen(side) {
         let bounds=(side===0 ? leftPane : rightPane).viewRange()
@@ -56,7 +67,7 @@ Window {
         else if(action==="view.swap")ctl.switchView(side)
         else if(action==="view.fullscreen"){if(fullscreenSide>=0)closeFullscreen();else openFullscreen(side)}
         else if(action==="signals.open")signalsPanel.open(side,index)
-        else if(action==="more.open")radial.open(side,index)
+        else if(action==="more.open"){if(radial.visible&&radial.side===side)radial.dismiss("");else radial.open(side,index)}
     }
     function dismissKnobPanel(){
         if(systemSettings.tourIndex>=0){systemSettings.stopTour();return}
@@ -77,12 +88,13 @@ Window {
     Connections { target: ctl; function onChanged() { window.revision++ }  }
     Connections {target:systemSettings;function onNavigateTour(step){
         radial.visible=false;selector.visible=false;keypad.visible=false;signalsPanel.visible=false;alarmPanel.visible=false;window.fullscreenSide=-1
-        if(step<0)return
+        signalsPanel.tourMode=""
+        if(step<0){restoreGuide();return}
         let info=systemSettings.tour, action=info.action, side=info.side||0
         let index=side===0?ctl.leftChannel:ctl.rightChannel
         if(["signals","combined","axes","error_axes"].indexOf(action)>=0){
             signalsPanel.open(side,index)
-            if(action==="combined")ctl.setChartMode(index,"combined")
+            if(action==="combined")signalsPanel.tourMode="combined"
             else if(action!=="signals"){signalsPanel.axisPage=true;signalsPanel.errorAxis=action==="error_axes"}
         }
         if(action==="fullscreen")window.openFullscreen(side)
@@ -151,7 +163,7 @@ Window {
                 visible=false
                 if(option==="Alarms") alarmPanel.open(side,index)
                 else if(option==="Settings") ctl.openSettings()
-                else if(option==="Display") ctl.openSection("display")
+                else if(option==="Logs") ctl.openSection("logs")
                 else if(option==="Notifications")ctl.openSection("notifications")
                 else ctl.openSection("control")
             }

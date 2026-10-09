@@ -18,8 +18,9 @@ Rectangle {
         id: tile
         x: 4+(control.value-control.minimum)/(control.maximum-control.minimum)*control.travel
         y:4;width:control.tileWidth;height:parent.height-8;radius:5
-        color:theme.accent;border.color:theme.muted;border.width:1
-        Text {anchors.centerIn:parent;text:Math.round(control.value)+control.suffix;color:theme.accentInk;font.family:theme.fontFamily;font.pixelSize:theme.fontSize(24)}
+        color:theme.active;border.color:theme.muted;border.width:1
+        Row {x:8;anchors.verticalCenter:parent.verticalCenter;spacing:3;Repeater {model:3;Rectangle {width:1;height:16;color:"#697069"}}}
+        Text {x:21;width:parent.width-24;height:parent.height;verticalAlignment:Text.AlignVCenter;horizontalAlignment:Text.AlignHCenter;text:Math.round(control.value)+control.suffix;color:theme.activeInk;font.family:theme.fontFamily;font.pixelSize:theme.fontSize(20)}
     }
     MouseArea {
         anchors.fill:parent

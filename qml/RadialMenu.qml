@@ -11,8 +11,10 @@ Item {
     property bool animating:expand.running
     property string pendingOption:""
     property int targetPosition:0
+    property real wheelPosition:targetPosition
+    Behavior on wheelPosition {NumberAnimation {duration:320;easing.type:Easing.OutCubic}}
     property int selectedIndex:((targetPosition%4)+4)%4
-    property var options:[{name:"Alarms",icon:"alarm"},{name:"Settings",icon:"settings"},{name:"Display",icon:"display"},{name:"Diagnostics",icon:"diagnostics"}]
+    property var options:[{name:"Alarms",icon:"alarm"},{name:"Settings",icon:"settings"},{name:"Logs",icon:"logs"},{name:"Diagnostics",icon:"diagnostics"}]
     signal closed()
     signal chosen(string option,int channelIndex,int side)
     function animateTo(value){expand.stop();expand.from=expansion;expand.to=value;expand.duration=Math.max(120,800*Math.abs(value-expansion));expand.start()}
@@ -45,18 +47,22 @@ Item {
                 for(let i=0;i<4;i++){
                     let a=(-100+i*36.25)*Math.PI/180,b=(-100+(i+1)*36.25)*Math.PI/180
                     c.beginPath();c.arc(0,0,350,a,b);c.arc(0,0,185,b,a,true);c.closePath()
-                    c.fillStyle=i===menu.selectedIndex?"#D9D9D9":"#000000";c.fill();c.stroke()
+                    c.fillStyle=i===0?"#D9D9D9":"#000000";c.fill();c.stroke()
                 }
             }
             Connections {target:menu;function onSideChanged(){arcCanvas.requestPaint()} function onSelectedIndexChanged(){arcCanvas.requestPaint()}}
         }
         Repeater {
-            model:menu.options
+            model:6
             Item {
                 required property int index
-                required property var modelData
-                property real angle:(-100+(index+.5)*36.25)*Math.PI/180
-                property color ink:index===menu.selectedIndex?"#111111":"#FFFFFF"
+                property real slot:index-1-(menu.wheelPosition-Math.floor(menu.wheelPosition))
+                property int optionIndex:((Math.floor(menu.wheelPosition)+index-1)%4+4)%4
+                property var modelData:menu.options[optionIndex]
+                property real angle:(-100+(slot+.5)*36.25)*Math.PI/180
+                property color ink:slot<.5?"#111111":"#FFFFFF"
+                visible:slot>-.5&&slot<3.5
+                opacity:Math.min(1,Math.max(0,(slot+.5)*2),Math.max(0,(3.5-slot)*2))
                 x:360+(menu.side===0?1:-1)*Math.cos(angle)*270-65
                 y:360+Math.sin(angle)*270-48;width:130;height:92
                 Icon {x:38;y:0;width:54;height:54;kind:parent.modelData.icon;ink:parent.ink}
@@ -69,7 +75,8 @@ Item {
                 let dx=(mouse.x-355)*(menu.side===0?1:-1),dy=mouse.y-355
                 let r=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx)*180/Math.PI
                 if(r<185||r>350||angle< -100||angle>45){menu.dismiss("");return}
-                let i=Math.min(3,Math.floor((angle+100)/36.25));menu.targetPosition=i;menu.chooseCurrent()
+                let i=Math.min(3,Math.floor((angle+100)/36.25))
+                menu.dismiss(menu.options[((Math.round(menu.wheelPosition)+i)%4+4)%4].name)
             }
             onWheel:function(event){menu.rotateSteps(event.angleDelta.y<0?1:-1);event.accepted=true}
         }

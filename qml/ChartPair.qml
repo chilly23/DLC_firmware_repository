@@ -75,9 +75,10 @@ Item {
     // Both labels are one touch target, present on both panes and in fullscreen.
     Rectangle {
         width: pair.large ? 330 : 284; height: 42
-        x: pair.large ? 70 : (pair.labelOnRight ? pair.width-width-76 : 59)
+        x: pair.large ? 70 : (pair.labelOnRight ? pair.width-width-32 : 59)
         y: 14
-        radius: 5; color: theme.surface; visible: pair.showLabels
+        property color labelSurface:theme.surface
+        radius:5;color:Qt.rgba(labelSurface.r,labelSurface.g,labelSurface.b,.55);visible:pair.showLabels
         Row {
             anchors.centerIn: parent; spacing: 18
             Row {

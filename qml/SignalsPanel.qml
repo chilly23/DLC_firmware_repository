@@ -9,7 +9,8 @@ Item {
     property int revision: 0
     property bool axisPage: false
     property bool errorAxis: false
-    property var chart: {revision;return ctl.channel(channelIndex).chart}
+    property string tourMode:""
+    property var chart: {revision;let c=ctl.channel(channelIndex).chart;if(tourMode){c=Object.assign({},c);c.mode=tourMode}return c}
     property string axisPrefix: errorAxis ? "chart_error_" : "chart_main_"
     signal editAxis(int index, string key, int side)
     function open(paneSide,index) {side=paneSide;channelIndex=index;axisPage=false;errorAxis=false;visible=true}

@@ -1,7 +1,9 @@
 import QtQuick
 Item {
     id:stack
-    x:438;y:0;width:724;height:708;z:notifications.toast.decision?70:19
+    width:theme.notificationSize==="Small"?600:theme.notificationSize==="Large"?740:724
+    property real cardHeight:theme.notificationSize==="Small"?64:theme.notificationSize==="Large"?98:78
+    x:(1600-width)/2;y:0;height:708;z:notifications.toast.decision?70:19
     visible:cards.count>0
     property int appearanceRevision:0
     Connections {target:theme;function onChanged(){stack.appearanceRevision++}}
@@ -18,8 +20,8 @@ Item {
             required property int blurStep
             required property int revision
             objectName:"noticeCard"+noticeId
-            width:724;height:78
-            y:708-78-(cards.count-1-index)*88
+            width:stack.width;height:stack.cardHeight
+            y:708-height-(cards.count-1-index)*(height+10)
             opacity:alpha
             Behavior on y {NumberAnimation {duration:190;easing.type:Easing.OutCubic}}
             Image {
@@ -31,12 +33,12 @@ Item {
                 onWheel:function(wheel){wheel.accepted=true}
             }
             MouseArea {
-                x:505;y:15;width:130;height:48;visible:card.decision;enabled:card.blurStep===0
+                x:card.width-219;y:10;width:130;height:card.height-20;visible:card.decision;enabled:card.blurStep===0
                 property string navLabel:"Confirm notification: "+card.text
                 onClicked:notifications.acceptId(card.noticeId)
             }
             MouseArea {
-                x:658;y:10;width:56;height:58
+                x:card.width-66;y:10;width:56;height:card.height-20
                 property string navLabel:"Dismiss notification: "+card.text
                 onClicked:notifications.dismissId(card.noticeId)
             }
