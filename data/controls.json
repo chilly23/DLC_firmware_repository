@@ -163,7 +163,7 @@
       }
     }
   ],
-  "wiring_revision": 2,
+  "wiring_revision": 3,
   "panel": {
     "lock": {
       "pin": 20,
@@ -194,11 +194,11 @@
       "calibrated": true
     },
     "left_shortcut": {
-      "pin": 8,
-      "enabled": false,
+      "pin": 16,
+      "enabled": true,
       "active_level": 0,
       "debounce_ms": 25,
-      "calibrated": false
+      "calibrated": true
     }
   }
 }
