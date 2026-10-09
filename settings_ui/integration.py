@@ -13,7 +13,7 @@ class AttachedSettings(SettingsWindow):
 
     def __init__(self, data_dir):
         super().__init__(58, SettingsStore(Path(data_dir) / "settings.json"))
-        self.setWindowTitle("NEXATOM v1.4 · Settings")
+        self.setWindowTitle("NEXATOM v1.5 · Settings")
         self.timer.stop()
 
     def open_search(self):
