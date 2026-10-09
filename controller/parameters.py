@@ -62,7 +62,7 @@ class ParameterCatalog(QObject):
     def state_changed(self):
         if self.snapshot() != self.last_saved:
             self.save_timer.start()
-        self.changed.emit()
+        if self.read_timer.isActive():self.changed.emit()
 
     def save(self):
         self.last_saved = self.snapshot()
@@ -73,6 +73,7 @@ class ParameterCatalog(QObject):
     @Slot(bool)
     def observe(self, active):
         self.read_timer.start() if active else self.read_timer.stop()
+        if active:self.changed.emit()
 
     @Property('QVariantList', constant=True)
     def fields(self):

@@ -1,5 +1,7 @@
 """QPainter plot: bounded geometry, native Qt text, no chart-package dependency."""
 from math import ceil, isfinite
+import time
+import numpy as np
 from PySide6.QtCore import Property, Signal, Slot, QRectF, QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen, QPolygonF
 from PySide6.QtQuick import QQuickPaintedItem
@@ -10,6 +12,17 @@ def axis_label(value):
     if abs(value) < .005:
         value = 0.
     return f'{value:.2f}'.rstrip('0').rstrip('.')
+
+
+def display_indices(samples, columns):
+    """Keep first/last and every pixel bucket's extrema, in acquisition order."""
+    n=len(samples)
+    if n<=2*columns:return np.arange(n)
+    width=ceil(n/columns)
+    padded=np.pad(samples,(0,(-n)%width),mode='edge').reshape(-1,width)
+    base=np.arange(len(padded))*width
+    picks=np.concatenate(([0,n-1],base+np.argmin(padded,axis=1),base+np.argmax(padded,axis=1)))
+    return np.unique(np.minimum(picks,n-1))
 
 
 class SpectrumPlot(QQuickPaintedItem):
@@ -37,6 +50,14 @@ class SpectrumPlot(QQuickPaintedItem):
             bounds=(config['x_min'],config['x_max'])
             if getattr(self,'_configured_x',None)!=bounds:
                 self._configured_x=bounds;self._minimum,self._maximum=bounds
+            laser=self.controller.instrument.lasers[self._channel]
+            theme=self.controller.theme
+            signature=(self._channel,self._error,self._large,self._right_axis,self._combined,self._bottom_axis,
+                       tuple(sorted(config.items())),tuple(sorted(laser.chart.axes.items())),
+                       laser.chart.main_visible,laser.chart.error_visible,laser.selected,laser.locked,laser.emission,
+                       theme.foreground,theme.light,theme.fontFamily,theme.textScale)
+            if getattr(self,'_visual_signature',None)==signature:return
+            self._visual_signature=signature
         self.changed.emit()
         self.refresh()
 
@@ -75,6 +96,14 @@ class SpectrumPlot(QQuickPaintedItem):
 
     def refresh(self):
         if self.isVisible() and not self.controller.presentation_busy:
+            worker=getattr(getattr(self.controller,'knobs',None),'worker',None)
+            pending=worker.mailbox.snapshot()['pending'] if worker and hasattr(worker,'mailbox') else 0
+            if pending>24:
+                now=time.monotonic()
+                if now<getattr(self,'_next_pressure_paint',0):
+                    self.controller.performance.count('graph_redraws_deferred_for_input')
+                    return
+                self._next_pressure_paint=now+max(.5 if pending>500 else .2,getattr(self,'_last_paint_seconds',0)*20)
             self.update()
 
     @Property(int, notify=changed)
@@ -142,10 +171,10 @@ class SpectrumPlot(QQuickPaintedItem):
         # Wider gutters are only needed when an edited axis has long labels.
         values = chart.bounds(False)+chart.bounds(True)
         left = max(43, min(90, max(len(axis_label(n)) for n in values)*8+9))
-        right = 72 if self._combined and chart.main_visible and chart.error_visible else 16
+        right = 72 if self._combined and chart.main_visible and chart.error_visible else 5
         if self._right_axis:left,right=right,left
-        return QRectF(left, 10, max(1,self.width()-left-right),
-                      max(1,self.height()-((55 if self._large else 40) if self._bottom_axis else 20)))
+        return QRectF(left, 6, max(1,self.width()-left-right),
+                      max(1,self.height()-((55 if self._large else 40) if self._bottom_axis else 12)))
 
     @Slot(float, float)
     def pan(self, dx, dy):
@@ -218,6 +247,7 @@ class SpectrumPlot(QQuickPaintedItem):
     def paint(self, painter: QPainter):
         if not self.controller:
             return
+        paint_started=time.monotonic_ns()
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         a = self.area()
         laser = self.controller.instrument.lasers[self._channel]
@@ -265,6 +295,9 @@ class SpectrumPlot(QQuickPaintedItem):
             color=QColor(config['error_color' if error else 'main_color'])
             if appearance.light and color.lightnessF()>.55:color=color.darker(190)
             self.paint_trace(painter,a,laser,error,color,x)
+        duration=time.monotonic_ns()-paint_started
+        self._last_paint_seconds=duration/1e9
+        self.controller.performance.observe('plot_paint',duration)
 
     def paint_trace(self,painter,a,laser,error,color,x):
         lo,hi = laser.chart.bounds(error)
@@ -273,18 +306,20 @@ class SpectrumPlot(QQuickPaintedItem):
         painter.save()
         painter.setClipRect(a.adjusted(1, 1, -1, -1))
         path = QPainterPath()
-        # At most one sample per pixel, with a minimum for narrow peaks.
-        count = min(1600, max(720, ceil(a.width())))
-        minimum,step = self._minimum,(self._maximum-self._minimum)/count
-        sample = laser.signal.sample
-        for i in range(count + 1):
-            value = minimum+step*i
-            pair = sample(value)
-            point = QPointF(x(value), y(pair[1 if error else 0]))
-            if i == 0:
-                path.moveTo(point)
-            else:
-                path.lineTo(point)
+        # Vector interpolation keeps all acquisition samples available; normal
+        # view bounds raster work, while benchmark full-detail draws every point.
+        full=getattr(self.controller,'benchmark_full_detail',False)
+        domain=laser.signal.x_values
+        first=max(0,int(np.searchsorted(domain,self._minimum))-1)
+        last=min(len(domain),int(np.searchsorted(domain,self._maximum))+1)
+        values=np.concatenate(([self._minimum],domain[first:last],[self._maximum]))
+        values=np.sort(np.clip(values,self._minimum,self._maximum))
+        samples=np.interp(values,domain,laser.signal.output(error))
+        if not full:
+            indices=display_indices(samples,max(100,min(1600,ceil(a.width()))))
+            values,samples=values[indices],samples[indices]
+        points=QPolygonF([QPointF(float(x(v)),float(y(sample))) for v,sample in zip(values,samples)])
+        path.addPolygon(points)
         config=self.controller.preferences['graph'+str(self._channel+1)];prefix='error' if error else 'main'
         width=config[prefix+'_width']
         pen = QPen(color, width)

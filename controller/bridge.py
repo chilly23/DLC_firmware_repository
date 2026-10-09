@@ -1,5 +1,6 @@
 """Small QObject API between QML and the simulation; one authoritative state."""
 import time
+from hardware.metrics import Metrics
 from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, Qt
 from .model import Instrument, PARAMETERS, PEAKS, MODULES
 from .charts import axis_parameter, AXIS_DEFAULTS
@@ -43,6 +44,10 @@ class Controller(QObject):
         else:self.shortcutRequested.emit(side,key)
 
     def configure(self,values):
+        if hasattr(self,'benchmark_points'):
+            from copy import deepcopy
+            values=deepcopy(values)
+            for key in ('graph1','graph2'):values[key]['max_points']=self.benchmark_points
         previous=getattr(self,'preferences',{})
         self.preferences=values.copy()
         rate=int(values.get('sampling_rate',20));self.timer.setInterval(round(1000/rate))
@@ -108,12 +113,18 @@ class Controller(QObject):
         self._alarm_elapsed = 0.
         for laser in self.instrument.lasers:
             laser.alarms = {'enabled': False, 'main_high': 8.5, 'error_high': 2.0}
+        self.performance = Metrics()
         self.elapsed = 0.0
         self._started = time.monotonic()
         self._last_tick = self._started
         self._animate = animate
         self._live = False
         self.presentation_busy = False
+        self._knob_edit = False
+        self._input_refresh = QTimer(self)
+        self._input_refresh.setSingleShot(True)
+        self._input_refresh.setInterval(33)
+        self._input_refresh.timeout.connect(self.changed)
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.timer.setInterval(50)  # 20 display updates/s; unrelated to a real servo rate.
@@ -147,6 +158,7 @@ class Controller(QObject):
     def step(self, dt):
         if not self._live:
             return
+        step_started=time.monotonic_ns()
         self.elapsed += max(0,dt)
         for i, laser in enumerate(self.instrument.lasers):
             laser.signal.advance(max(0,dt),self.elapsed,self.effective_targets(i),laser.stabilised)
@@ -154,12 +166,12 @@ class Controller(QObject):
         if self._alarm_elapsed >= .1:
             changed = False
             for laser, monitor in zip(self.instrument.lasers,self.alarm_monitors):
-                samples = [laser.signal.sample(x) for x in laser.signal.x_values]
-                main = max((s[0] for s in samples),default=0.)
-                error = max((abs(s[1]) for s in samples),default=0.)
+                main=float(laser.signal.output(False).max())
+                error=float(abs(laser.signal.output(True)).max())
                 changed |= monitor.update(laser.alarms,laser.emission,main,error,self._alarm_elapsed)
             self._alarm_elapsed = 0.
             if changed:self.changed.emit()
+        self.performance.observe('simulation_step',time.monotonic_ns()-step_started)
         self.frame.emit()
 
     def effective_targets(self, index):
@@ -217,6 +229,17 @@ class Controller(QObject):
         if getattr(self,'journal',None):self.journal.record(f'Laser {index+1}: {key} = {value}'+(' — '+error if error else ''),'Failed' if error else 'Passed','warning' if error else 'default','Parameter')
         return error
 
+    def setKnobValue(self,index,key,value):
+        # Every ordered delta updates/validates/journals the authoritative model.
+        # Only redundant visual invalidations are limited to 30 Hz.
+        self._knob_edit=True
+        try:return self.setValue(index,key,value)
+        finally:self._knob_edit=False
+
+    def flush_input_changes(self):
+        if self._input_refresh.isActive():
+            self._input_refresh.stop();self.changed.emit()
+
     def edit_value(self,index,key,value):
         laser = self.instrument.lasers[index]
         if key.startswith('alarm_'):
@@ -233,7 +256,9 @@ class Controller(QObject):
             return ''
         error = laser.chart.set_axis(key, value) if key.startswith('chart_') else laser.set_value(key, value)
         if not error:
-            self.changed.emit()
+            if self._knob_edit:
+                if not self._input_refresh.isActive():self._input_refresh.start()
+            else:self.changed.emit()
         return error
 
     @Slot(int)
