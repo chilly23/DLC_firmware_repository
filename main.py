@@ -24,6 +24,7 @@ from interaction.notifications import Notifications
 from interaction.notification_art import NotificationArt,NotificationImageProvider
 from interaction.session_lock import SessionLock
 from interaction.journal import Journal
+from interaction.workspace import Workspace
 
 ROOT = Path(__file__).resolve().parent
 
@@ -39,9 +40,10 @@ def configure_logging(data_dir=None):
 
 def create_application(*, skip_boot=False, animate=True, data_dir=None, device=None, gpio_factory=None, gpio_autostart=True):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
+    os.environ.setdefault('QT_QUICK_CONTROLS_STYLE', 'Basic')
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.14")
-    app.setApplicationVersion("1.14.0")
+    app.setApplicationName("NEXATOM v1.15")
+    app.setApplicationVersion("1.15.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
@@ -62,6 +64,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     knobs=KnobService(Path(data_dir or ROOT/'data')/'controls.json',app,worker_factory=gpio_factory,autostart=gpio_autostart)
     navigation=InputRouter(controller,knobs,app)
     controller.knobs=knobs;controller.navigation=navigation
+    workspace=Workspace(controller,theme,app);controller.workspace=workspace
     from copy import deepcopy
     last_gpio=[None];last_config=[deepcopy(knobs.store.config)]
     def gpio_status():
@@ -85,9 +88,11 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     engine.rootContext().setContextProperty("knobs",knobs)
     engine.rootContext().setContextProperty("navigation",navigation)
     engine.rootContext().setContextProperty("notifications",notifications)
+    engine.rootContext().setContextProperty("workspace",workspace)
     engine.load(QUrl.fromLocalFile(str(ROOT / "qml" / "Main.qml")))
     if not engine.rootObjects():
         raise RuntimeError("QML failed to load; see the messages above")
+    workspace.home=engine.rootObjects()[0]
     controller.settings_host = SettingsHost(app, engine.rootObjects()[0], controller, data_dir or ROOT / "data",theme,system)
     system.host=controller.settings_host
     navigation.attach(engine.rootObjects()[0],controller.settings_host)
@@ -97,6 +102,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     app.aboutToQuit.connect(guard.shutdown);app.aboutToQuit.connect(notifications.timer.stop)
     app.aboutToQuit.connect(knobs.shutdown)
     app.aboutToQuit.connect(navigation.shutdown)
+    app.aboutToQuit.connect(workspace.shutdown)
     return app, engine, controller, engine.rootObjects()[0]
 
 

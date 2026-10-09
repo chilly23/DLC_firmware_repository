@@ -1,29 +1,41 @@
 {
-  "version": "1.14",
+  "version": "1.15",
+  "checked_utc": "2026-10-07T11:10:33.429652+00:00",
+  "platform": "Windows",
   "unit_tests_passed": 54,
-  "ui_checks_passed": 75,
-  "windows_startup": "passed",
-  "python_files": 82,
-  "shell_syntax": "passed",
-  "source_text_files_verified": 113,
-  "binary_asset_dependency_files_verified": 2617,
+  "baseline_checks_passed": 21,
+  "chart_checks_passed": 54,
+  "touch_zoom_paths_passed": 9,
+  "lobby_scenarios_passed": 9,
+  "qml_warnings": [],
+  "windows_startup": {
+    "visible": true,
+    "fullscreen": true,
+    "exposed": true,
+    "booting": false,
+    "platform": "windows",
+    "width": 1920,
+    "height": 1200,
+    "acquiring": true,
+    "timer_active": true,
+    "signal_levels": [
+      0.6252952747263751,
+      0.6252952747263751
+    ],
+    "elapsed": 0.8764947000308894
+  },
+  "python_compile": "passed",
+  "bash_syntax": "passed (Git Bash bash -n setup.sh start.sh)",
   "physical_pi_tested": false,
-  "tests": [
-    {
-      "name": "unit",
-      "exit_code": 0
-    },
-    {
-      "name": "fixes",
-      "exit_code": 0
-    },
-    {
-      "name": "console",
-      "exit_code": 0
-    },
-    {
-      "name": "verify_interaction_update",
-      "exit_code": 0
-    }
+  "artifacts": [
+    "tests/lobby/results.json",
+    "tests/lobby/startup.json",
+    "tests/chart-validation.json",
+    "tests/zoom-validation.json"
+  ],
+  "limitations": [
+    "CM5 performance, GPIO and Wayland compositor capture require testing on the target device.",
+    "DLC 3D viewer remains a separate installed application.",
+    "Historical console/version UI scripts are superseded by verify_lobby.py for the changed navigation."
   ]
 }

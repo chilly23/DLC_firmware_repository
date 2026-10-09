@@ -42,7 +42,9 @@ gpio_access=true
 for node in /dev/gpiochip*; do
   if [[ -e "$node" && ( ! -r "$node" || ! -w "$node" ) ]]; then gpio_access=false; fi
 done
-if [[ ! -f .ready ]] || ! $healthy || ! $gpio_access || $repair; then
+capture_ready=true
+if [[ -n "${WAYLAND_DISPLAY:-}" ]] && ! command -v grim >/dev/null; then capture_ready=false; fi
+if [[ ! -f .ready ]] || ! $healthy || ! $gpio_access || ! $capture_ready || $repair; then
   echo 'Installing operating-system packages and configuring GPIO access...'
   if command -v sudo >/dev/null && sudo -n true 2>/dev/null; then sudo -n /bin/bash "$APP_DIR/setup.sh" "$(id -un)";
   elif command -v pkexec >/dev/null; then pkexec /bin/bash "$APP_DIR/setup.sh" "$(id -un)";

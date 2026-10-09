@@ -12,6 +12,7 @@ apt-get install -y python3-venv python3-pip python3-dev build-essential gpiod dd
   libegl1 libopengl0 libxkbcommon0 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 \
   libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-xkb1 fonts-dejavu-core
 if apt-cache show wlr-randr >/dev/null 2>&1; then apt-get install -y wlr-randr; fi
+if apt-cache show grim >/dev/null 2>&1; then apt-get install -y grim; fi
 for group in gpio i2c video; do
   getent group "$group" >/dev/null || groupadd --system "$group"
   usermod -aG "$group" "$device_user"
