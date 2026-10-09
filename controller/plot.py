@@ -15,6 +15,8 @@ class SpectrumPlot(QQuickPaintedItem):
         self._channel = 0
         self._error = False
         self._large = False
+        self._combined = False
+        self._bottom_axis = False
         self._minimum, self._maximum = 48.2, 68.2
         self._yshift, self._yscale = 0.0, 1.0
         if self.controller:
@@ -31,7 +33,25 @@ class SpectrumPlot(QQuickPaintedItem):
 
     @Property(bool, notify=changed)
     def showXAxis(self):
-        return self._error
+        return self._bottom_axis
+
+    @Property(bool, notify=changed)
+    def bottomAxis(self):
+        return self._bottom_axis
+
+    @bottomAxis.setter
+    def bottomAxis(self, value):
+        self._bottom_axis = value
+        self.state_changed()
+
+    @Property(bool, notify=changed)
+    def combined(self):
+        return self._combined
+
+    @combined.setter
+    def combined(self, value):
+        self._combined = value
+        self.state_changed()
 
     def refresh(self):
         if self.isVisible():
@@ -87,9 +107,13 @@ class SpectrumPlot(QQuickPaintedItem):
         self.update()
 
     def area(self):
-        return QRectF(55 if self._large else 43, 10,
-                      max(1, self.width() - (71 if self._large else 59)),
-                      max(1, self.height() - ((55 if self._large else 40) if self._error else 20)))
+        chart = self.controller.instrument.lasers[self._channel].chart
+        # Wider gutters are only needed when an edited axis has long labels.
+        values = chart.bounds(False)+chart.bounds(True)
+        left = max(55 if self._large else 43, min(88, max(len(f'{n:.4g}') for n in values)*8+7))
+        right = 72 if self._combined and chart.main_visible and chart.error_visible else 16
+        return QRectF(left, 10, max(1,self.width()-left-right),
+                      max(1,self.height()-((55 if self._large else 40) if self._bottom_axis else 20)))
 
     @Slot(float, float)
     def pan(self, dx, dy):
@@ -98,8 +122,14 @@ class SpectrumPlot(QQuickPaintedItem):
         a = self.area()
         delta = -dx / a.width() * (self._maximum - self._minimum)
         self.setRange(self._minimum + delta, self._maximum + delta)
-        shift = self._yshift + dy / a.height() * (5 if self._error else 11) * self._yscale
-        self._yshift = max(-2., min(2. if self._error else .8, shift))
+        chart = self.controller.instrument.lasers[self._channel].chart
+        signals = [False, True] if self._combined else [self._error]
+        for error in signals:
+            prefix = 'error' if error else 'main'
+            scale = chart.axes[prefix+'_scale']
+            shift = chart.axes[prefix+'_position']+dy/a.height()*4*scale
+            chart.axes[prefix+'_position'] = round(max(-1000,min(1000,shift)),3)
+        self.controller.changed.emit()
         self.update()
 
     @Slot(float, float)
@@ -118,12 +148,21 @@ class SpectrumPlot(QQuickPaintedItem):
         if self.interactionLocked:
             return
         self._yscale, self._yshift = 1., 0.
+        from .charts import AXIS_DEFAULTS
+        chart = self.controller.instrument.lasers[self._channel].chart
+        for error in ([False,True] if self._combined else [self._error]):
+            prefix = 'error' if error else 'main'
+            for key in (prefix+'_scale',prefix+'_position'):
+                chart.axes[key] = AXIS_DEFAULTS[key]
+        self.controller.changed.emit()
         self.setRange(48.2, 68.2)
         self.update()
 
     @Slot(float)
     def pick(self, px):
         if self.interactionLocked:
+            return
+        if self._combined and not self.controller.instrument.lasers[self._channel].chart.main_visible:
             return
         a = self.area()
         value = self._minimum + (px - a.left()) / a.width() * (self._maximum - self._minimum)
@@ -138,11 +177,11 @@ class SpectrumPlot(QQuickPaintedItem):
             return
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         a = self.area()
-        lo, hi = ((-2.5, 2.5) if self._error else (-1, 10))
-        lo = lo * self._yscale + self._yshift
-        hi = hi * self._yscale + self._yshift
+        laser = self.controller.instrument.lasers[self._channel]
+        chart = laser.chart
+        primary = self._error or (self._combined and not chart.main_visible)
+        lo,hi = chart.bounds(primary)
         x = lambda value: a.left() + (value - self._minimum) / (self._maximum - self._minimum) * a.width()
-        y = lambda value: a.bottom() - (value - lo) / (hi - lo) * a.height()
         color = QColor('#C2C5C2')
         font = QFont('Roboto')
         font.setPixelSize(20 if self._large else 16)
@@ -158,17 +197,24 @@ class SpectrumPlot(QQuickPaintedItem):
             painter.drawLine(QPointF(xx, a.top()), QPointF(xx, a.bottom()))
             painter.setPen(color)
             value = lo + (hi - lo) * ratio
-            if not self._error or self._large or i % 2 == 0:
-                painter.drawText(QRectF(0, yy - 12, a.left() - 9, 24), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{value:g}')
+            if a.height()>145 or i % 2 == 0:
+                painter.drawText(QRectF(0, yy - 12, a.left() - 9, 24), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{value:.4g}')
+                if self._combined and chart.main_visible and chart.error_visible:
+                    elo,ehi = chart.bounds(True)
+                    painter.drawText(QRectF(a.right()+7,yy-12,62,24),Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,f'{elo+(ehi-elo)*ratio:.4g}')
             label_x = min(self.width() - 66, max(0, xx - 32))
-            if self._error:
+            if self._bottom_axis:
                 painter.drawText(QRectF(label_x, a.bottom() + 5, 64, 25), Qt.AlignmentFlag.AlignHCenter, f'{self._minimum + ratio * (self._maximum - self._minimum):.1f}')
         painter.setPen(QPen(QColor('#A0A59E'), 1.3))
         painter.drawLine(a.bottomLeft(), a.topLeft())
         painter.drawLine(a.bottomLeft(), a.bottomRight())
-        laser = self.controller.instrument.lasers[self._channel]
-        if self._error and not laser.show_error:
-            return
+        signals = ([False] if chart.main_visible else []) + ([True] if chart.error_visible else []) if self._combined else [self._error]
+        for error in signals:
+            self.paint_trace(painter,a,laser,error,color,x)
+
+    def paint_trace(self,painter,a,laser,error,color,x):
+        lo,hi = laser.chart.bounds(error)
+        y = lambda value: a.bottom()-(value-lo)/(hi-lo)*a.height()
         painter.save()
         painter.setClipRect(a.adjusted(1, 1, -1, -1))
         path = QPainterPath()
@@ -177,17 +223,17 @@ class SpectrumPlot(QQuickPaintedItem):
         for i in range(count + 1):
             value = self._minimum + (self._maximum - self._minimum) * i / count
             pair = laser.sample(value, self.controller.elapsed)
-            point = QPointF(x(value), y(pair[1 if self._error else 0]))
+            point = QPointF(x(value), y(pair[1 if error else 0]))
             if i == 0:
                 path.moveTo(point)
             else:
                 path.lineTo(point)
-        pen = QPen(color, 1.5 if self._error else 1.7)
-        if self._error:
+        pen = QPen(color, 1.5 if error else 1.7)
+        if error:
             pen.setDashPattern([2.4, 2.4])
         painter.setPen(pen)
         painter.drawPath(path)
-        if not self._error and laser.signal.level > 0.01:
+        if not error and laser.signal.level > 0.01:
             painter.setOpacity(laser.signal.level)
             for index, (center, _, _) in enumerate(laser.signal.peaks):
                 center = laser.signal.center(center)
