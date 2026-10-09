@@ -1,1 +1,1 @@
-{"visible": true, "exposed": true, "booting": false, "platform": "windows", "width": 1600, "height": 720, "acquiring": true, "timer_active": true, "signal_levels": [0.22946326901048292, 0.22946326901048292], "elapsed": 0.46587060001911595}
+{"visible": true, "fullscreen": true, "exposed": true, "booting": false, "platform": "windows", "width": 1536, "height": 864, "acquiring": true, "timer_active": true, "signal_levels": [0.8635726016629869, 0.8635726016629869], "elapsed": 1.152098599995952}

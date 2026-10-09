@@ -17,7 +17,7 @@ qInstallMessageHandler(lambda kind,context,message: messages.append(message))
 data=tempfile.TemporaryDirectory()
 app,engine,ctl,w=create_application(skip_boot=True,animate=False,data_dir=data.name)
 checks=[]
-shots=ROOT/'tests'/'screenshots';shots.mkdir(exist_ok=True)
+shots=ROOT/'tests'/'chart-screenshots';shots.mkdir(exist_ok=True)
 def check(name,value):
     assert value,name
     checks.append(name);print('PASS',name,flush=True)
@@ -135,7 +135,7 @@ try:
     check('Emission and stabilisation still run',a.signal.level==1 and a.signal.smoothing>.99)
     errors=[m for m in messages if any(s in m for s in ['TypeError','ReferenceError','Cannot assign','Binding loop','failed to load','Error:'])]
     check('No QML errors',not errors)
-    (ROOT/'tests'/'validation.json').write_text(json.dumps({'checks':checks,'warnings':messages},indent=2),encoding='utf8')
+    (ROOT/'tests'/'chart-validation.json').write_text(json.dumps({'checks':checks,'warnings':messages},indent=2),encoding='utf8')
     print(f'{len(checks)} checks passed',flush=True)
 finally:
     print('\n'.join(messages),flush=True)

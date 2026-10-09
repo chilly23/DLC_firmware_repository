@@ -1,0 +1,18 @@
+[
+  "Touch opens inline accent dropdown",
+  "Touch selection commits accent and returns",
+  "Hardware slider preview does not repeatedly write",
+  "Hardware slider commits once on release",
+  "Swipe scrolls content without opening a row",
+  "Content continues with inertia after release",
+  "Touch numeric keys replace selection exactly once",
+  "Numeric hold backspace clears whole field",
+  "Native touch keyboard enters each letter once",
+  "Short touch backspace removes one letter",
+  "Touch hold backspace clears all search text",
+  "Physical keyboard also enters once",
+  "Tap dim area closes keyboard and saves history",
+  "History icon opens actual query list",
+  "History clear is reachable by touch",
+  "Large translated help remains scrollable"
+]

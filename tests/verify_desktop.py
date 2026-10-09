@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-for name in ('Start Nexatom v1.5.cmd','Start Fullscreen v1.5.cmd'):
+for name in ('Start Nexatom v1.7.cmd','Start Fullscreen v1.7.cmd'):
     report=ROOT/'tests'/('desktop-fullscreen.json' if 'Fullscreen' in name else 'desktop-window.json')
     if report.exists():report.unlink()
     subprocess.run(f'call "{ROOT/name}" --verify-startup "{report}"',shell=True,cwd=ROOT,check=True)
@@ -14,6 +14,7 @@ for name in ('Start Nexatom v1.5.cmd','Start Fullscreen v1.5.cmd'):
     assert report.exists(),f'{name} did not start; see logs/startup.log'
     result=json.loads(report.read_text(encoding='utf8'))
     assert result['visible'] and result['exposed'] and not result['booting'] and result['platform']=='windows',result
+    assert result['fullscreen'],result
     assert result['acquiring'] and result['timer_active'] and result['elapsed']>0,result
     assert all(0<level<=1 for level in result['signal_levels']),result
     print('PASS',name,result,flush=True)
