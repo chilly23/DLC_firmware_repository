@@ -32,7 +32,7 @@ def finish_jobs():
     while system.busy and time.monotonic()<end:QTest.qWait(20)
     assert not system.busy
 try:
-    QTest.qWait(250);check('v1.9 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.9.0')
+    QTest.qWait(250);check('v1.10 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.10.0')
     check('Default home values are white',ctl.theme.parameterInk.upper()=='#FFFFFF')
     ctl.theme.apply('accent','Cyan');check('Light accents use dark numeric ink',ctl.theme.parameterInk.upper()=='#111111');ctl.theme.apply('accent','Green')
     check('Earlier Green is restored exactly',ctl.theme.accent.upper()=='#008622')
@@ -67,9 +67,10 @@ try:
     command(0,'view.fullscreen');full=item('fullscreenAbsorptionRenderer');old=full.xMaximum-full.xMinimum
     command(0,'graph.zoom_in');check('Fullscreen knob zoom works',full.xMaximum-full.xMinimum<old);command(0,'view.fullscreen')
     command(3,'view.fullscreen');command(1,'graph.left');check('Graph shortcut reveals its assigned fullscreen side',w.property('fullscreenSide')==0);command(0,'view.fullscreen')
-    command(1,'more.open');QTest.qWait(270)
-    labels=[label for obj,rect,label in nav.targets()];check('More focus includes all sectors',all(s in labels for s in ('Alarms','Settings','Display','Diagnostics')))
-    nav.target=next(o for o,r,label in nav.targets() if label=='Alarms');nav.activate();QTest.qWait(300)
+    command(1,'more.open');QTest.qWait(780)
+    radial=item('radialMenu');knobs.dispatch(1,'clockwise',2);QTest.qWait(250)
+    check('More wheel rotates to Alarms',radial.property('selectedIndex')==2)
+    knobs.dispatch(1,'push');QTest.qWait(780)
     check('Physical activation opens real alarm panel',item('alarmPanel').isVisible());nav.back()
     command(0,'signals.open');check('Chart Signals opens by shortcut',item('signalsPanel').isVisible())
     nav.target=item('signalsCombined');
@@ -107,7 +108,7 @@ try:
     for pos in sc.targets:QTest.touchEvent(sc,touch).move(0,pos.toPoint(),sc).commit();QTest.qWait(25)
     QTest.touchEvent(sc,touch).release(0,sc.targets[-1].toPoint(),sc).commit();check('Native touch drag hits all targets',sc.checks['drag']);sc.close()
     check('Screen result returns to Control Settings',all(sw.touch_results.values()) and sw.isVisible())
-    tap(('knob_guide',));check('Knob guide starts paused with focused content',system.tour.get('knob_intro') and not system.tourPlaying)
+    tap(('panel_open',));sw.scroll=300;sw.repaint();tap(('settings_action','knob_guide'));check('Knob guide starts paused with focused content',system.tour.get('knob_intro') and not system.tourPlaying)
     for _ in range(11):system.tourNext();QTest.qWait(30);sw.repaint()
     check('Knob guide covers mapping, calibration and screen check','Check touchscreen' in system.tour['title']);system.stopTour()
     check('Guide has detailed control coverage',len(TOUR)>=85)
