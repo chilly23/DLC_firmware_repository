@@ -45,7 +45,7 @@ if __name__=='__main__':
         QTest.qWait(150);im=sw.grab() if settings else w.grabWindow();assert im.save(str(out/(name+'.png')))
     def page(key):sw.select(sw.order.index(key));sw.motion.position=sw.selected;sw.last_index=sw.selected;QTest.qWait(350);sw.repaint()
     try:
-        QTest.qWait(1800);check('Application v1.7 starts',w.isVisible() and app.applicationVersion()=='1.7.0');screenshot('01-home')
+        QTest.qWait(1800);check('Application v1.8 starts',w.isVisible() and app.applicationVersion()=='1.8.0');screenshot('01-home')
         tap('more0');QTest.qWait(300);check('Restored ring reveal completes',item('radialMenu').property('expansion')==1);screenshot('02-ring');tap('radialCancel');QTest.qWait(300)
         ctl.openSettings();wait(lambda:not syssettings.busy);QTest.qWait(150)
         check('Fixed settings navigation order',sw.order==['display','function','control','system','storage','help','upgrade','about'])

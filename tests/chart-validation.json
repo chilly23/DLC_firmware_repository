@@ -55,7 +55,5 @@
     "Emission and stabilisation still run",
     "No QML errors"
   ],
-  "warnings": [
-    "Member enabled of the object QQuickPinchArea overrides a member of the base object. Consider renaming it or adding final or override specifier"
-  ]
+  "warnings": []
 }
