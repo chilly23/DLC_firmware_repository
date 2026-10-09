@@ -9,7 +9,7 @@ from .panel import PanelDecoder
 
 def gpio_module():
     import gpiod
-    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.12 Pi launcher setup.')
+    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.13 Pi launcher setup.')
     return gpiod
 
 def discover(gpiod):
@@ -101,6 +101,6 @@ class GPIOWorker(QThread):
                     panel_decoder.settle(now)
                     if time.monotonic()-published>=1/60:
                         self.frames.emit({i:d.snapshot() for i,d in decoders.items()});self.panelFrames.emit(panel_decoder.snapshot());published=time.monotonic()
-        except PermissionError as exc:self.status.emit(False,f'GPIO permission denied: {exc}. Run bash run.sh --repair-setup in the Pi desktop.')
+        except PermissionError as exc:self.status.emit(False,f'GPIO permission denied: {exc}. Open System Settings > Startup > Repair setup, or run bash start.sh --repair in the Pi desktop.')
         except Exception as exc:self.status.emit(False,f'{type(exc).__name__}: {exc}')
     def stop(self):self.requestInterruption();self.wait()
