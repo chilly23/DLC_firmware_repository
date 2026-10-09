@@ -1,10 +1,12 @@
-"""Settings and history shared by the three views; no device hardware writes."""
+"""Persisted application preferences and the searchable settings catalog."""
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = {
+    "control": "Control Settings",
     "display": "Display Settings",
     "system": "System Settings",
     "function": "Function Settings",
@@ -15,7 +17,7 @@ LABELS = {
 }
 ORDERS = {
     32: ["display", "system", "function", "storage", "about", "help", "upgrade"],
-    58: ["system", "function", "storage", "help", "upgrade", "about", "display"],
+    58: ["display", "function", "control", "system", "storage", "help", "upgrade", "about"],
     59: ["system", "function", "storage", "help", "upgrade", "display", "about"],
 }
 DEFAULTS = {
@@ -33,34 +35,57 @@ DEFAULTS = {
     "retention": "30 days",
 }
 SEARCH = [
-    ("display", "Display Settings", "Screen brightness, animations, sleep timeout"),
-    ("system", "System Settings", "Language, touch sound, measurement units"),
+    ("display", "Display Settings", "Screen brightness contrast resolution refresh rate UI scale accent color theme dark light appearance"),
+    ("system", "System Settings", "Language font text size side button icons names date time clock automatic sleep shutdown idle factory reset restore defaults information tour tutorial guide"),
     (
         "function",
         "Function Settings",
-        "Laser 1, Laser 2, graph stabilisation, scan rate",
+        "Laser 1 Laser 2 spectroscopy error graph baseline calibration X Y limits bandwidth sampling rate maximum points graph color laser color line width",
     ),
-    ("storage", "Storage", "Data logging, retention, export settings"),
-    ("about", "About", "Model, calibration time, firmware version, serial number"),
+    ("storage", "Storage", "Disk space export settings JSON capture graph frame CSV clear search history"),
+    ("about", "About", "Model organization firmware version serial number QR code"),
     ("help", "Help", "Touch gestures, navigation, search assistance"),
     ("upgrade", "Upgrade", "Firmware update, installed version"),
+    ("control", "Control Settings", "External controls, routing, reserved configuration"),
 ]
 
 
 class SettingsStore:
     def __init__(self, path=None):
         self.path = Path(path or ROOT / "data" / "settings.json")
-        self.values = DEFAULTS.copy()
+        from .preferences import NEW_DEFAULTS
+        self.values = deepcopy(DEFAULTS)
+        self.values.update(deepcopy(NEW_DEFAULTS))
         self.history = []
         self.error = ""
         try:
             content = json.loads(self.path.read_text(encoding="utf8"))
             self.values.update(
-                {k: v for k, v in content.get("values", {}).items() if k in DEFAULTS}
+                {k: v for k, v in content.get("values", {}).items() if k in self.values}
             )
             self.history = [str(s) for s in content.get("history", [])][:8]
         except (OSError, ValueError, TypeError, AttributeError):
             pass
+        # Version migration also merges newly introduced graph keys.
+        from .preferences import GRAPH_DEFAULTS
+        for key in ('graph1','graph2'):
+            loaded=self.values.get(key,{})
+            self.values[key]=dict(GRAPH_DEFAULTS,**(loaded if isinstance(loaded,dict) else {}))
+        if self.values.get('sampling_rate') not in (5,10,20,30,60):self.values['sampling_rate']=20
+        if self.values.get('language') not in ('English','Français','Deutsch','Español','Italiano','Português'):
+            self.values['language']='English'
+        from math import isfinite
+        for key in ('alarms1','alarms2'):
+            loaded=self.values.get(key,{})
+            valid=deepcopy(NEW_DEFAULTS[key])
+            if isinstance(loaded,dict):
+                valid['enabled']=loaded.get('enabled') is True
+                for field in ('main_high','error_high'):
+                    try:value=float(loaded.get(field,valid[field]))
+                    except (ValueError,TypeError):continue
+                    if isfinite(value) and (0 if field=='error_high' else -1000)<=value<=1000:valid[field]=value
+            self.values[key]=valid
+        self.path.parent.mkdir(parents=True,exist_ok=True)
 
     def save(self):
         try:
@@ -86,9 +111,10 @@ class SettingsStore:
             self.save()
 
     def search(self, query):
+        from .translations import translate
         terms = query.casefold().split()
         return [
             item
             for item in SEARCH
-            if all(t in (" ".join(item)).casefold() for t in terms)
+            if all(t in (" ".join(item)+' '+translate(item[1],self.values['language'])).casefold() for t in terms)
         ]

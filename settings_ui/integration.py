@@ -4,16 +4,17 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Qt, Signal
 
 from .model import SettingsStore
-from .window import SettingsWindow
+from .refined import RefinedSettingsWindow
 
 
-class AttachedSettings(SettingsWindow):
+class AttachedSettings(RefinedSettingsWindow):
     returned = Signal()
     valuesEdited = Signal(str)
 
-    def __init__(self, data_dir):
-        super().__init__(58, SettingsStore(Path(data_dir) / "settings.json"))
-        self.setWindowTitle("NEXATOM v1.5 · Settings")
+    def __init__(self, data_dir,theme,system):
+        super().__init__(theme,system)
+        self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
+        self.setWindowTitle("NEXATOM v1.7 · Settings")
         self.timer.stop()
 
     def open_search(self):
@@ -33,6 +34,7 @@ class AttachedSettings(SettingsWindow):
             self.search.setFocus()
 
     def closeEvent(self, event):
+        if self.system.mode_deadline:self.system.revert_mode()
         self.close_overlay()
         self.timer.stop()
         self.returned.emit()
@@ -41,12 +43,12 @@ class AttachedSettings(SettingsWindow):
 
 
 class SettingsHost(QObject):
-    def __init__(self, app, home, controller, data_dir):
+    def __init__(self, app, home, controller, data_dir,theme,system):
         super().__init__(app)
         self.home = home
         self.controller = controller
         self.applying = False
-        self.window = AttachedSettings(data_dir)
+        self.window = AttachedSettings(data_dir,theme,system)
         self.window.valuesEdited.connect(self.apply_function_settings)
         controller.changed.connect(self.sync_function_settings)
         self.sync_function_settings()
@@ -80,6 +82,7 @@ class SettingsHost(QObject):
         self.sync_function_settings()
 
     def open(self):
+        self.controller.system_settings.probe()
         self.fullscreen = self.home.visibility() == self.home.Visibility.FullScreen
         self.window.setGeometry(self.home.x(), self.home.y(), self.home.width(), self.home.height())
         self.window.timer.start()

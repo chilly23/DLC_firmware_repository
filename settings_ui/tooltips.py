@@ -1,0 +1,22 @@
+"""Touch help shared by home controls and the guided tour."""
+TIPS={
+ 'lock':('View locked','Tap to unlock pan, zoom and rearranging. Live acquisition continues while locked.'),
+ 'unlock':('View unlocked','Pan, pinch zoom and long-press dragging are available. Tap to lock this view.'),
+ 'emission':('Emission','Bring this simulated laser up from zero, or smoothly return its traces to zero.'),
+ 'stabilise':('Stabilise','Smooth the live noise on this laser without stopping acquisition.'),
+ 'switch':('Switch channel','Change only this half between Laser 1 and Laser 2.'),
+ 'fullscreen':('Fullscreen','Expand this laser. Signal settings remain available.'),
+ 'more':('More','Open Settings, Alarms, Display and other instrument tools.'),
+ 'close':('Close','Dismiss this panel. Unsubmitted numeric input is discarded.'),
+ 'enter':('Apply value','Validate the number and apply it to this laser.'),
+ 'minus':('Decrease / minus','Decrease this setting, or reverse the sign in the numeric editor.'),
+ 'plus':('Increase','Increase by the next scale step or by one division.'),
+ 'combined':('Combined','Overlay spectroscopy and error; use the switches to hide each trace.'),
+ 'split':('Split','Separate the signals while keeping one shared horizontal scale.'),
+ 'axis':('Y axis','Adjust scale, position and the relative height of the two plots.'),
+ 'up':('Upper','Place this signal above the other signal.'),
+ 'down':('Lower','Place this signal below the other signal.'),
+ 'reset':('Restore defaults','Restore this laser’s chart scales, positions and height ratio.'),
+ 'eye':('Visibility','Show or hide this signal in Combined mode.'),
+ 'eyeOff':('Visibility','Show or hide this signal in Combined mode.'),
+}

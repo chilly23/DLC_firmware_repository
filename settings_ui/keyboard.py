@@ -1,10 +1,9 @@
-"""Frame 60 keyboard: actual editable input with alphabet, symbols and shift."""
-
+"""Letter-only circular touch keyboard, drawn from the user's reference style."""
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QColor, QPainterPath, QPen
-
-from .drawing import box, line, text
-from .layout import KEYBOARD_RECT, POPUP_TRANSFORM, REFERENCE_POPUP
+from PySide6.QtGui import QColor, QFont, QPainterPath, QPen
+from .drawing import box, line, cross
+from . import drawing
+from .layout import KEYBOARD_RECT
 
 
 class TouchKeyboard:
@@ -12,139 +11,63 @@ class TouchKeyboard:
 
     def __init__(self):
         self.shift = False
-        self.numeric = False
         self.pressed = None
 
     def key_rects(self):
-        return [
-            (POPUP_TRANSFORM.mapRect(rect), label, action)
-            for rect, label, action in self._reference_key_rects()
-        ]
-
-    def _reference_key_rects(self):
-        first = "1234567890" if self.numeric else "qwertyuiop"
-        second = "-/:;()$&@" if self.numeric else "asdfghjkl"
-        third = [".", ",", "?", "!", "'", '"', "#"] if self.numeric else list("zxcvbnm")
-        result = []
-        for row, start, y, width, gap in [
-            (first, 790, 153, 33, 6),
-            (second, 810, 209, 33, 6),
-        ]:
-            for i, value in enumerate(row):
-                label = value.upper() if self.shift else value
-                result.append(
-                    (QRectF(start + i * (width + gap), y, width, 45), label, value)
-                )
-        result.append((QRectF(790, 265, 45, 45), "shift", "shift"))
-        for i, value in enumerate(third):
-            result.append(
-                (
-                    QRectF(849 + i * 39, 265, 33, 45),
-                    value.upper() if self.shift else value,
-                    value,
-                )
-            )
-        result.append((QRectF(1129, 265, 45, 45), "backspace", "backspace"))
-        result.extend(
-            [
-                (QRectF(790, 321, 92, 45), "ABC" if self.numeric else "123", "mode"),
-                (QRectF(888, 321, 188, 45), "", "space"),
-                (QRectF(1082, 321, 92, 45), "enter", "enter"),
-            ]
-        )
-        return result
+        keys = []
+        for i, value in enumerate('qwertyuiop'):
+            keys.append((QRectF(332+i*86,308,76,76),value.upper(),value))
+        keys.append((QRectF(1192,308,76,76),'backspace','backspace'))
+        for i, value in enumerate('asdfghjkl'):
+            keys.append((QRectF(375+i*86,402,76,76),value.upper(),value))
+        keys.append((QRectF(332,496,76,76),'shift','shift'))
+        for i, value in enumerate('zxcvbnm'):
+            keys.append((QRectF(418+i*86,496,76,76),value.upper(),value))
+        keys.extend([(QRectF(1020,496,76,76),'left','left'),
+                     (QRectF(1106,496,76,76),'right','right'),
+                     (QRectF(1192,402,76,170),'enter','enter'),
+                     (QRectF(500,592,600,68),'space','space'),
+                     (QRectF(1216,241,52,52),'close','close')])
+        return keys
 
     def paint(self, p, register, query):
-        p.save()
-        p.setWorldTransform(POPUP_TRANSFORM, True)
-        self._paint_reference(
-            p,
-            lambda rect, action: register(POPUP_TRANSFORM.mapRect(rect), action),
-            query,
-        )
-        p.restore()
-
-    def _paint_reference(self, p, register, query):
-        box(p, REFERENCE_POPUP, "#faa6aaad", 31)
-        from .model import SEARCH
-        words = list(dict.fromkeys(word.strip(',').lower() for item in SEARCH for word in ' '.join(item[1:]).split()))
-        prefix = query.split()[-1].lower() if query.strip() else ''
-        suggestions = [w for w in words if prefix and w.startswith(prefix)]
-        if prefix and prefix not in suggestions:
-            suggestions.insert(0, prefix)
-        suggestions = list(dict.fromkeys(suggestions + ['display', 'system', 'storage']))[:3]
-        for i, label in enumerate(suggestions):
-            r = QRectF(790 + i * 131, 103, 131, 44)
-            text(
-                p,
-                r.x(),
-                r.y(),
-                r.width(),
-                r.height(),
-                label,
-                16,
-                "#080b0c",
-                align=Qt.AlignmentFlag.AlignCenter,
-            )
-            register(
-                r, ("suggest", label)
-            )
-        line(p, 915, 116, 915, 142, "#999da0", 0.7)
-        line(p, 1049, 116, 1049, 142, "#999da0", 0.7)
-        for rect, label, action in self._reference_key_rects():
-            active = action == self.pressed or (action == "shift" and self.shift)
-            color = (
-                "#008aff" if action == "enter" else ("#ffffff" if active else "#eff1f4")
-            )
-            box(p, rect, color, 9)
-            cx, cy = rect.center().x(), rect.center().y()
-            if label == "shift":
-                points = [
-                    (cx - 10, cy),
-                    (cx, cy - 9),
-                    (cx + 10, cy),
-                    (cx + 4, cy),
-                    (cx + 4, cy + 9),
-                    (cx - 4, cy + 9),
-                    (cx - 4, cy),
-                    (cx - 10, cy),
-                ]
-                path = QPainterPath(QPointF(*points[0]))
-                for point in points[1:]:
-                    path.lineTo(QPointF(*point))
-                p.setBrush(QColor("#4b4f52") if self.shift else Qt.BrushStyle.NoBrush)
-                p.setPen(QPen(QColor("#4b4f52"), 2))
+        theme=drawing.STYLE
+        ink=theme.foreground if theme else '#FFFFFF'
+        box(p,self.rect,theme.surface if theme else '#212121',54)
+        font=QFont(theme.fontFamily if theme else 'Roboto')
+        font.setPixelSize(round(30*(theme.fontScale if theme else 1)))
+        for rect,label,action in self.key_rects():
+            active = action == self.pressed or (action=='shift' and self.shift)
+            box(p,rect,theme.accent if active and theme else '#FF8500' if active else theme.raised if theme else '#333333',min(rect.width(),rect.height())/2)
+            p.setPen(QPen(QColor(ink),2.2))
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            cx,cy=rect.center().x(),rect.center().y()
+            if action=='backspace':
+                path=QPainterPath(QPointF(cx-19,cy))
+                for x,y in [(cx-9,cy-12),(cx+17,cy-12),(cx+17,cy+12),(cx-9,cy+12)]:path.lineTo(x,y)
+                path.closeSubpath();p.drawPath(path)
+                cross(p,cx+2,cy,10,'#FFFFFF')
+            elif action=='shift':
+                path=QPainterPath(QPointF(cx-16,cy))
+                for x,y in [(cx,cy-15),(cx+16,cy),(cx+7,cy),(cx+7,cy+14),(cx-7,cy+14),(cx-7,cy),(cx-16,cy)]:path.lineTo(x,y)
                 p.drawPath(path)
-            elif label == "backspace":
-                path = QPainterPath(QPointF(cx - 12, cy))
-                for a, b in [
-                    (cx - 5, cy - 8),
-                    (cx + 10, cy - 8),
-                    (cx + 10, cy + 8),
-                    (cx - 5, cy + 8),
-                ]:
-                    path.lineTo(a, b)
-                path.closeSubpath()
-                p.setBrush(Qt.BrushStyle.NoBrush)
-                p.setPen(QPen(QColor("#4b4f52"), 2))
-                p.drawPath(path)
-                line(p, cx - 2, cy - 4, cx + 5, cy + 4, "#4b4f52", 1.5)
-                line(p, cx - 2, cy + 4, cx + 5, cy - 4, "#4b4f52", 1.5)
-            elif label == "enter":
-                line(p, cx + 8, cy - 8, cx + 8, cy + 1, "#fff", 1.6)
-                line(p, cx + 8, cy + 1, cx - 8, cy + 1, "#fff", 1.6)
-                line(p, cx - 8, cy + 1, cx - 2, cy - 5, "#fff", 1.6)
-                line(p, cx - 8, cy + 1, cx - 2, cy + 7, "#fff", 1.6)
+            elif action in ('left','right'):
+                d=-1 if action=='left' else 1
+                line(p,cx-14,cy,cx+14,cy,'#FFFFFF',2.2)
+                line(p,cx+d*14,cy,cx+d*3,cy-10,'#FFFFFF',2.2)
+                line(p,cx+d*14,cy,cx+d*3,cy+10,'#FFFFFF',2.2)
+            elif action=='enter':
+                line(p,cx+13,cy-14,cx+13,cy+4,'#FFFFFF',2.2)
+                line(p,cx+13,cy+4,cx-15,cy+4,'#FFFFFF',2.2)
+                line(p,cx-15,cy+4,cx-4,cy-7,'#FFFFFF',2.2)
+                line(p,cx-15,cy+4,cx-4,cy+15,'#FFFFFF',2.2)
+            elif action=='space':
+                line(p,cx-50,cy+4,cx+50,cy+4,'#FFFFFF',2.2)
+                line(p,cx-50,cy+4,cx-50,cy-4,'#FFFFFF',2.2)
+                line(p,cx+50,cy+4,cx+50,cy-4,'#FFFFFF',2.2)
+            elif action=='close':
+                cross(p,cx,cy,15,'#FFFFFF')
             else:
-                text(
-                    p,
-                    rect.x(),
-                    rect.y(),
-                    rect.width(),
-                    rect.height(),
-                    label,
-                    16 if action == "mode" else 26,
-                    "#4b4f52",
-                    align=Qt.AlignmentFlag.AlignCenter,
-                )
-            register(rect, ("key", action))
+                p.setFont(font);p.setPen(QColor(theme.accentInk if active and theme else ink))
+                p.drawText(rect,Qt.AlignmentFlag.AlignCenter,label)
+            register(rect,('key',action))

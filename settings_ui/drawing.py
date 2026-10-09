@@ -1,12 +1,20 @@
 """Scalable Qt painter primitives and reference-derived navigation glyphs."""
 
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QColor, QFont, QPen, QPixmap
+from PySide6.QtGui import QColor, QFont, QPen, QPixmap, QPainter, QFontMetricsF
 
 from .model import ROOT
 
 WHITE = "#f3f4f4"
 BG = "#050704"
+STYLE = None
+
+
+def themed(color):
+    if STYLE is None:return color
+    if color.lower() in ('#f3f4f4','#ffffff','#f4f4f4','#d9d9d9','#e1e2e2'):return STYLE.foreground
+    if color.lower() in ('#bdc2bd','#bcc1bc','#bdc2c3','#999b9b'):return STYLE.muted
+    return color
 
 
 def text(
@@ -20,12 +28,16 @@ def text(
     color=WHITE,
     bold=False,
     align=Qt.AlignmentFlag.AlignLeft,
+    literal_color=False,
 ):
-    font = QFont("Roboto")
-    font.setPixelSize(round(size))
-    font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
+    font = QFont(STYLE.fontFamily if STYLE else 'Roboto')
+    from .controls import type_size
+    font.setPixelSize(round(type_size(size)*(STYLE.textScale if STYLE else 1)))
+    font.setWeight(QFont.Weight.Medium if bold else QFont.Weight.Normal)
     p.setFont(font)
-    p.setPen(QColor(color))
+    p.setPen(QColor(color if literal_color else themed(color)))
+    value=STYLE.trText(str(value)) if STYLE else str(value)
+    value=QFontMetricsF(font).elidedText(value,Qt.TextElideMode.ElideRight,width)
     p.drawText(
         QRectF(x, y, width, height), align | Qt.AlignmentFlag.AlignVCenter, str(value)
     )
@@ -38,12 +50,13 @@ def box(p, rect, color, radius=0, border=None):
 
 
 def line(p, x1, y1, x2, y2, color="#393e3d", width=1):
-    p.setPen(QPen(QColor(color), width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+    p.setPen(QPen(QColor(themed(color)), width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
     p.drawLine(QPointF(x1, y1), QPointF(x2, y2))
 
 
 class Icons:
     def __init__(self):
+        self.tinted={}
         self.images = {
             key: QPixmap(str(ROOT / "assets" / (key + ".png")))
             for key in [
@@ -63,8 +76,15 @@ class Icons:
         }
 
     def draw(self, p, key, cx, cy, size):
+        if key=='control':key='function'
         image = self.images.get("help-large" if key == "help" and size > 60 else key)
         if image and not image.isNull():
+            if STYLE and STYLE.light:
+                cache=(key,STYLE.foreground)
+                if cache not in self.tinted:
+                    tinted=QPixmap(image.size());tinted.fill(Qt.GlobalColor.transparent)
+                    painter=QPainter(tinted);painter.drawPixmap(0,0,image);painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn);painter.fillRect(tinted.rect(),QColor(STYLE.foreground));painter.end();self.tinted[cache]=tinted
+                image=self.tinted[cache]
             p.drawPixmap(
                 QRectF(cx - size / 2, cy - size / 2, size, size),
                 image,
@@ -74,14 +94,14 @@ class Icons:
 
 def search_icon(p, x, y, size=22):
     p.setBrush(Qt.BrushStyle.NoBrush)
-    p.setPen(QPen(QColor("#bdc2c3"), 2.3))
+    p.setPen(QPen(QColor(themed("#bdc2c3")), 2.3))
     p.drawEllipse(QRectF(x, y, size * 0.66, size * 0.66))
     line(p, x + size * 0.58, y + size * 0.58, x + size, y + size, "#bdc2c3", 2.3)
 
 
 def history_icon(p, x, y):
     p.setBrush(Qt.BrushStyle.NoBrush)
-    p.setPen(QPen(QColor(WHITE), 2))
+    p.setPen(QPen(QColor(themed(WHITE)), 2))
     p.drawRoundedRect(QRectF(x, y, 24, 28), 3, 3)
     for d in [7, 14, 21]:
         line(p, x + 7, y + d, x + 18, y + d, WHITE, 1.5)
