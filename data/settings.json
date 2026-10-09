@@ -1,0 +1,19 @@
+{
+  "values": {
+    "brightness": 61,
+    "animations": true,
+    "timeout": "5 minutes",
+    "sound": false,
+    "language": "English",
+    "units": "SI",
+    "laser1": true,
+    "laser2": true,
+    "stabilisation": false,
+    "scan_rate": "20 Hz",
+    "logging": true,
+    "retention": "30 days"
+  },
+  "history": [
+    "bright"
+  ]
+}
