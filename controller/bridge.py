@@ -16,8 +16,13 @@ class Controller(QObject):
     @Slot(str)
     def notify(self,message):self.notice.emit(message)
     def action_notice(self,text,key):
-        if getattr(self,'notifications',None) and self.preferences.get('notification_actions',True):self.notifications.post(text,key=key)
-        elif getattr(self,'journal',None):self.journal.record(text,source='Controller')
+        # Continuous gestures and already-visible state changes belong in Logs.
+        # Only emission/alarms need a transient operator acknowledgement.
+        visible = key.startswith(('emission-', 'alarm'))
+        if visible and getattr(self,'notifications',None) and self.preferences.get('notification_actions',True):
+            self.notifications.post(text,key=key)
+        elif getattr(self,'journal',None):
+            self.journal.record(text,source='Controller')
     def gesture_notice(self,index,action):
         """Announce continuous changes once they settle, never once per edge/frame."""
         if not hasattr(self,'_gesture_timers'):self._gesture_timers={}
@@ -47,7 +52,7 @@ class Controller(QObject):
                 laser.alarms.update({k: loaded[k] for k in laser.alarms if k in loaded})
             key='graph'+str(i+1);config=values[key]
             laser.signal.configure(dict(config,sampling_rate=rate))
-            if self._live and not laser.signal.ready:laser.signal.advance(0,self.elapsed,laser.values,laser.stabilised)
+            if self._live and not laser.signal.ready:laser.signal.advance(0,self.elapsed,self.effective_targets(i),laser.stabilised)
             for prefix,low,high in [('main','main_min','main_max'),('error','error_min','error_max')]:
                 old=previous.get(key,{})
                 if old.get(low)!=config[low] or old.get(high)!=config[high]:
@@ -143,8 +148,8 @@ class Controller(QObject):
         if not self._live:
             return
         self.elapsed += max(0,dt)
-        for laser in self.instrument.lasers:
-            laser.signal.advance(max(0,dt),self.elapsed,laser.values,laser.stabilised)
+        for i, laser in enumerate(self.instrument.lasers):
+            laser.signal.advance(max(0,dt),self.elapsed,self.effective_targets(i),laser.stabilised)
         self._alarm_elapsed += max(0,dt)
         if self._alarm_elapsed >= .1:
             changed = False
@@ -156,6 +161,18 @@ class Controller(QObject):
             self._alarm_elapsed = 0.
             if changed:self.changed.emit()
         self.frame.emit()
+
+    def effective_targets(self, index):
+        laser = self.instrument.lasers[index]
+        targets = laser.values
+        if hasattr(self, 'parameters'):
+            flags = self.parameters.flags[index]
+            targets = dict(targets)
+            if not flags['feedforward_enabled']:
+                targets['feedforward'] = 0.0
+            if not flags['tc_enabled']:
+                targets['temperature'] = laser.signal.live['temperature']
+        return targets
 
     @Property(int, notify=changed)
     def leftChannel(self):
