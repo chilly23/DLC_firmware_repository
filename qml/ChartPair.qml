@@ -23,6 +23,21 @@ Item {
     signal moveCancelled()
     function viewRange() {return [main.xMinimum,main.xMaximum]}
     function setViewRange(lo,hi) {main.setRange(lo,hi)}
+    // One gesture owner spans both traces, including the space between them.
+    // It can take over single-finger panning or an already-started graph move.
+    PinchHandler {
+        id: pinch
+        objectName: "chartPinch"+pair.suffix
+        target: null
+        minimumPointCount: 2
+        maximumPointCount: 2
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
+        rotationAxis.enabled: false
+        onActiveChanged: if(active){main.cancelGesture();error.cancelGesture()}
+        onScaleChanged: function(delta) {
+            if(active && !main.interactionLocked)main.zoomAt(delta,centroid.position.x)
+        }
+    }
     function nudge(action,amount){
         if(action==="graph.reset"){main.resetView();error.resetView();return}
         if(action==="graph.zoom_in"||action==="graph.zoom_out"){main.zoomBy(Math.pow(1.12,(action==="graph.zoom_in"?1:-1)*amount));return}
