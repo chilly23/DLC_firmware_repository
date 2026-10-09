@@ -1,5 +1,6 @@
 """Local visual signal model; no device commands or measurement claims."""
 from math import exp, sin
+from random import Random
 
 X_MIN, X_MAX, SAMPLE_COUNT = 48.2, 68.2, 1001
 X_STEP = (X_MAX-X_MIN)/(SAMPLE_COUNT-1)
@@ -15,6 +16,7 @@ class SignalSimulation:
         self.live = values.copy()
         self.peaks = PEAK_SETS[number-1]
         self.number = number
+        self.random=Random(2107+number);self.noise_memory=[0.0]*SAMPLE_COUNT
         self.raw_s = [0.0]*SAMPLE_COUNT
         self.raw_e = [0.0]*SAMPLE_COUNT
         self.filtered_s = [0.0]*SAMPLE_COUNT
@@ -40,6 +42,7 @@ class SignalSimulation:
             n=int(new[2]);self.x_values=[new[0]+i*(new[1]-new[0])/(n-1) for i in range(n)]
             for name in ('raw_s','raw_e','filtered_s','filtered_e','limited_s','limited_e'):setattr(self,name,[0.]*n)
             self.ready=False
+            self.noise_memory=[0.0]*n
 
     def emission(self, enabled):
         self.fade_start = self.level
@@ -80,8 +83,12 @@ class SignalSimulation:
                 s += height*intensity/denominator
                 e += height*intensity*.24*(-2*u)/denominator**2
             residual=(sin(x*47+noise_phase)+.48*sin(x*113-noise_phase*1.3)+.23*sin(x*211+noise_phase*.7))
-            s += .038*residual+.004*values['feedforward']*(x-58.2)
-            e = e*error_gain-values['setpoint']+.064*residual+.001*values['feedforward']*(x-58.2)
+            # Independent broadband detector noise plus correlated electronic
+            # pickup. Stabilisation retains its warm temporal noise filter.
+            self.noise_memory[i]=.35*self.noise_memory[i]+self.random.gauss(0,.075)
+            detector=self.noise_memory[i]
+            s += .072*residual+detector+.004*values['feedforward']*(x-58.2)
+            e = e*error_gain-values['setpoint']+.095*residual+.7*detector+self.random.gauss(0,.038)+.001*values['feedforward']*(x-58.2)
             s=max(-.85,min(9.65,s));e=max(-2.35,min(2.35,e))
             self.raw_s[i],self.raw_e[i]=s,e
             if not self.ready:

@@ -162,6 +162,7 @@ class SpectrumPlot(QQuickPaintedItem):
             chart.axes[prefix+'_position'] = round(max(low,min(high,shift)),3)
         self.controller.changed.emit()
         self.update()
+        if dx or dy:self.controller.gesture_notice(self._channel,'graph view panned')
 
     @Slot(float, float)
     def zoom(self, factor, px):
@@ -173,6 +174,7 @@ class SpectrumPlot(QQuickPaintedItem):
         new = max(.4, min(80., width / factor))
         anchor = self._minimum + ratio * width
         self.setRange(anchor - ratio * new, anchor + (1 - ratio) * new)
+        if abs(new-width)>.000001:self.controller.gesture_notice(self._channel,'graph zoom adjusted')
 
     @Slot()
     def resetView(self):
