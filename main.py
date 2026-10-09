@@ -21,6 +21,7 @@ from hardware.service import KnobService
 from interaction.router import InputRouter
 from interaction.icons import IconProvider
 from interaction.notifications import Notifications
+from interaction.notification_art import NotificationArt,NotificationImageProvider
 from interaction.session_lock import SessionLock
 
 ROOT = Path(__file__).resolve().parent
@@ -38,8 +39,8 @@ def configure_logging(data_dir=None):
 def create_application(*, skip_boot=False, animate=True, data_dir=None, device=None, gpio_factory=None, gpio_autostart=True):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.11")
-    app.setApplicationVersion("1.11.0")
+    app.setApplicationName("NEXATOM v1.12")
+    app.setApplicationVersion("1.12.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
@@ -49,6 +50,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     theme=Appearance(store,app)
     controller.theme=theme
     notifications=Notifications(Path(data_dir or ROOT/'data')/'notifications.json',app);controller.notifications=notifications
+    notifications.renderer=NotificationArt(notifications,theme)
     controller.notice.connect(lambda text:notifications.post(text))
     system=SettingsCoordinator(app,controller,theme,device or make_device())
     controller.system_settings=system
@@ -60,6 +62,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     qmlRegisterType(SpectrumPlot, "Nexatom", 1, 0, "SpectrumPlot")
     engine = QQmlApplicationEngine()
     engine.addImageProvider('outline',IconProvider())
+    engine.addImageProvider('notices',NotificationImageProvider(notifications.renderer))
     engine.rootContext().setContextProperty("ctl", controller)
     engine.rootContext().setContextProperty("theme", theme)
     engine.rootContext().setContextProperty("systemSettings", system)

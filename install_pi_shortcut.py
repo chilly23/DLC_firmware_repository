@@ -8,7 +8,7 @@ def quote(value):
     return '"'+str(value).replace('\\','\\\\').replace('"','\\"').replace('`','\\`').replace('$','\\$').replace('%','%%')+'"'
 
 def install():
-    content='\n'.join(['[Desktop Entry]','Version=1.0','Type=Application','Name=Nexatom v1.11',
+    content='\n'.join(['[Desktop Entry]','Version=1.0','Type=Application','Name=Nexatom v1.12',
         'Comment=Dual laser HMI with calibrated RKJXT inputs','Exec=/bin/bash '+quote(ROOT/'run.sh'),
         'Icon='+str(ROOT/'assets/logo.png'),'Terminal=false','Categories=Science;Education;',''])
     menu=Path.home()/'.local/share/applications';menu.mkdir(parents=True,exist_ok=True)

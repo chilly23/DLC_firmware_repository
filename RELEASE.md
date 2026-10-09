@@ -1,8 +1,8 @@
-# Nexatom v1.11
+# Nexatom v1.12
 
-Right shortcut GPIO7 and left shortcut GPIO16.
+Restored sector wheel, GPIO recovery and notification blur/stacking.
 
-Originally delivered **01 October 2026, 15:24 IST** as an in-place v1.8 build.
+Originally delivered **03 October 2026, 13:40 IST** as an in-place v1.8 build.
 Recovered and renumbered on 5 October 2026.
 
 ## Run
@@ -13,9 +13,11 @@ Recovered and renumbered on 5 October 2026.
 
 ## Changes in this release
 
-- Kept right shortcut Button 3 on GPIO7; assigned and enabled left shortcut Button 4 on GPIO16.
-- Added wiring revision 3 migration while preserving custom pin maps and saved calibration.
-- Updated help, tour, wiring instructions and migration tests; GPIO8 remains Knob 2 D.
+- Restored the earlier black four-sector More fan, with 800 ms expansion/contraction and a 16 px downward offset.
+- Added GPIO automatic retries and isolated busy/unavailable pins so they do not disable all controls.
+- Added newest-first notification stacking, independent timers and 650 ms blur/fade expiry; manual close remains immediate.
+- Preserved pending consent and kept routine cards underneath active editors/dropdowns.
+- This release still permits up to four visible notifications; the two-card limit arrives in v1.14.
 
 ## Historical scope
 
@@ -25,21 +27,22 @@ About firmware remains V1.6.0 as originally requested. GPIO and host controls ar
 laser traces remain simulated. Physical Pi hardware was not retested during recovery.
 
 The source change inventory and original file hashes are in [RELEASE.json](RELEASE.json).
-A local Git tag, **recovered-v1.11**, preserves this completed recovery.
+A local Git tag, **recovered-v1.12**, preserves this completed recovery.
 
 ## Files changed from the preceding release
 
+**Added**
+
+`interaction/notification_art.py`, `tests/test_gpio_recovery.py`, `tests/test_notifications.py`, `tests/verify_interaction_update.py`.
+
 **Modified**
 
-`README.md`, `data/controls.json`, `hardware/config.py`, `hardware/panel.py`, `settings_ui/help_content.py`, `settings_ui/tour.py`, `tests/test_gpio_adapter.py`, `tests/test_panel_inputs.py`, `tests/test_wiring_migration.py`.
+`README.md`, `hardware/gpio.py`, `hardware/service.py`, `interaction/notifications.py`, `main.py`, `qml/NotificationToast.qml`, `qml/RadialMenu.qml`, `settings_ui/control_panel.py`, `settings_ui/extended_controls.py`, `settings_ui/help_content.py`, `settings_ui/tour.py`, `tests/test_gpio_adapter.py`, `tests/verify_control_update.py`, `tests/verify_refinements.py`, `tests/verify_v18.py`.
 
 ## Recovery verification
 
-33 unit tests and 33 UI checks passed. The actual Windows `start.cmd`
+42 unit tests and 20 UI checks passed. The actual Windows `start.cmd`
 completed fullscreen boot and live acquisition. Python compilation and Bash syntax
 passed. All retained dependencies/assets and recovered source text were verified.
-
-The original animation test passed unchanged when run serially; its first
-parallel run missed its fixed animation deadline. Run GUI checks serially.
 
 [Verification summary](VALIDATION.json). Physical Raspberry Pi hardware was not tested.

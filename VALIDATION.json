@@ -1,11 +1,11 @@
 {
-  "version": "1.11",
-  "unit_tests_passed": 33,
-  "ui_checks_passed": 33,
+  "version": "1.12",
+  "unit_tests_passed": 42,
+  "ui_checks_passed": 20,
   "windows_startup": "passed",
-  "python_files": 67,
+  "python_files": 71,
   "shell_syntax": "passed",
-  "source_text_files_verified": 100,
+  "source_text_files_verified": 104,
   "binary_asset_dependency_files_verified": 2617,
   "physical_pi_tested": false,
   "tests": [
@@ -14,9 +14,8 @@
       "exit_code": 0
     },
     {
-      "name": "verify_control_update_serial",
+      "name": "verify_interaction_update",
       "exit_code": 0
     }
-  ],
-  "timing_note": "Historical animation test failed under parallel load, then passed unchanged in a serial rerun; initial evidence is retained in ../recovery/validation.json."
+  ]
 }
