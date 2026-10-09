@@ -13,7 +13,8 @@ class CardModel(QAbstractListModel):
         if not index.isValid() or not 0<=index.row()<len(self.rows) or not 0<=n<len(self.FIELDS):return None
         return self.rows[index.row()].get(self.FIELDS[n])
     def insert(self,entry):
-        self.beginInsertRows(QModelIndex(),0,0);self.rows.insert(0,entry);self.endInsertRows()
+        index=next((i for i,row in enumerate(self.rows) if row['time']<=entry['time']),len(self.rows))
+        self.beginInsertRows(QModelIndex(),index,index);self.rows.insert(index,entry);self.endInsertRows()
     def remove(self,index):
         self.beginRemoveRows(QModelIndex(),index,index);entry=self.rows.pop(index);self.endRemoveRows();return entry
     def refresh(self,index):self.dataChanged.emit(self.index(index),self.index(index),list(self.roleNames()))
@@ -25,7 +26,7 @@ class CardModel(QAbstractListModel):
 
 class Notifications(QObject):
     changed=Signal()
-    MAX_CARDS=4
+    MAX_CARDS=2
     FADE_SECONDS=.65
     def __init__(self,path,parent=None):
         super().__init__(parent);self.path=Path(path);self.entries=[];self.pending={};self.serial=0
@@ -70,7 +71,12 @@ class Notifications(QObject):
         if decision is not None:self.pending[entry['id']]=decision
         if len(self.cards)<self.MAX_CARDS:self.show(entry)
         else:
-            # Bound the HMI stack. Overflow is queued, never silently discarded.
+            # Two visible cards, including cards that are fading. Routine bursts
+            # keep only the latest two waiting previews; every action remains in
+            # History/Logs. Consent and critical errors are never overwritten.
+            if not entry['decision'] and entry['level']!='critical':
+                routine=[e for e in self.waiting if not e['decision'] and e['level']!='critical']
+                for stale in routine[:-1]:self.waiting.remove(stale)
             self.waiting.append(entry)
             oldest=next((e for e in reversed(self.cards) if not e['decision'] and e['level']!='critical' and e['fading'] is None),None)
             if oldest:oldest['fading']=time.monotonic()
@@ -80,7 +86,10 @@ class Notifications(QObject):
     def show(self,entry):
         entry['deadline']=self.deadline(entry['level'],entry['decision']);self._model.insert(entry)
     def drain(self):
-        while self.waiting and len(self.cards)<self.MAX_CARDS:self.show(self.waiting.pop(0))
+        while self.waiting and len(self.cards)<self.MAX_CARDS:
+            protected=next((e for e in self.waiting if e['decision'] or e['level']=='critical'),None)
+            entry=protected or self.waiting[-1]
+            self.waiting.remove(entry);self.show(entry)
     def remove(self,index):
         entry=self._model.remove(index);self.pending.pop(entry['id'],None)
         if self.renderer:self.renderer.discard(entry['id'])
