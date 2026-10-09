@@ -25,7 +25,7 @@ Item {
     property bool targetUpper: pointerY < 100+upperHeight+9
     property bool sourceUpper: errorSignal ? !sourceChart.mainUpper : sourceChart.mainUpper
     property bool destinationLocked: (targetSide === 0 ? leftData : rightData).locked
-    property bool validDrop: pointerX >= 110 && pointerX <= 1495 && pointerY >= 100 && pointerY <= 611 && !destinationLocked
+    property bool validDrop: (targetSide===0?pointerX>=122&&pointerX<=778:pointerX>=822&&pointerX<=1478) && pointerY >= 100 && pointerY <= 611 && !destinationLocked
     function begin(side, index, error, x, y) {
         sourceSide = side;
         channelIndex = index;
@@ -91,21 +91,21 @@ Item {
                 h: 76
             },
             {
-                x: 829,
+                x: 824,
                 y: 21,
                 w: 240,
                 h: 76
             },
             {
-                x: 0,
+                x: 7,
                 y: 113,
-                w: 96,
+                w: 88,
                 h: 464
             },
             {
-                x: 1511,
+                x: 1505,
                 y: 113,
-                w: 89,
+                w: 88,
                 h: 464
             }
         ]
@@ -123,7 +123,8 @@ Item {
         model: 2
         Rectangle {
             required property int index
-            x: index === 0 ? 122 : 815; y:100; width:680;height:511
+            objectName:"dropPanel"+index
+            x: index === 0 ? 122 : 822; y:100; width:656;height:511
             radius:12;color:theme.surface
             border.width: drag.wholeChannel && drag.targetSide===index ? 2 : 0
             border.color: drag.destinationLocked ? "#A92621" : theme.foreground
@@ -152,7 +153,7 @@ Item {
         }
     }
     Rectangle {
-        x: Math.max(110, Math.min(1495-width, (drag.sourceSide === 0 ? 140 : 833) + drag.pointerX - drag.anchorX))
+        x: Math.max(122, Math.min(1478-width, (drag.sourceSide === 0 ? 135 : 835) + drag.pointerX - drag.anchorX))
         y: Math.max(102, Math.min(610-height, (drag.sourceUpper?110:118+drag.upperHeight) + drag.pointerY - drag.anchorY))
         width: 630
         height: drag.wholeChannel ? 475 : Math.max(100,493*(drag.errorSignal?1-drag.sourceChart.mainRatio:drag.sourceChart.mainRatio)-12)
@@ -161,10 +162,11 @@ Item {
         border.width: 1
         border.color: "#71766F"
         opacity: .88
-        ChartPair {anchors.fill:parent;visible:drag.wholeChannel;channelIndex:drag.channelIndex;revision:drag.revision;suffix:"Drag";canMove:false;showLabels:false;enabled:false}
+        ChartPair {anchors.fill:parent;visible:drag.wholeChannel;channelIndex:drag.channelIndex;revision:drag.revision;suffix:"Drag";canMove:false;showLabels:false;enabled:false;labelOnRight:drag.sourceSide===1}
         PlotView {
             anchors.fill:parent;visible:!drag.wholeChannel
             errorPlot: drag.errorSignal;bottomAxis:true
+            rightAxis:drag.sourceSide===1
             channelIndex: drag.channelIndex
             canMove: false
             enabled: false

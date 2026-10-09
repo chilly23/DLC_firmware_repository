@@ -51,7 +51,7 @@ Item {
         id: main; objectName: pair.mainObjectName
         width: parent.width; height: pair.combined ? pair.height : pair.mainHeight
         y: pair.combined || pair.chart.mainUpper ? 0 : pair.errorHeight+pair.gap
-        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove
+        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove;rightAxis:pair.labelOnRight
         combined: pair.combined; bottomAxis: pair.combined || !pair.chart.mainUpper
         onRangeChanged: function(lo,hi) {error.setRange(lo,hi)}
         onMoveStarted: function(x,y) {pair.moveStarted(false,x,y)}
@@ -64,7 +64,7 @@ Item {
         width: parent.width; height: pair.errorHeight
         y: pair.chart.mainUpper ? pair.mainHeight+pair.gap : 0
         visible: !pair.combined; errorPlot: true
-        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove
+        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove;rightAxis:pair.labelOnRight
         bottomAxis: pair.chart.mainUpper
         onRangeChanged: function(lo,hi) {main.setRange(lo,hi)}
         onMoveStarted: function(x,y) {pair.moveStarted(true,x,y)}
@@ -75,7 +75,7 @@ Item {
     // Both labels are one touch target, present on both panes and in fullscreen.
     Rectangle {
         width: pair.large ? 330 : 284; height: 42
-        x: pair.large ? 70 : (pair.labelOnRight ? pair.width-width-32 : 59)
+        x: pair.large ? 70 : (pair.labelOnRight ? pair.width-width-59 : 59)
         y: 14
         property color labelSurface:theme.surface
         radius:5;color:Qt.rgba(labelSurface.r,labelSurface.g,labelSurface.b,.55);visible:pair.showLabels

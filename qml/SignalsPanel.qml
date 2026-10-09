@@ -19,12 +19,12 @@ Item {
     Rectangle {
         id: panel;objectName:"signalsSurface"
         x:dialog.side===0?830:30;y:60;width:740;height:600
-        radius:16;color:theme.surface;border.width:0;clip:true
+        radius:16;color:theme.light?"#F0F0F0":"#202020";border.width:0;clip:true
         MouseArea {anchors.fill:parent}
         TouchButton {objectName:"axisBack";ink:theme.light?theme.foreground:theme.active;x:12;y:14;width:54;height:54;visible:dialog.axisPage;iconName:"chevronLeft";iconSize:30;onClicked:dialog.axisPage=false}
         Text { font.family:theme.fontFamily;x:dialog.axisPage?74:28;y:24;text:(dialog.side===0?"Left":"Right")+" chart - "+theme.translate(theme.language,dialog.axisPage?"Y axis":"Signals");font.pixelSize: theme.fontSize(28);font.weight:Font.Medium;color:theme.light?theme.foreground:theme.active}
         TouchButton {objectName:"signalsClose";x:672;y:12;width:54;height:54;iconName:"close";iconSize:46;ink:theme.light?theme.foreground:theme.active;onClicked:dialog.visible=false}
-        Rectangle {x:28;y:77;width:684;height:1;color:"#424C43"}
+        Rectangle {x:28;y:77;width:684;height:1;color:theme.light?"#BCBCBC":"#4B4B4B"}
         Item {
             id: pages;y:90;width:1480;height:500
             x: dialog.axisPage ? -740 : 0
@@ -68,9 +68,9 @@ Item {
                         property string key: dialog.axisPrefix+(index===0?"scale":"position")
                         property real value: {dialog.revision;return ctl.value(dialog.channelIndex,key)}
                         Text { font.family:theme.fontFamily;text:parent.index===0?"Scale · V/div":"Position · centre voltage (V)";font.pixelSize: theme.fontSize(21);color:theme.light?theme.foreground:theme.active}
-                        TouchButton {objectName:parent.index===0?"scaleMinus":"positionMinus";ink:theme.light?theme.foreground:theme.active;x:0;y:34;width:76;height:64;radius:8;normalColor:theme.raised;iconName:"minus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,-1)}
-                        TouchButton {objectName:parent.index===0?"scaleInput":"positionInput";ink:theme.light?theme.foreground:theme.active;x:88;y:34;width:508;height:64;radius:8;normalColor:theme.surface;border.width:1;border.color:"#58645A";text:Number(parent.value).toFixed(3);textSize:30;onClicked:dialog.editAxis(dialog.channelIndex,parent.key,dialog.side)}
-                        TouchButton {objectName:parent.index===0?"scalePlus":"positionPlus";ink:theme.light?theme.foreground:theme.active;x:608;y:34;width:76;height:64;radius:8;normalColor:theme.raised;iconName:"plus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,1)}
+                        TouchButton {objectName:parent.index===0?"scaleMinus":"positionMinus";ink:theme.light?theme.foreground:theme.active;x:0;y:34;width:76;height:64;radius:8;normalColor:theme.light?"#E3E3E3":"#2B2B2B";iconName:"minus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,-1)}
+                        TouchButton {objectName:parent.index===0?"scaleInput":"positionInput";ink:theme.light?theme.foreground:theme.active;x:88;y:34;width:508;height:64;radius:8;normalColor:theme.light?"#F8F8F8":"#171717";border.width:1;border.color:theme.light?"#AAAAAA":"#606060";text:Number(parent.value).toFixed(3);textSize:30;onClicked:dialog.editAxis(dialog.channelIndex,parent.key,dialog.side)}
+                        TouchButton {objectName:parent.index===0?"scalePlus":"positionPlus";ink:theme.light?theme.foreground:theme.active;x:608;y:34;width:76;height:64;radius:8;normalColor:theme.light?"#E3E3E3":"#2B2B2B";iconName:"plus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,1)}
                     }
                 }
                 Text { font.family:theme.fontFamily;x:28;y:326;text:"Spectroscopy "+Math.round(dialog.chart.mainRatio*100)+"%";font.pixelSize: theme.fontSize(21);color:theme.light?theme.foreground:theme.active}

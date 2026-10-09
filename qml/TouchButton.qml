@@ -3,6 +3,7 @@ import QtQuick
 Rectangle {
     id: button
     property string iconName: ""
+    property bool mirrorIcon: false
     property string text: ""
     property string caption: ""
     property color ink: theme.foreground
@@ -21,7 +22,9 @@ Rectangle {
     color: pointer.pressed ? theme.raised : normalColor
     Accessible.role: Accessible.Button
     Accessible.name: text !== "" ? text : iconName
-    Icon { anchors.centerIn: parent; anchors.verticalCenterOffset:button.caption!==""?-11:0; width: Math.min(button.width-10,button.iconSize*theme.uiScale)*(button.caption!==""?.72:1); height: width; visible: button.iconName !== ""; kind: button.iconName; ink: button.ink; active: button.selected }
+    Icon { id:glyph;anchors.centerIn: parent; anchors.verticalCenterOffset:button.caption!==""?-11:0; width: Math.min(button.width-10,button.iconSize*theme.uiScale)*(button.caption!==""?.72:1); height: width; visible: button.iconName !== ""; kind: button.iconName; ink: button.ink; active: button.selected
+        transform:Scale {origin.x:glyph.width/2;xScale:button.mirrorIcon?-1:1}
+    }
     Text { font.family:theme.fontFamily; anchors.centerIn: parent; text: button.text; visible: button.text !== ""; color: button.ink; font.pixelSize: theme.fontSize(button.textSize); width:parent.width-8;horizontalAlignment:Text.AlignHCenter;fontSizeMode:Text.Fit;minimumPixelSize:14 }
     Text {font.family:theme.fontFamily;anchors.bottom:parent.bottom;anchors.bottomMargin:7;width:parent.width;horizontalAlignment:Text.AlignHCenter;text:button.caption;visible:text!=="";font.pixelSize:16*theme.fontScale;color:button.ink;fontSizeMode:Text.Fit;minimumPixelSize:11}
     MouseArea {

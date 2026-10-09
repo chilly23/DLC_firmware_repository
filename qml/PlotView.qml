@@ -6,6 +6,7 @@ Item {
     property int channelIndex: 0
     property bool errorPlot: false
     property bool large: false
+    property bool rightAxis:false
     property bool canMove: true
     property bool combined: false
     property bool bottomAxis: errorPlot
@@ -26,7 +27,7 @@ Item {
     SpectrumPlot {
         id: plot; anchors.fill: parent; objectName: view.objectName + "Renderer"
         channelIndex: view.channelIndex; errorPlot: view.errorPlot; large: view.large
-        combined: view.combined; bottomAxis: view.bottomAxis
+        combined: view.combined; bottomAxis: view.bottomAxis;rightAxis:view.rightAxis
         onChanged: view.rangeChanged(xMinimum, xMaximum)
     }
     MouseArea {

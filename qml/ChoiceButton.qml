@@ -8,14 +8,14 @@ TouchButton {
     property bool activeChoice: false
     navLabel:label
     tipInfo:theme.tipFor(symbol)
-    normalColor: activeChoice ? theme.accent : theme.raised
-    ink: activeChoice ? theme.accentInk : theme.foreground
+    normalColor: activeChoice ? theme.active : (theme.light ? "#E3E3E3" : "#2B2B2B")
+    ink: activeChoice ? "#111111" : theme.foreground
     radius: 12
     border.width: 1
-    border.color: activeChoice ? theme.accent : "#505B52"
+    border.color: activeChoice ? theme.active : (theme.light ? "#AAAAAA" : "#515151")
     Rectangle {
         anchors.fill: parent; anchors.margins: 3; radius: 9
-        color: activeChoice ? theme.accent : "transparent"
+        color: activeChoice ? theme.active : "transparent"
         opacity: activeChoice ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
     }

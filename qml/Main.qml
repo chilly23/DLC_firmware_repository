@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: theme.background; title: "NEXATOM · v1.13"
+    visible: true; color: theme.background; title: "NEXATOM · v1.14"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -142,7 +142,7 @@ Window {
                 onGraphMoveFinished: function(x,y) {window.finishMove(x,y)}
                 onGraphMoveCancelled: graphDrag.visible=false
             }
-            Rectangle { objectName: "divider"; x: 800; width: 4; height: 605; color: "#4A4D47" }
+            Rectangle { objectName: "divider"; x: 798; width: 4; height: 605; color: "#4A4D47" }
         }
         FullscreenView {
             id: fullscreenView

@@ -7,14 +7,14 @@ TouchButton {
     property bool activeChoice: false
     navLabel:label
     tipInfo:theme.tipFor(symbol)
-    normalColor:theme.raised;radius:12
+    normalColor:theme.light?"#E3E3E3":"#2B2B2B";radius:12
     Text {x:20;anchors.verticalCenter:parent.verticalCenter;text:theme.translate(theme.language,control.label);color:theme.foreground;font.family:theme.fontFamily;font.pixelSize:theme.fontSize(24)}
     Rectangle {
         x:parent.width-106;y:(parent.height-44)/2;width:82;height:44;radius:22
-        color:control.activeChoice?theme.accent:theme.muted
+        color:control.activeChoice?theme.active:(theme.light?"#AAAAAA":"#5B5B5B")
         Behavior on color {ColorAnimation {duration:180}}
         Rectangle {
-            x:control.activeChoice?42:4;y:4;width:36;height:36;radius:18;color:"#FFFFFF"
+            x:control.activeChoice?42:4;y:4;width:36;height:36;radius:18;color:control.activeChoice?"#303030":"#EEEEEE"
             Behavior on x {NumberAnimation {duration:180;easing.type:Easing.OutCubic}}
         }
     }
