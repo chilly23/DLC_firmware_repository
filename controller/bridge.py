@@ -1,12 +1,34 @@
 """Small QObject API between QML and the simulation; one authoritative state."""
 import time
 from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, Qt
-from .model import Instrument, PARAMETERS, PEAKS
+from .model import Instrument, PARAMETERS, PEAKS, MODULES
 
 
 class Controller(QObject):
     changed = Signal()
     frame = Signal()
+    settingsRequested = Signal()
+
+    @Slot()
+    def openSettings(self):
+        self.settingsRequested.emit()
+
+    @Slot(int, int)
+    def moveGraph(self, source, destination):
+        if source in (0, 1) and destination in (0, 1) and source != destination:
+            views = self.instrument.views
+            views[source], views[destination] = views[destination], views[source]
+            self.changed.emit()
+
+    @Slot(str, result="QVariantList")
+    def fields(self, module):
+        return [dict(key=key, **self.parameter(key)) for key in MODULES.get(module, ())]
+
+    @Slot(int, bool, str)
+    def selectField(self, index, bottom, key):
+        if index in (0, 1) and key in PARAMETERS:
+            setattr(self.instrument.lasers[index], "bottom" if bottom else "top", key)
+            self.changed.emit()
 
     def __init__(self, parent=None, *, animate=True):
         super().__init__(parent)
@@ -52,7 +74,7 @@ class Controller(QObject):
     def parameter(self, key):
         p = PARAMETERS[key]
         return {"label": p.label, "unit": p.unit, "minimum": p.minimum,
-                "maximum": p.maximum, "decimals": p.decimals}
+                "maximum": p.maximum, "decimals": p.decimals, "module": p.module}
 
     @Slot(int, str, str, result=str)
     def setValue(self, index, key, value):
