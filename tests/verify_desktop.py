@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-for name in ('Start Nexatom v1.11.cmd','Start Fullscreen v1.11.cmd'):
+for name in ('Start Nexatom v1.12.cmd','Start Fullscreen v1.12.cmd'):
     report=ROOT/'tests'/('desktop-fullscreen.json' if 'Fullscreen' in name else 'desktop-window.json')
     if report.exists():report.unlink()
     subprocess.run(f'call "{ROOT/name}" --verify-startup "{report}"',shell=True,cwd=ROOT,check=True)

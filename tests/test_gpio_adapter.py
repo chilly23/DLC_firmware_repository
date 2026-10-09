@@ -37,7 +37,10 @@ class AdapterTests(unittest.TestCase):
         path,args=self.requested[0];pins,settings=next(iter(args['config'].items()))
         self.assertEqual(len(set(pins)),26);self.assertTrue({1,7,12,16,20}.issubset(pins));self.assertEqual(settings,dict(direction='input',edge_detection='both',bias='pullup',active_low=False))
         self.assertEqual(set(frames[0]),{0,1,3});self.assertTrue(states[0][0]);self.assertFalse(states[-1][0]);self.assertTrue(self.closed)
-    def test_busy_gpio_reports_owner_and_never_requests(self):
-        frames,states=self.run_fixture(4);self.assertFalse(self.requested);self.assertFalse(frames)
-        self.assertIn('GPIO4: rkjxt-live',states[-1][1]);self.assertFalse(states[-1][0])
+    def test_busy_gpio_reports_owner_and_keeps_other_controls_live(self):
+        frames,states=self.run_fixture(4);self.assertTrue(self.requested)
+        self.assertEqual(set(frames[0]),{1,3})
+        pins=next(iter(self.requested[0][1]['config']))
+        self.assertFalse(set(DEFAULTS['knobs'][0]['pins'].values()).intersection(pins))
+        self.assertIn('GPIO4: rkjxt-live',states[0][1]);self.assertTrue(states[0][0])
 if __name__=='__main__':unittest.main(verbosity=2)

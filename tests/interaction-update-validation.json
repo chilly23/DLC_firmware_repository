@@ -1,0 +1,22 @@
+[
+  "Wheel has visible intermediate opening frames",
+  "Old sector wheel is restored and moved down 16px",
+  "Closing reverses the radius animation",
+  "Wheel disappears only after closing completes",
+  "Knob selection still wraps through restored sectors",
+  "Three simultaneous notifications remain newest first",
+  "Newest notification is physically above both older cards",
+  "Automatic expiry retains the card while blurring and fading",
+  "Software renderer produces actual blurred pixels",
+  "Only the expired notification is removed",
+  "Touch close removes only its card immediately",
+  "Touch close stays immediate during automatic blur-out",
+  "Native Settings exposes independent close targets",
+  "Dragging a notification never scrolls Settings underneath",
+  "Notification body is excluded from knob focus",
+  "Open Settings dropdown receives touches above routine notices",
+  "Closing another notice preserves pending consent",
+  "Confirmation executes its own callback once",
+  "Dismissed confirmations cannot replay",
+  "No Qt/QML errors"
+]

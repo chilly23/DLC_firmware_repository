@@ -19,6 +19,9 @@ def check(label,value):
 def item(name):return nav.find(name)
 def tap(name):
     o=item(name);p=o.mapToScene(QPointF(o.width()/2,o.height()/2)).toPoint();QTest.mouseClick(w,Qt.LeftButton,Qt.NoModifier,p);QTest.qWait(60)
+def quiet_notices():
+    while ctl.notifications.cards:ctl.notifications.dismissId(ctl.notifications.cards[0]['id'])
+
 def shot(name):QTest.qWait(60);w.grabWindow().save(str(out/(name+'.png')))
 try:
     QTest.qWait(250)
@@ -34,15 +37,15 @@ try:
     frame=decoder.snapshot();knobs.receive({0:frame})
     check('160 decoded fast rotation steps reach the big number',frame['count']==160 and round(ctl.value(0,'current')-start,3)==.16)
     check('Burst dispatch counter keeps all steps',knobs.delivery[0]==160)
-    ctl.notifications.dismiss();nav.clear_focus();nav.set_side(0)
+    quiet_notices();nav.clear_focus();nav.set_side(0)
     check('Left focus targets stay on left',all(r.center().x()<800 for o,r,l in nav.targets()))
     nav.set_side(3);check('Right focus targets stay on right',all(r.center().x()>=800 for o,r,l in nav.targets()))
     entries=nav.targets();nav.move_focus(1,7);check('First focus batch preserves seven steps',nav.target==entries[6%len(entries)][0]);nav.clear_focus()
     # Knob 2 default push opens More; rotary operations override its normal focus mapping.
-    knobs.dispatch(1,'push');QTest.qWait(800);radial=item('radialMenu')
-    check('Push opens quarter wheel',radial.isVisible() and radial.property('expansion')>.99)
+    knobs.dispatch(1,'push');QTest.qWait(880);radial=item('radialMenu')
+    check('Push opens restored sector wheel',radial.isVisible() and radial.property('expansion')>.99)
     knobs.dispatch(1,'clockwise',12);QTest.qWait(270)
-    check('Infinite icon wheel accumulates every rotation',radial.property('targetPosition')==12 and radial.property('selectedIndex')==2)
+    check('Sector selection wraps and preserves every knob step',radial.property('targetPosition')==12 and radial.property('selectedIndex')==0)
     shot('more-left');knobs.dispatch(3,'clockwise',2)
     check('Opposite-side knob cannot move left wheel',radial.property('targetPosition')==12)
     knobs.dispatch(1,'push');QTest.qWait(820);check('Wheel highlight opens Alarms',item('alarmPanel').isVisible())
@@ -67,10 +70,10 @@ try:
     check('Separate number and label colors apply',item('topParameter0').property('tileInk').name()=='#ffd60a' and item('topParameter0').property('detailInk').name()=='#ffffff')
     ctl.theme.apply('corner_number_color','Automatic');ctl.theme.apply('corner_detail_color','Automatic')
     for preset in ('Classic','Lab Light','Ion Cyber','Porcelain','Orchid','Clay'):
-        ctl.theme.apply('theme_preset',preset);ctl.notifications.dismiss();QTest.qWait(750);shot('theme-'+preset.lower().replace(' ','-'))
+        ctl.theme.apply('theme_preset',preset);quiet_notices();QTest.qWait(750);shot('theme-'+preset.lower().replace(' ','-'))
     ctl.theme.apply('theme_preset','Classic')
     for side in (0,1):
-        radial.open(side,side);QTest.qWait(800);shot('more-'+str(side));radial.dismiss('');QTest.qWait(800)
+        radial.open(side,side);QTest.qWait(880);shot('more-'+str(side));radial.dismiss('');QTest.qWait(880)
     # Lock both Qt surfaces and semantic GPIO commands; cancel before expiry.
     guard=ctl.session_lock;before=ctl.value(0,'current');guard.set_locked(True)
     check('Physical switch locks system',guard.locked and guard.window.isVisible())
