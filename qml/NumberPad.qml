@@ -23,6 +23,7 @@ Item {
     }
     function key(value) {
         errorMessage=""
+        if(value === "clearAll") {draft="";cursor=0;replaceDraft=false;return}
         if(value === "enter") {
             errorMessage=ctl.setValue(channelIndex, fieldKey, draft)
             if(errorMessage === "") pad.closed()
@@ -57,13 +58,13 @@ Item {
         fieldKey: pad.fieldKey; value: pad.acceptedValue
     }
     Rectangle {
-        id: panel; objectName: "keypadPanel"; x: pad.side===0 ? 0 : 964; y: 111; width: 636; height: 507; color: "#252825"
+        id: panel; objectName: "keypadPanel"; x: pad.side===0 ? 0 : 964; y: 111; width: 636; height: 507; color: theme.light ? theme.surface : "#252825"
         MouseArea { anchors.fill: parent } // Modal surface consumes taps between keys.
         Rectangle {
-            x: 5; y: 5; width: 625; height: 70; color: "#000000"
-            TextInput {
+            x: 5; y: 5; width: 625; height: 70; color: theme.background
+            TextInput { font.family:theme.fontFamily;
                 id: editor; objectName: "keypadDraft"; x: 12; y: 7; width: 530; height: 40
-                color: "#D9D9D9"; font.pixelSize: 34; clip: true; selectByMouse: true
+                color: theme.foreground; font.pixelSize: theme.fontSize(34); clip: true; selectByMouse: true
                 cursorVisible: pad.visible; maximumLength: 18; inputMethodHints: Qt.ImhFormattedNumbersOnly
                 onTextEdited: pad.replaceDraft=false
                 Keys.onReturnPressed: pad.key("enter")
@@ -71,8 +72,8 @@ Item {
                 Keys.onEscapePressed: pad.closed()
             }
             Rectangle { x: 13; y: 46; width: 530; height: 1; color: "#A5AAA3" }
-            Text { x: 550; y: 9; text: pad.cursor + "/" + pad.draft.length; font.pixelSize: 32; color: "#D9D9D9" }
-            Text { x: 13; y: 49; text: pad.errorMessage; color: "#FF9991"; font.pixelSize: 16 }
+            Text { font.family:theme.fontFamily; x: 550; y: 9; text: pad.cursor + "/" + pad.draft.length; font.pixelSize: theme.fontSize(32); color: theme.foreground }
+            Text { font.family:theme.fontFamily; x: 13; y: 49; text: pad.errorMessage; color: "#FF9991"; font.pixelSize: theme.fontSize(16) }
         }
         Repeater {
             model: ["7","8","9","4","5","6","1","2","3"]
@@ -81,17 +82,17 @@ Item {
                 required property int index
                 objectName: "key" + modelData
                 x: 5+(index%3)*158; y: 84+Math.floor(index/3)*85; width: 148; height: 76; radius: 5
-                normalColor: "#000000"; text: modelData; textSize: 32
+                normalColor:theme.background; text: modelData; textSize: 32
                 onClicked: pad.key(modelData)
             }
         }
-        TouchButton { objectName: "keyBackspace"; x: 482; y: 84; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "backspace"; onClicked: pad.key("backspace") }
-        TouchButton { objectName: "keyEnter"; x: 482; y: 169; width: 148; height: 246; radius: 4; normalColor: "#3D403D"; iconName: "enter"; onClicked: pad.key("enter") }
-        TouchButton { objectName: "key0"; x: 5; y: 339; width: 306; height: 76; radius: 4; normalColor: "#000000"; text: "0"; textSize: 32; onClicked: pad.key("0") }
-        TouchButton { objectName: "keyMinus"; x: 321; y: 339; width: 148; height: 76; radius: 4; normalColor: "#000000"; iconName: "minus"; iconSize: 64; onClicked: pad.key("-") }
-        TouchButton { objectName: "keyLeft"; x: 5; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "left"; onClicked: pad.key("left") }
-        TouchButton { objectName: "keyRight"; x: 163; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "right"; onClicked: pad.key("right") }
-        TouchButton { objectName: "keyDecimal"; x: 321; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; text: "."; onClicked: pad.key(".") }
+        TouchButton { objectName: "keyBackspace"; x: 482; y: 84; width: 148; height: 76; radius: 4; normalColor: theme.light ? theme.raised : "#3D403D"; iconName: "backspace";holdEnabled:true;onHeld:pad.key("clearAll");onClicked: pad.key("backspace") }
+        TouchButton { objectName: "keyEnter"; x: 482; y: 169; width: 148; height: 246; radius: 4; normalColor: theme.light ? theme.raised : "#3D403D"; iconName: "enter"; onClicked: pad.key("enter") }
+        TouchButton { objectName: "key0"; x: 5; y: 339; width: 306; height: 76; radius: 4; normalColor:theme.background; text: "0"; textSize: 32; onClicked: pad.key("0") }
+        TouchButton { objectName: "keyMinus"; x: 321; y: 339; width: 148; height: 76; radius: 4; normalColor:theme.background; iconName: "minus"; iconSize: 64; onClicked: pad.key("-") }
+        TouchButton { objectName: "keyLeft"; x: 5; y: 425; width: 148; height: 76; radius: 4; normalColor: theme.light ? theme.raised : "#3D403D"; iconName: "left"; onClicked: pad.key("left") }
+        TouchButton { objectName: "keyRight"; x: 163; y: 425; width: 148; height: 76; radius: 4; normalColor: theme.light ? theme.raised : "#3D403D"; iconName: "right"; onClicked: pad.key("right") }
+        TouchButton { objectName: "keyDecimal"; x: 321; y: 425; width: 148; height: 76; radius: 4; normalColor: theme.light ? theme.raised : "#3D403D"; text: "."; onClicked: pad.key(".") }
         TouchButton { objectName: "keyCancel"; x: 482; y: 425; width: 148; height: 76; normalColor: "#A92621"; iconName: "close"; onClicked: pad.key("close") }
     }
 }

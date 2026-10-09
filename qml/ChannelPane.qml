@@ -1,4 +1,5 @@
 import QtQuick
+import "Colors.js" as Colors
 
 Item {
     id: pane
@@ -8,6 +9,8 @@ Item {
     property int revision: 0
     property bool mirrored: side === 1
     property var channel: { revision; return ctl.channel(channelIndex) }
+    property real idleOpacity: channel.emission ? 1 : Colors.idleOpacity
+    Behavior on idleOpacity {NumberAnimation {duration:700;easing.type:Easing.InOutQuad}}
     signal editRequested(int channelIndex, string fieldKey, int side, bool bottom)
     signal fullscreenRequested(int side)
     signal moreRequested(int side)
@@ -37,44 +40,50 @@ Item {
         onModuleRequested: pane.selectorRequested(pane.channelIndex, fieldKey, pane.side, true, true)
         onFieldRequested: pane.selectorRequested(pane.channelIndex, fieldKey, pane.side, true, false)
     }
-    Rectangle { x: pane.mirrored ? 33 : 765; y: 27; width: 6; height: 60; color: pane.channelIndex === 0 ? "#D9D9D9" : "#2362E5" }
-    Text { x: pane.mirrored ? 60 : 558; y: 27; width: 186; text: "Laser " + pane.channel.number; color: "#FFFFFF"; font.pixelSize: 24; horizontalAlignment: pane.mirrored ? Text.AlignLeft : Text.AlignRight }
-    Text { x: pane.mirrored ? 60 : 490; y: 69; width: 254; text: pane.channel.status; color: "#FFFFFF"; font.pixelSize: 16; horizontalAlignment: pane.mirrored ? Text.AlignLeft : Text.AlignRight }
-    TouchButton { objectName: "switch" + pane.side; x: pane.mirrored ? 318 : 428; y: 2; width: 50; height: 44; iconName: "switch"; iconSize: 32; onClicked: ctl.switchView(pane.side) }
-    TouchButton { objectName: "fullscreen" + pane.side; x: pane.mirrored ? 318 : 428; y: 48; width: 50; height: 47; iconName: "fullscreen"; iconSize: 32; onClicked: pane.fullscreenRequested(pane.side) }
+    Rectangle { opacity:pane.idleOpacity;x: pane.mirrored ? 33 : 765; y: 27; width: 6; height: 60; color: pane.channelIndex === 0 ? theme.laser1Color : theme.laser2Color }
+    Text { font.family:theme.fontFamily; opacity:pane.idleOpacity;x: pane.mirrored ? 60 : 558; y: 27; width: 186; text: "Laser " + pane.channel.number; color: theme.foreground; font.pixelSize: theme.fontSize(24); horizontalAlignment: pane.mirrored ? Text.AlignLeft : Text.AlignRight }
+    Text { font.family:theme.fontFamily; objectName:"channelStatus"+pane.side;x: pane.mirrored ? 60 : 490; y: 69; width: 254; text: pane.channel.status; color: pane.channel.emission?theme.foreground:"#7E877F";font.pixelSize: theme.fontSize(16); horizontalAlignment: pane.mirrored ? Text.AlignLeft : Text.AlignRight;Behavior on color {ColorAnimation {duration:700}} }
+    TouchButton { opacity:pane.idleOpacity;objectName: "switch" + pane.side; x: pane.mirrored ? 318 : 428; y: 2; width: 50; height: 44; iconName: "switch"; iconSize: 32; onClicked: ctl.switchView(pane.side) }
+    TouchButton { opacity:pane.idleOpacity;objectName: "fullscreen" + pane.side; x: pane.mirrored ? 318 : 428; y: 48; width: 50; height: 47; iconName: "fullscreen"; iconSize: 32; onClicked: pane.fullscreenRequested(pane.side) }
     ChartPair {
         id: charts; objectName: "charts" + pane.side
+        opacity:pane.idleOpacity
         x: pane.mirrored ? 15 : 122; y: 100; width: 680; height: 511
         channelIndex: pane.channelIndex; revision: pane.revision; suffix: String(pane.side)
+        labelOnRight: pane.side === 1
         onSignalsRequested: pane.signalsRequested(pane.side,pane.channelIndex)
         onMoveStarted: function(errorSignal,x,y) {pane.graphMoveStarted(pane.side,errorSignal,x,y)}
         onMoveUpdated: function(x,y) {pane.graphMoveUpdated(x,y)}
         onMoveFinished: function(x,y) {pane.graphMoveFinished(x,y)}
         onMoveCancelled: pane.graphMoveCancelled()
     }
-    Rectangle { x: pane.mirrored ? 697 : 105; y: 111; width: 5; height: 494; color: pane.channelIndex === 0 ? "#A7AAA5" : "#2362E5" }
+    Rectangle { opacity:pane.idleOpacity;x: pane.mirrored ? 697 : 105; y: 111; width: 5; height: 494; color: pane.channelIndex === 0 ? theme.laser1Color : theme.laser2Color }
     TouchButton {
-        objectName: "lock" + pane.side; x: pane.mirrored ? 711 : -1; y: 124; width: 96; height: 90; radius: 24
-        iconName: pane.channel.locked ? "lock" : "unlock"; iconSize: 64; ink: pane.channel.locked ? "#101610" : "#F0F1EE"; normalColor: pane.channel.locked ? "#BDC0BB" : "transparent"; selected: pane.channel.locked
+        objectName: "lock" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Lock") : ""; x: pane.mirrored ? 711 : -1; y: 124; width: 96; height: 90; radius: 24
+        opacity:pane.idleOpacity
+        iconName: pane.channel.locked ? "lock" : "unlock"; iconSize: 64; ink: pane.channel.locked ? theme.activeInk : theme.foreground; normalColor: pane.channel.locked ? theme.active : "transparent"; selected: pane.channel.locked
         onClicked: ctl.toggleLock(pane.channelIndex)
     }
     TouchButton {
-        objectName: "emission" + pane.side; x: pane.mirrored ? 711 : -1; y: 230; width: 96; height: 86; radius: 24
-        iconName: "emission"; iconSize: 64; ink: pane.channel.emission ? "#101610" : "#F0F1EE"; normalColor: pane.channel.emission ? "#BDC0BB" : "transparent"
+        objectName: "emission" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Emission") : ""; x: pane.mirrored ? 711 : -1; y: 230; width: 96; height: 86; radius: 24
+        iconName: "emission"; iconSize: 64; ink: pane.channel.emission ? theme.activeInk : theme.foreground; normalColor: pane.channel.emission ? theme.active : "transparent"
         onClicked: ctl.toggleEmission(pane.channelIndex)
     }
     TouchButton {
-        objectName: "stabilise" + pane.side; x: pane.mirrored ? 711 : -1; y: 323; width: 96; height: 88; radius: 24
-        iconName: "stabilise"; iconSize: 64; ink: pane.channel.stabilised ? "#101610" : "#F0F1EE"; normalColor: pane.channel.stabilised ? "#BDC0BB" : "transparent"
+        objectName: "stabilise" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Stabilise") : ""; x: pane.mirrored ? 711 : -1; y: 323; width: 96; height: 88; radius: 24
+        opacity:pane.idleOpacity
+        iconName: "stabilise"; iconSize: 64; ink: pane.channel.stabilised ? theme.activeInk : theme.foreground; normalColor: pane.channel.stabilised ? theme.active : "transparent"
         onClicked: ctl.toggleStabilisation(pane.channelIndex)
     }
     TouchButton {
         objectName: "shortcut" + pane.side; x: pane.mirrored ? 712 : 0; y: 430; width: 96; height: 85
-        text: "Not\nSet"
+        opacity:pane.idleOpacity
+        iconName:"";text:theme.translate(theme.language,"Not set");textSize:16;ink:theme.muted;normalColor:"transparent"
         onClicked: pane.notice("Shortcut not set")
     }
     TouchButton {
-        objectName: "more" + pane.side; x: pane.mirrored ? 712 : 0; y: 526; width: 96; height: 78
+        objectName: "more" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"More") : ""; x: pane.mirrored ? 712 : 0; y: 526; width: 96; height: 78
+        opacity:pane.idleOpacity
         iconName: "more"; iconSize: 64; onClicked: pane.moreRequested(pane.side)
     }
 }

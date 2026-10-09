@@ -2,6 +2,7 @@ import QtQuick
 
 Item {
     id: menu
+    z:20
     property int channelIndex: 0
     property int side: 0
     property bool lower: false
@@ -21,7 +22,7 @@ Item {
     }
     Rectangle {
         anchors.fill: parent
-        color: "#000000"
+        color: theme.surface
         opacity: .77
     }
     MouseArea {
@@ -34,6 +35,8 @@ Item {
         width: 416
         height: menu.modules ? 194 : 44 + menu.entries.length * 87
         Canvas {
+            id: moduleBackground
+            Connections { target: theme; function onChanged() { moduleBackground.requestPaint(); } }
             anchors.fill: parent
             onVisibleChanged: if (visible)
                 requestPaint()
@@ -51,20 +54,20 @@ Item {
                 c.lineTo(width, height);
                 c.lineTo(0, height);
                 c.closePath();
-                c.fillStyle = "#040504";
+                c.fillStyle = theme.surface;
                 c.fill();
                 c.strokeStyle = "#999C98";
                 c.lineWidth = 2;
                 c.stroke();
             }
         }
-        Text {
+        Text { font.family:theme.fontFamily;
             x: 285
             y: 8
             width: 137
-            text: menu.selectedModule === "CC" ? "Current Control" : menu.selectedModule === "TC" ? "Temperature Control" : "Piezo Control"
-            color: "white"
-            font.pixelSize: 12
+            text: theme.translate(theme.language,menu.selectedModule === "CC" ? "Current Control" : menu.selectedModule === "TC" ? "Temperature Control" : "Piezo Control")
+            color: theme.foreground
+            font.pixelSize: theme.fontSize(12)
             horizontalAlignment: Text.AlignHCenter
         }
         Row {
@@ -79,20 +82,20 @@ Item {
                     required property int index
                     width: 117
                     height: 122
-                    color: menu.selectedModule === modelData ? "#404040" : "#151515"
-                    Text {
+                    color: menu.selectedModule === modelData ? theme.raised : theme.surface
+                    Text { font.family:theme.fontFamily;
                         x: 18
                         y: 43
                         text: modelData
-                        color: "white"
-                        font.pixelSize: 36
+                        color: theme.foreground
+                        font.pixelSize: theme.fontSize(36)
                     }
-                    Text {
+                    Text { font.family:theme.fontFamily;
                         x: 94
                         y: 20
                         text: index + 1
-                        color: "white"
-                        font.pixelSize: 12
+                        color: theme.foreground
+                        font.pixelSize: theme.fontSize(12)
                     }
                     MouseArea {
                         objectName: "module" + modelData
@@ -116,24 +119,24 @@ Item {
                     required property var modelData
                     width: 382
                     height: 68
-                    color: menu.selectedField === modelData.key ? "#404040" : "#151515"
-                    Text {
+                    color: menu.selectedField === modelData.key ? theme.raised : theme.surface
+                    Text { font.family:theme.fontFamily;
                         x: 26
                         y: 16
                         width: 270
                         height: 36
-                        text: modelData.key === "temperature" ? "Set Temperature" : modelData.label
-                        color: "white"
-                        font.pixelSize: 25
+                        text: theme.translate(theme.language,modelData.key === "temperature" ? "Set Temperature" : modelData.label)
+                        color: theme.foreground
+                        font.pixelSize: theme.fontSize(25)
                     }
-                    Text {
+                    Text { font.family:theme.fontFamily;
                         x: 275
                         y: 13
                         width: 94
                         height: 42
                         text: modelData.unit
-                        color: "#929292"
-                        font.pixelSize: 30
+                        color: theme.muted
+                        font.pixelSize: theme.fontSize(30)
                         horizontalAlignment: Text.AlignHCenter
                     }
                     MouseArea {

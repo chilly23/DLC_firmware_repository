@@ -3,7 +3,7 @@ import QtQuick
 Canvas {
     id: icon
     property string kind: "lock"
-    property color ink: "#D9D9D9"
+    property color ink: theme.foreground
     property bool active: false
     property real strokeWidth: 2.2
     onKindChanged: requestPaint()
@@ -13,12 +13,15 @@ Canvas {
     onHeightChanged: requestPaint()
     onAvailableChanged: if(available) requestPaint()
     onVisibleChanged: if(visible) requestPaint()
+    Image {anchors.fill:parent;visible:icon.kind==="drag";source:visible?"../assets/dragndrop-white.png":"";fillMode:Image.PreserveAspectFit;smooth:true}
     onPaint: {
         let c = getContext("2d"); c.reset();
+        if(kind === "drag") return
         c.scale(width/64, height/64); c.strokeStyle=ink; c.fillStyle=ink;
         c.lineWidth=strokeWidth*64/Math.max(1,Math.min(width,height)); c.lineCap="round"; c.lineJoin="round";
         function line(points) {c.beginPath(); c.moveTo(points[0][0],points[0][1]); for(let i=1;i<points.length;i++) c.lineTo(points[i][0],points[i][1]); c.stroke()}
-        if(kind === "minus") {line([[16,32],[48,32]])}
+        if(kind === "shortcut") {line([[20,18],[44,18],[44,46],[20,46],[20,18]]);line([[26,26],[38,38]]);line([[38,26],[26,38]])}
+        else if(kind === "minus") {line([[16,32],[48,32]])}
         else if(kind === "plus") {line([[16,32],[48,32]]);line([[32,16],[32,48]])}
         else if(kind === "dashed") {for(let x=8;x<57;x+=12)line([[x,32],[x+6,32]])}
         else if(kind === "combined" || kind === "split") {c.strokeRect(7,10,50,44);if(kind==="split")line([[7,32],[57,32]]);else{line([[12,38],[21,38],[27,20],[34,44],[41,30],[52,30]]);}}

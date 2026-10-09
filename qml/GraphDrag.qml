@@ -48,7 +48,7 @@ Item {
     }
     Rectangle {
         anchors.fill: parent
-        color: "#0E140F"
+        color: theme.background
     }
     ParameterTile {
         x: 7
@@ -116,7 +116,7 @@ Item {
             width: modelData.w
             height: modelData.h
             radius: 20
-            color: "#404040"
+            color: theme.raised
         }
     }
     Repeater {
@@ -124,9 +124,9 @@ Item {
         Rectangle {
             required property int index
             x: index === 0 ? 122 : 815; y:100; width:680;height:511
-            radius:12;color:"#282F29"
+            radius:12;color:theme.surface
             border.width: drag.wholeChannel && drag.targetSide===index ? 2 : 0
-            border.color: drag.destinationLocked ? "#A92621" : "#D9D9D9"
+            border.color: drag.destinationLocked ? "#A92621" : theme.foreground
             property int paneSide: index
             property var paneChart: (index===0?drag.leftData:drag.rightData).chart
             property real paneUpperHeight: 493*(paneChart.mainUpper?paneChart.mainRatio:1-paneChart.mainRatio)
@@ -137,10 +137,14 @@ Item {
                     x:8;y:index===0?8:parent.paneUpperHeight+18
                     width:parent.width-16;height:parent.paneChart.mode==="combined"?495:index===0?parent.paneUpperHeight-8:493-parent.paneUpperHeight-8
                     radius:8
-                    color:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? "#525B53" : "#363E37"
+                    color:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? theme.active : theme.raised
                     border.width:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? 2:0
-                    border.color:"#D9D9D9"
-                    Text {anchors.centerIn:parent;text:parent.parent.paneChart.mode==="combined"?"Combined":index===0?"Upper":"Lower";font.pixelSize:24;color:"#D9D9D9"}
+                    border.color:theme.foreground
+                    Column {
+                        anchors.centerIn:parent;spacing:2
+                        Image {objectName:"dropArtwork";anchors.horizontalCenter:parent.horizontalCenter;width:Math.min(100,parent.parent.height-37);height:width;source:"../assets/dragndrop-white.png";fillMode:Image.PreserveAspectFit;smooth:true}
+                        Text { font.family:theme.fontFamily;anchors.horizontalCenter:parent.horizontalCenter;text:parent.parent.parent.paneChart.mode==="combined"?"Combined":index===0?"Upper":"Lower";font.pixelSize: theme.fontSize(20);color:theme.active}
+                    }
                 }
             }
         }
@@ -151,7 +155,7 @@ Item {
         width: 630
         height: drag.wholeChannel ? 475 : Math.max(100,493*(drag.errorSignal?1-drag.sourceChart.mainRatio:drag.sourceChart.mainRatio)-12)
         radius: 0
-        color: "#101411"
+        color: theme.surface
         border.width: 1
         border.color: "#71766F"
         opacity: .88
@@ -164,5 +168,5 @@ Item {
             enabled: false
         }
     }
-    Text {x:435;y:649;width:730;height:40;horizontalAlignment:Text.AlignHCenter;font.pixelSize:21;color:"#D9D9D9";text:drag.destinationLocked?"Destination graph is locked":!drag.validDrop?"Release outside to cancel":drag.wholeChannel?"Move both signals with Laser "+(drag.channelIndex+1):"Move "+(drag.errorSignal?"Error":"Spectroscopy")+" · "+(drag.targetUpper?"Upper":"Lower")}
+    Text { font.family:theme.fontFamily;x:435;y:649;width:730;height:40;horizontalAlignment:Text.AlignHCenter;font.pixelSize: theme.fontSize(21);color:theme.foreground;text:drag.destinationLocked?"Destination graph is locked":!drag.validDrop?"Release outside to cancel":drag.wholeChannel?"Move both signals with Laser "+(drag.channelIndex+1):"Move "+(drag.errorSignal?"Error":"Spectroscopy")+" · "+(drag.targetUpper?"Upper":"Lower")}
 }

@@ -1,7 +1,9 @@
 import QtQuick
+import "Colors.js" as Colors
 
 Item {
     id: dialog
+    z:20
     property int channelIndex: 0
     property int side: 0
     property int revision: 0
@@ -11,16 +13,16 @@ Item {
     property string axisPrefix: errorAxis ? "chart_error_" : "chart_main_"
     signal editAxis(int index, string key, int side)
     function open(paneSide,index) {side=paneSide;channelIndex=index;axisPage=false;errorAxis=false;visible=true}
-    Rectangle {anchors.fill:parent;color:"#000000";opacity:.24}
+    Rectangle {objectName:"signalsScrim";x:dialog.side===0?800:0;y:0;width:800;height:720;color:"#000000";opacity:.76}
     MouseArea {anchors.fill:parent;onClicked:dialog.visible=false}
     Rectangle {
         id: panel;objectName:"signalsSurface"
-        x:dialog.side===0?850:10;y:106;width:740;height:600
-        radius:16;color:"#151C17";border.color:"#687369";border.width:1;clip:true
+        x:dialog.side===0?830:30;y:60;width:740;height:600
+        radius:16;color:theme.surface;border.width:0;clip:true
         MouseArea {anchors.fill:parent}
-        TouchButton {objectName:"axisBack";x:12;y:14;width:54;height:54;visible:dialog.axisPage;iconName:"chevronLeft";iconSize:30;onClicked:dialog.axisPage=false}
-        Text {x:dialog.axisPage?74:28;y:24;text:(dialog.side===0?"Left":"Right")+" chart - "+(dialog.axisPage?"Y axis":"Signals");font.pixelSize:28;font.weight:Font.Medium;color:"#F0F1EE"}
-        TouchButton {objectName:"signalsClose";x:672;y:12;width:54;height:54;iconName:"close";iconSize:46;onClicked:dialog.visible=false}
+        TouchButton {objectName:"axisBack";ink:theme.active;x:12;y:14;width:54;height:54;visible:dialog.axisPage;iconName:"chevronLeft";iconSize:30;onClicked:dialog.axisPage=false}
+        Text { font.family:theme.fontFamily;x:dialog.axisPage?74:28;y:24;text:(dialog.side===0?"Left":"Right")+" chart - "+theme.translate(theme.language,dialog.axisPage?"Y axis":"Signals");font.pixelSize: theme.fontSize(28);font.weight:Font.Medium;color:theme.active}
+        TouchButton {objectName:"signalsClose";x:672;y:12;width:54;height:54;iconName:"close";iconSize:46;ink:theme.active;onClicked:dialog.visible=false}
         Rectangle {x:28;y:77;width:684;height:1;color:"#424C43"}
         Item {
             id: pages;y:90;width:1480;height:500
@@ -39,10 +41,10 @@ Item {
                         property bool errorSignal: index===1
                         property bool signalVisible: errorSignal?dialog.chart.errorVisible:dialog.chart.mainVisible
                         property bool upper: errorSignal?!dialog.chart.mainUpper:dialog.chart.mainUpper
-                        Icon {x:0;y:4;width:34;height:30;kind:parent.errorSignal?"dashed":"minus"}
-                        Text {x:47;y:0;text:parent.errorSignal?"Error":"Spectroscopy";font.pixelSize:28;color:"#F0F1EE"}
-                        Text {x:47;y:40;text:parent.errorSignal?"Derived levels | Laser "+(dialog.channelIndex+1)+" | V | Required":"AFE"+(dialog.channelIndex+1)+" | Precision ADC | V | Required";font.pixelSize:18;color:"#B8C0B8"}
-                        ChoiceButton {objectName:parent.errorSignal?"visibleError":"visibleMain";x:0;y:78;width:684;height:62;visible:dialog.chart.mode==="combined";label:parent.signalVisible?"Visible":"Hidden";symbol:parent.signalVisible?"eye":"eyeOff";activeChoice:parent.signalVisible;onClicked:ctl.toggleSignal(dialog.channelIndex,parent.errorSignal)}
+                        Icon {x:0;y:4;width:34;height:30;ink:theme.active;kind:parent.errorSignal?"dashed":"minus"}
+                        Text { font.family:theme.fontFamily;x:47;y:0;text:theme.translate(theme.language,parent.errorSignal?"Error":"Spectroscopy");font.pixelSize: theme.fontSize(28);color:theme.active}
+                        Text { font.family:theme.fontFamily;x:47;y:40;text:parent.errorSignal?"Derived levels | Laser "+(dialog.channelIndex+1)+" | V | Required":"AFE"+(dialog.channelIndex+1)+" | Precision ADC | V | Required";font.pixelSize: theme.fontSize(18);color:theme.muted}
+                        ToggleChoice {objectName:parent.errorSignal?"visibleError":"visibleMain";x:0;y:78;width:684;height:62;visible:dialog.chart.mode==="combined";label:parent.signalVisible?"Visible":"Hidden";symbol:parent.signalVisible?"eye":"eyeOff";activeChoice:parent.signalVisible;onClicked:ctl.toggleSignal(dialog.channelIndex,parent.errorSignal)}
                         Row {
                             x:0;y:78;spacing:12;visible:dialog.chart.mode==="split"
                             property bool errorSignal: parent.errorSignal
@@ -64,26 +66,20 @@ Item {
                         x:28;y:76+index*118;width:684;height:108
                         property string key: dialog.axisPrefix+(index===0?"scale":"position")
                         property real value: {dialog.revision;return ctl.value(dialog.channelIndex,key)}
-                        Text {text:parent.index===0?"Scale · V/div":"Position · centre voltage (V)";font.pixelSize:21;color:"#CCD2CC"}
-                        TouchButton {objectName:parent.index===0?"scaleMinus":"positionMinus";x:0;y:34;width:76;height:64;radius:8;normalColor:"#2B332D";iconName:"minus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,-1)}
-                        TouchButton {objectName:parent.index===0?"scaleInput":"positionInput";x:88;y:34;width:508;height:64;radius:8;normalColor:"#080D09";border.width:1;border.color:"#58645A";text:Number(parent.value).toFixed(3);textSize:30;onClicked:dialog.editAxis(dialog.channelIndex,parent.key,dialog.side)}
-                        TouchButton {objectName:parent.index===0?"scalePlus":"positionPlus";x:608;y:34;width:76;height:64;radius:8;normalColor:"#2B332D";iconName:"plus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,1)}
+                        Text { font.family:theme.fontFamily;text:parent.index===0?"Scale · V/div":"Position · centre voltage (V)";font.pixelSize: theme.fontSize(21);color:theme.active}
+                        TouchButton {objectName:parent.index===0?"scaleMinus":"positionMinus";ink:theme.active;x:0;y:34;width:76;height:64;radius:8;normalColor:theme.raised;iconName:"minus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,-1)}
+                        TouchButton {objectName:parent.index===0?"scaleInput":"positionInput";ink:theme.active;x:88;y:34;width:508;height:64;radius:8;normalColor:theme.surface;border.width:1;border.color:"#58645A";text:Number(parent.value).toFixed(3);textSize:30;onClicked:dialog.editAxis(dialog.channelIndex,parent.key,dialog.side)}
+                        TouchButton {objectName:parent.index===0?"scalePlus":"positionPlus";ink:theme.active;x:608;y:34;width:76;height:64;radius:8;normalColor:theme.raised;iconName:"plus";iconSize:44;onClicked:ctl.stepAxis(dialog.channelIndex,parent.key,1)}
                     }
                 }
-                Text {x:28;y:326;text:"Spectroscopy "+Math.round(dialog.chart.mainRatio*100)+"%";font.pixelSize:21;color:"#D9D9D9"}
-                Text {x:470;y:326;width:242;horizontalAlignment:Text.AlignRight;text:"Error "+Math.round((1-dialog.chart.mainRatio)*100)+"%";font.pixelSize:21;color:"#D9D9D9"}
-                Item {
-                    id:ratioControl;objectName:"heightRatio";x:28;y:358;width:684;height:60
-                    Rectangle {x:18;y:26;width:648;height:8;radius:4;color:"#4C574E"}
-                    Rectangle {x:18+(dialog.chart.mainRatio-.2)/.6*648-17;y:13;width:34;height:34;radius:17;color:"#D9D9D9"}
-                    MouseArea {
-                        anchors.fill:parent
-                        function apply(x) {ctl.setChartRatio(dialog.channelIndex,.2+Math.max(0,Math.min(1,(x-18)/648))*.6)}
-                        onPressed:function(mouse){apply(mouse.x)}
-                        onPositionChanged:function(mouse){if(pressed)apply(mouse.x)}
-                    }
+                Text { font.family:theme.fontFamily;x:28;y:326;text:"Spectroscopy "+Math.round(dialog.chart.mainRatio*100)+"%";font.pixelSize: theme.fontSize(21);color:theme.active}
+                Text { font.family:theme.fontFamily;x:470;y:326;width:242;horizontalAlignment:Text.AlignRight;text:"Error "+Math.round((1-dialog.chart.mainRatio)*100)+"%";font.pixelSize: theme.fontSize(21);color:theme.active}
+                ReferenceSlider {
+                    objectName:"heightRatio";x:28;y:358;width:684;height:60
+                    minimum:20;maximum:80;value:dialog.chart.mainRatio*100
+                    onMoved:function(value){ctl.setChartRatio(dialog.channelIndex,value/100)}
                 }
-                Text {x:28;y:418;text:dialog.chart.mode==="combined"?"Split height ratio · applied when Split is selected":"Split height ratio · 20:80 to 80:20";font.pixelSize:17;color:"#B8C0B8"}
+                Text { font.family:theme.fontFamily;x:28;y:418;text:dialog.chart.mode==="combined"?"Split height ratio · applied when Split is selected":"Split height ratio · 20:80 to 80:20";font.pixelSize: theme.fontSize(17);color:theme.muted}
                 ChoiceButton {objectName:"restoreAxes";x:28;y:452;width:684;height:48;label:"Restore defaults";symbol:"reset";onClicked:ctl.restoreChartAxes(dialog.channelIndex)}
             }
         }

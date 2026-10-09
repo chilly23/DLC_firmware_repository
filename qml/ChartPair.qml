@@ -10,6 +10,7 @@ Item {
     property bool large: false
     property bool canMove: true
     property bool showLabels: true
+    property bool labelOnRight: false
     property var chart: {revision;return ctl.channel(channelIndex).chart}
     property bool combined: chart.mode === "combined"
     property real gap: 18
@@ -49,19 +50,21 @@ Item {
     }
     // Both labels are one touch target, present on both panes and in fullscreen.
     Rectangle {
-        x: pair.large ? 70 : 59; y: 14; width: pair.large ? 330 : 284; height: 42
-        radius: 5; color: "#DA0E140F"; visible: pair.showLabels
+        width: pair.large ? 330 : 284; height: 42
+        x: pair.large ? 70 : (pair.labelOnRight ? pair.width-width-76 : 59)
+        y: 14
+        radius: 5; color: theme.surface; visible: pair.showLabels
         Row {
             anchors.centerIn: parent; spacing: 18
             Row {
                 spacing: 7; opacity: !pair.combined || pair.chart.mainVisible ? 1 : .4
-                Rectangle {y:11;width:24;height:1.7;color:"#D9D9D9"}
-                Text {text:"Spectroscopy";color:"#FFFFFF";font.pixelSize:pair.large?20:17}
+                Rectangle {y:11;width:24;height:1.7;color:theme.foreground}
+                Text { font.family:theme.fontFamily;text:theme.translate(theme.language,"Spectroscopy");color:theme.foreground;font.pixelSize:(pair.large?20:17)*theme.textScale}
             }
             Row {
                 spacing: 7; opacity: !pair.combined || pair.chart.errorVisible ? 1 : .4
-                Row {y:11;spacing:2;Repeater {model:5;Rectangle {width:3;height:1.5;color:"#D9D9D9"}}}
-                Text {text:"Error";color:"#FFFFFF";font.pixelSize:pair.large?20:17}
+                Row {y:11;spacing:2;Repeater {model:5;Rectangle {width:3;height:1.5;color:theme.foreground}}}
+                Text { font.family:theme.fontFamily;text:theme.translate(theme.language,"Error");color:theme.foreground;font.pixelSize:(pair.large?20:17)*theme.textScale}
             }
         }
         MouseArea {objectName:"chartLabels"+pair.suffix;anchors.fill:parent;onClicked:pair.signalsRequested()}
