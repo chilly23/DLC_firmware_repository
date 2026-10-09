@@ -163,5 +163,42 @@
       }
     }
   ],
-  "wiring_revision": 2
+  "wiring_revision": 2,
+  "panel": {
+    "lock": {
+      "pin": 20,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 30,
+      "calibrated": true
+    },
+    "right_emission": {
+      "pin": 12,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "left_emission": {
+      "pin": 1,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "right_shortcut": {
+      "pin": 7,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "left_shortcut": {
+      "pin": 8,
+      "enabled": false,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": false
+    }
+  }
 }
