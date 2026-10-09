@@ -1,0 +1,25 @@
+{
+  "version": "1.8",
+  "unit_tests_passed": 18,
+  "ui_checks_passed": 41,
+  "windows_startup": "passed",
+  "python_files": 57,
+  "shell_syntax": "passed",
+  "source_text_files_verified": 86,
+  "binary_asset_dependency_files_verified": 2617,
+  "physical_pi_tested": false,
+  "tests": [
+    {
+      "name": "unit",
+      "exit_code": 0
+    },
+    {
+      "name": "verify_v18",
+      "exit_code": 0
+    },
+    {
+      "name": "diagnose_v18",
+      "exit_code": 0
+    }
+  ]
+}

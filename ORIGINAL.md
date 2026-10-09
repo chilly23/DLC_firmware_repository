@@ -1,6 +1,3 @@
-> **Recovered release v1.8** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
-> Run **start.cmd** on Windows or **bash start.sh** on Raspberry Pi OS.
-
 # Nexatom v1.8 — RKJXT control integration
 
 Application **1.8.0**, based on `mock1.7-pyside6`. Updated 30 September 2026.

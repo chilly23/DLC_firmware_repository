@@ -20,9 +20,6 @@ from device.platform import make_device
 from hardware.service import KnobService
 from interaction.router import InputRouter
 from interaction.icons import IconProvider
-from interaction.notifications import Notifications
-from interaction.notification_art import NotificationArt,NotificationImageProvider
-from interaction.session_lock import SessionLock
 
 ROOT = Path(__file__).resolve().parent
 
@@ -49,12 +46,8 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     store=SettingsStore(Path(data_dir or ROOT/'data')/'settings.json')
     theme=Appearance(store,app)
     controller.theme=theme
-    notifications=Notifications(Path(data_dir or ROOT/'data')/'notifications.json',app);controller.notifications=notifications
-    notifications.renderer=NotificationArt(notifications,theme)
-    controller.notice.connect(lambda text:notifications.post(text))
     system=SettingsCoordinator(app,controller,theme,device or make_device())
     controller.system_settings=system
-    system.message.connect(lambda text:notifications.post(text,'critical' if 'failed' in text.lower() else 'normal'))
     knobs=KnobService(Path(data_dir or ROOT/'data')/'controls.json',app,worker_factory=gpio_factory,autostart=gpio_autostart)
     navigation=InputRouter(controller,knobs,app)
     controller.knobs=knobs;controller.navigation=navigation
@@ -62,24 +55,18 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     qmlRegisterType(SpectrumPlot, "Nexatom", 1, 0, "SpectrumPlot")
     engine = QQmlApplicationEngine()
     engine.addImageProvider('outline',IconProvider())
-    engine.addImageProvider('notices',NotificationImageProvider(notifications.renderer))
     engine.rootContext().setContextProperty("ctl", controller)
     engine.rootContext().setContextProperty("theme", theme)
     engine.rootContext().setContextProperty("systemSettings", system)
     engine.rootContext().setContextProperty("skipBoot", skip_boot)
     engine.rootContext().setContextProperty("knobs",knobs)
     engine.rootContext().setContextProperty("navigation",navigation)
-    engine.rootContext().setContextProperty("notifications",notifications)
     engine.load(QUrl.fromLocalFile(str(ROOT / "qml" / "Main.qml")))
     if not engine.rootObjects():
         raise RuntimeError("QML failed to load; see the messages above")
     controller.settings_host = SettingsHost(app, engine.rootObjects()[0], controller, data_dir or ROOT / "data",theme,system)
     system.host=controller.settings_host
     navigation.attach(engine.rootObjects()[0],controller.settings_host)
-    guard=SessionLock(app,controller);controller.session_lock=guard;knobs.lockChanged.connect(guard.set_locked)
-    knobs.panelAction.connect(lambda key:engine.rootObjects()[0].panelInput(key))
-    controller.shortcutRequested.connect(lambda side,action:navigation.handle(0 if side==0 else 3,action,1))
-    app.aboutToQuit.connect(guard.shutdown);app.aboutToQuit.connect(notifications.timer.stop)
     app.aboutToQuit.connect(knobs.shutdown)
     app.aboutToQuit.connect(navigation.shutdown)
     return app, engine, controller, engine.rootObjects()[0]
@@ -102,8 +89,7 @@ def main():
         try:
             gpiod=gpio_module();chips=discover(gpiod)
             config=ControlStore(Path(args.data_dir or ROOT/'data')/'controls.json').config
-            pins=sorted({p for k in config['knobs'] if k['enabled'] for p in k['pins'].values()} |
-                        {contact['pin'] for contact in config.get('panel',{}).values() if contact['enabled']})
+            pins=sorted({p for k in config['knobs'] for p in k['pins'].values()})
             for chip in chips:
                 if chip['lines']<28:continue
                 with gpiod.Chip(chip['path']) as handle:
