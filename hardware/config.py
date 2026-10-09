@@ -27,6 +27,7 @@ ACTIONS={
  'stabilise.toggle':'Toggle stabilisation', 'view.swap':'Switch displayed laser',
  'view.fullscreen':'Toggle graph fullscreen', 'signals.open':'Open chart signals',
  'more.open':'Open More menu', 'settings.open':'Open Settings', 'capture.frame':'Export graph frame',
+ 'capture.screenshot':'Screenshot', 'lobby.open':'Open Lobby', 'logs.open':'Open Logs',
 }
 
 def default_knob(index):
