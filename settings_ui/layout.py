@@ -1,0 +1,17 @@
+"""Shared search geometry in the 1600 × 720 design coordinate space."""
+
+from PySide6.QtCore import QRectF
+from PySide6.QtGui import QTransform
+
+SEARCH_RECT = QRectF(793, 33, 321 * 1.5, 48)
+HISTORY_RECT = QRectF(SEARCH_RECT.right() + 12, 33, 48, 48)
+SEARCH_GROUP = SEARCH_RECT.united(HISTORY_RECT)
+INPUT_RECT = QRectF(SEARCH_RECT.left() + 46, 34, SEARCH_RECT.width() - 82, 46)
+SEARCH_FILL = "#b3202020"  # The wheel's #202020, at 70% opacity.
+REFERENCE_POPUP = QRectF(781, 93, 402, 297)
+POPUP_SCALE = SEARCH_RECT.width() / REFERENCE_POPUP.width()
+POPUP_TRANSFORM = QTransform()
+POPUP_TRANSFORM.translate(SEARCH_RECT.left(), REFERENCE_POPUP.top())
+POPUP_TRANSFORM.scale(POPUP_SCALE, POPUP_SCALE)
+POPUP_TRANSFORM.translate(-REFERENCE_POPUP.left(), -REFERENCE_POPUP.top())
+KEYBOARD_RECT = POPUP_TRANSFORM.mapRect(REFERENCE_POPUP)
