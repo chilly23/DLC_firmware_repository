@@ -89,8 +89,16 @@
     {
       "name": "Knob 3",
       "location": "Top right",
-      "enabled": false,
-      "pins": {},
+      "enabled": true,
+      "pins": {
+        "B": 26,
+        "encoder_b": 19,
+        "C": 13,
+        "D": 6,
+        "encoder_a": 5,
+        "A": 0,
+        "push": 21
+      },
       "target": 2,
       "calibrated": false,
       "directions": {
@@ -123,16 +131,8 @@
     {
       "name": "Knob 4",
       "location": "Bottom right",
-      "enabled": true,
-      "pins": {
-        "B": 26,
-        "encoder_b": 19,
-        "C": 13,
-        "D": 6,
-        "encoder_a": 5,
-        "A": 0,
-        "push": 21
-      },
+      "enabled": false,
+      "pins": {},
       "target": 3,
       "calibrated": false,
       "directions": {
@@ -162,43 +162,5 @@
         "push": "graph.lock"
       }
     }
-  ],
-  "wiring_revision": 3,
-  "panel": {
-    "lock": {
-      "pin": 20,
-      "enabled": true,
-      "active_level": 0,
-      "debounce_ms": 30,
-      "calibrated": true
-    },
-    "right_emission": {
-      "pin": 12,
-      "enabled": true,
-      "active_level": 0,
-      "debounce_ms": 25,
-      "calibrated": true
-    },
-    "left_emission": {
-      "pin": 1,
-      "enabled": true,
-      "active_level": 0,
-      "debounce_ms": 25,
-      "calibrated": true
-    },
-    "right_shortcut": {
-      "pin": 7,
-      "enabled": true,
-      "active_level": 0,
-      "debounce_ms": 25,
-      "calibrated": true
-    },
-    "left_shortcut": {
-      "pin": 16,
-      "enabled": true,
-      "active_level": 0,
-      "debounce_ms": 25,
-      "calibrated": true
-    }
-  }
+  ]
 }
