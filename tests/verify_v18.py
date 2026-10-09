@@ -32,15 +32,28 @@ def finish_jobs():
     while system.busy and time.monotonic()<end:QTest.qWait(20)
     assert not system.busy
 try:
-    QTest.qWait(250);check('v1.8 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.8.0')
+    QTest.qWait(250);check('v1.9 loads without GPIO dependency on desktop',w.isVisible() and app.applicationVersion()=='1.9.0')
     check('Default home values are white',ctl.theme.parameterInk.upper()=='#FFFFFF')
     ctl.theme.apply('accent','Cyan');check('Light accents use dark numeric ink',ctl.theme.parameterInk.upper()=='#111111');ctl.theme.apply('accent','Green')
+    check('Earlier Green is restored exactly',ctl.theme.accent.upper()=='#008622')
+    for accent,expected in [('Green','#ffffff'),('Orange','#ffffff'),('Cyan','#111111')]:
+        ctl.theme.apply('accent',accent);QTest.qWait(40)
+        foreground=[]
+        for name in ('topParameter0','bottomParameter0','topParameter1','bottomParameter1'):
+            stack=list(item(name).childItems())
+            while stack:
+                obj=stack.pop();stack.extend(obj.childItems())
+                if obj.property('text') is not None:foreground.append(obj.property('color').name())
+                elif obj.property('ink') is not None:foreground.append(obj.property('ink').name())
+        check('Every corner label, unit, value and icon uses consistent '+accent+' ink',len(foreground)==20 and all(c==expected for c in foreground))
+    ctl.theme.apply('accent','Green')
+    check('Knob 3 disabled and Knob 4 targets bottom right',not knobs.knobs[2]['enabled'] and knobs.knobs[3]['enabled'] and knobs.knobs[3]['target']==3)
     before=ctl.value(0,'current');command(0,'value.increase');check('Rotation updates top-left real parameter',round(ctl.value(0,'current')-before,3)==.001)
     command(0,'cursor.left',1);command(0,'value.increase');check('Cursor chooses next decimal digit',round(ctl.value(0,'current')-before,3)==.011)
     check('Selected digit underline is visible',nav.editCorner==0 and nav.powerFor(0)==-2)
     ctl.selectField(0,False,'umax');nav._power[0]=-3;command(0,'value.increase')
     check('Changing field clamps digit precision',ctl.value(0,'umax')==2.82 and nav.powerFor(0)==-2);ctl.selectField(0,False,'current')
-    command(2,'value.increase');check('Knob 3 targets top-right laser independently',ctl.value(1,'temperature')==24.001)
+    knobs.set_target(3,2);command(3,'value.increase');check('Knob 4 can target the top-right laser independently',ctl.value(1,'temperature')==24.001);knobs.set_target(3,3)
     ctl.switchView(0);command(0,'value.increase');check('Corner assignment follows displayed laser',ctl.value(1,'temperature')==24.011);ctl.switchView(0)
     command(0,'editor.open');pad=item('keypad');accepted=ctl.value(0,'current')
     command(0,'value.increase');check('Rotation edits active numpad draft',round(float(pad.property('draft'))-accepted,3)==.001 and ctl.value(0,'current')==accepted)
@@ -53,7 +66,7 @@ try:
     command(0,'graph.lock');old=renderer.xMinimum;command(1,'graph.left');check('Lock blocks knob pan',renderer.xMinimum==old);command(0,'graph.lock')
     command(0,'view.fullscreen');full=item('fullscreenAbsorptionRenderer');old=full.xMaximum-full.xMinimum
     command(0,'graph.zoom_in');check('Fullscreen knob zoom works',full.xMaximum-full.xMinimum<old);command(0,'view.fullscreen')
-    command(2,'view.fullscreen');command(1,'graph.left');check('Graph shortcut reveals its assigned fullscreen side',w.property('fullscreenSide')==0);command(0,'view.fullscreen')
+    command(3,'view.fullscreen');command(1,'graph.left');check('Graph shortcut reveals its assigned fullscreen side',w.property('fullscreenSide')==0);command(0,'view.fullscreen')
     command(1,'more.open');QTest.qWait(270)
     labels=[label for obj,rect,label in nav.targets()];check('More focus includes all sectors',all(s in labels for s in ('Alarms','Settings','Display','Diagnostics')))
     nav.target=next(o for o,r,label in nav.targets() if label=='Alarms');nav.activate();QTest.qWait(300)

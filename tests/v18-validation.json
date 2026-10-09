@@ -1,13 +1,18 @@
 {
   "checks": [
-    "v1.8 loads without GPIO dependency on desktop",
+    "v1.9 loads without GPIO dependency on desktop",
     "Default home values are white",
     "Light accents use dark numeric ink",
+    "Earlier Green is restored exactly",
+    "Every corner label, unit, value and icon uses consistent Green ink",
+    "Every corner label, unit, value and icon uses consistent Orange ink",
+    "Every corner label, unit, value and icon uses consistent Cyan ink",
+    "Knob 3 disabled and Knob 4 targets bottom right",
     "Rotation updates top-left real parameter",
     "Cursor chooses next decimal digit",
     "Selected digit underline is visible",
     "Changing field clamps digit precision",
-    "Knob 3 targets top-right laser independently",
+    "Knob 4 can target the top-right laser independently",
     "Corner assignment follows displayed laser",
     "Rotation edits active numpad draft",
     "Numpad Apply validates and commits",
@@ -43,7 +48,6 @@
     "No Qt or QML runtime errors"
   ],
   "qt_messages": [
-    "Member enabled of the object QQuickPinchArea overrides a member of the base object. Consider renaming it or adding final or override specifier",
     "This plugin does not support raise()",
     "This plugin does not support raise()",
     "This plugin does not support raise()",

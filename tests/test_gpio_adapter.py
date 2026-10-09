@@ -36,7 +36,7 @@ class AdapterTests(unittest.TestCase):
         frames,states=self.run_fixture();self.assertEqual(len(self.requested),1)
         path,args=self.requested[0];pins,settings=next(iter(args['config'].items()))
         self.assertEqual(len(set(pins)),21);self.assertEqual(settings,dict(direction='input',edge_detection='both',bias='pullup',active_low=False))
-        self.assertEqual(set(frames[0]),{0,1,2});self.assertTrue(states[0][0]);self.assertFalse(states[-1][0]);self.assertTrue(self.closed)
+        self.assertEqual(set(frames[0]),{0,1,3});self.assertTrue(states[0][0]);self.assertFalse(states[-1][0]);self.assertTrue(self.closed)
     def test_busy_gpio_reports_owner_and_never_requests(self):
         frames,states=self.run_fixture(4);self.assertFalse(self.requested);self.assertFalse(frames)
         self.assertIn('GPIO4: rkjxt-live',states[-1][1]);self.assertFalse(states[-1][0])
