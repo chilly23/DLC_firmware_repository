@@ -84,7 +84,7 @@ _HELP_FR={
  ('Exporter les réglages','L’export enregistre préférences et paramètres de courbes au format JSON dans le dossier exports de l’application.'),
  ('Exporter une trame','La capture écrit X, spectroscopie et erreur des deux lasers dans un fichier CSV. C’est un instantané, pas un enregistrement continu.'),
  ('Historique de recherche','Le bouton près de Rechercher affiche les huit dernières requêtes non vides. Elles sont enregistrées à la validation ou à la fermeture. Effacer supprime la liste enregistrée.'),
- ('Périmètre de version','Commande et Mise à jour sont des aperçus en v1.7. Le micrologiciel V1.6.0 est l’identifiant demandé pour À propos, indépendant de la version application 1.7.0.')]
+ ('Périmètre de version','La version 1.8 ajoute les commandes GPIO réelles. Mise à jour reste un aperçu et les signaux laser restent simulés. Le micrologiciel V1.6.0 est l’identifiant demandé pour À propos, indépendant de la version application 1.8.0.')]
 }
 from .help_content import TOPICS
 for _topic,_translated in _HELP_FR.items():

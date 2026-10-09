@@ -4,17 +4,17 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Qt, Signal
 
 from .model import SettingsStore
-from .refined import RefinedSettingsWindow
+from .extended_controls import ExtendedSettingsWindow
 
 
-class AttachedSettings(RefinedSettingsWindow):
+class AttachedSettings(ExtendedSettingsWindow):
     returned = Signal()
     valuesEdited = Signal(str)
 
     def __init__(self, data_dir,theme,system):
         super().__init__(theme,system)
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
-        self.setWindowTitle("NEXATOM v1.7 · Settings")
+        self.setWindowTitle("NEXATOM v1.8 · Settings")
         self.timer.stop()
 
     def open_search(self):
@@ -34,6 +34,10 @@ class AttachedSettings(RefinedSettingsWindow):
             self.search.setFocus()
 
     def closeEvent(self, event):
+        self.controls.panel_calibration=None
+        if self.controls.calibration:self.controls.cancel_calibration()
+        if self.screen_test and self.screen_test.isVisible():self.screen_test.close()
+        self.clear_knob_focus()
         if self.system.mode_deadline:self.system.revert_mode()
         self.close_overlay()
         self.timer.stop()

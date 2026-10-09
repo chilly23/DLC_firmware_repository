@@ -70,13 +70,19 @@ class SettingsCoordinator(QObject):
             self.changed.emit()
         job.signals.finished.connect(finish);self.pool.start(job);self.changed.emit()
 
-    def probe(self):
-        if self.probed or self.busy:return
+    def probe(self,force=False):
+        if self.busy:return
+        if self.probed and not force and all(self.caps.get(k) is not None for k in ('brightness','contrast')):return
         self.probed=True
         def done(value,error):
             if error:self.probed=False;self.tell(error);return
             self.caps=value;self.tell('Display detected: '+value['target'])
         self.submit(self.device.probe,done)
+
+    @Slot()
+    def retry_display(self):
+        self.probed=False
+        self.probe(force=True)
 
     def set_level(self,key,value):
         if self.busy:self.levelFinished.emit(key);return
@@ -174,7 +180,7 @@ class SettingsCoordinator(QObject):
                     writer=csv.writer(f);writer.writerow(['laser','x_V','spectroscopy_V','error_V'])
                     for laser in self.ctl.instrument.lasers:
                         for x in laser.signal.x_values:writer.writerow([laser.number,x,*laser.signal.sample(x)])
-            else:path.write_text(json.dumps(dict(values=self.store.values,history=self.store.history),indent=2),encoding='utf8')
+            else:path.write_text(json.dumps(dict(values=self.store.values,history=self.store.history,controls=self.ctl.knobs.store.config),indent=2),encoding='utf8')
             self.tell('Saved '+str(path));return path
         except OSError as exc:self.tell(str(exc))
 
@@ -189,6 +195,7 @@ class SettingsCoordinator(QObject):
 
     def tick(self):
         now=time.monotonic()
+        if getattr(self.ctl,'session_lock',None) and self.ctl.session_lock.locked:return
         if self.mode_deadline and now>=self.mode_deadline:self.revert_mode()
         if self._tour>=0 and self._tour_play and now>=self.tour_deadline:self.tourNext()
         minutes=self.store.values.get('idle_minutes',0)
@@ -204,6 +211,11 @@ class SettingsCoordinator(QObject):
     def startTour(self):
         self._tour_charts=[deepcopy(l.chart) for l in self.ctl.instrument.lasers]
         self._tour=0;self._tour_play=True;self.route_tour()
+    @Slot()
+    def startKnobTour(self):
+        self._tour_charts=[deepcopy(l.chart) for l in self.ctl.instrument.lasers]
+        self._tour=next(i for i,s in enumerate(TOUR) if s.get('knob_intro'))
+        self._tour_play=False;self.route_tour()
     def route_tour(self):
         self.tour_deadline=time.monotonic()+9;self.changed.emit()
         if self.host:

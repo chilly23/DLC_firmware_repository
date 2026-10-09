@@ -1,8 +1,16 @@
 """Touch help shared by home controls and the guided tour."""
 TIPS={
+ 'alarm':('Alarms','Set signal thresholds, enable monitoring, acknowledge events and review their history.'),
+ 'control':('Control Settings','Calibrate knobs and buttons, configure the physical lock, assign operations, or run the touchscreen check.'),
+ 'settings':('Settings','Adjust display, graph processing, knobs, system preferences and search saved help.'),
+ 'diagnostics':('Control diagnostics','Inspect knob input counts, calibrate directions, and check buttons and touch response.'),
+ 'display':('Display settings','Adjust hardware brightness, contrast, screen mode, theme and corner text colors.'),
+ 'notifications':('Notifications','Read recent actions and warnings, manage action updates, or clear notification history.'),
+ 'left':('Move left','Move the numeric text caret left without changing the value.'),
+ 'right':('Move right','Move the numeric text caret right without changing the value.'),
  'lock':('View locked','Tap to unlock pan, zoom and rearranging. Live acquisition continues while locked.'),
  'unlock':('View unlocked','Pan, pinch zoom and long-press dragging are available. Tap to lock this view.'),
- 'emission':('Emission','Bring this simulated laser up from zero, or smoothly return its traces to zero.'),
+ 'emission':('Emission','Tap, then slide to confirm. With a knob, rotate to fill the track and push. The dedicated button requires a second deliberate press.'),
  'stabilise':('Stabilise','Smooth the live noise on this laser without stopping acquisition.'),
  'switch':('Switch channel','Change only this half between Laser 1 and Laser 2.'),
  'fullscreen':('Fullscreen','Expand this laser. Signal settings remain available.'),

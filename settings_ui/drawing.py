@@ -76,7 +76,10 @@ class Icons:
         }
 
     def draw(self, p, key, cx, cy, size):
-        if key=='control':key='function'
+        if key in ('control','alarm','knob','calibrate','screencheck','diagnostics','notifications'):
+            from interaction.icons import paint_icon
+            paint_icon(p,key,QRectF(cx-size/2,cy-size/2,size,size),STYLE.foreground if STYLE else WHITE)
+            return
         image = self.images.get("help-large" if key == "help" and size > 60 else key)
         if image and not image.isNull():
             if STYLE and STYLE.light:
