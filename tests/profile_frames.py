@@ -12,4 +12,4 @@ with tempfile.TemporaryDirectory() as data:
     profiler=cProfile.Profile();profiler.enable()
     for _ in range(15):ctl.step(.05);QTest.qWait(1)
     profiler.disable();pstats.Stats(profiler).sort_stats('cumtime').print_stats(16)
-    ctl.settings_host.shutdown();w.close();engine.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.Type.DeferredDelete)
+    ctl.journal.close();ctl.settings_host.shutdown();w.close();engine.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.Type.DeferredDelete)

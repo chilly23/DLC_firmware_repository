@@ -1,0 +1,41 @@
+[
+  {
+    "points": 100,
+    "fps": 27.63498729487687,
+    "cpu_one_core_percent": 103.8313220275983,
+    "peak_rss_mib": 176.7890625,
+    "knob_p95_ms": 57.466984,
+    "button_p95_ms": 55.927003,
+    "command_to_owner_p95_ms": 4.0695,
+    "paint_p95_ms": 6.9751,
+    "heartbeat_p95_ms": 41.89740000059828,
+    "peak_queue": 105,
+    "knob_max_ms": 269.945291
+  },
+  {
+    "points": 1000,
+    "fps": 11.288215612582649,
+    "cpu_one_core_percent": 105.75066709569107,
+    "peak_rss_mib": 180.68359375,
+    "knob_p95_ms": 111.476082,
+    "button_p95_ms": 106.73061,
+    "command_to_owner_p95_ms": 2.833,
+    "paint_p95_ms": 20.3519,
+    "heartbeat_p95_ms": 117.72899999981746,
+    "peak_queue": 124,
+    "knob_max_ms": 327.949691
+  },
+  {
+    "points": 10000,
+    "fps": 7.105782029829137,
+    "cpu_one_core_percent": 108.21412487635769,
+    "peak_rss_mib": 184.69921875,
+    "knob_p95_ms": 149.154991,
+    "button_p95_ms": 149.471804,
+    "command_to_owner_p95_ms": 3.6529,
+    "paint_p95_ms": 34.7167,
+    "heartbeat_p95_ms": 196.0020999633707,
+    "peak_queue": 156,
+    "knob_max_ms": 401.613591
+  }
+]

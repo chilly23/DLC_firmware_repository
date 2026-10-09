@@ -1,0 +1,1025 @@
+{
+  "results": [
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 100,
+      "full_detail": false,
+      "duration_s": 20.3821970000281,
+      "rows": [
+        {
+          "elapsed_s": 0.824481800023932,
+          "points": 100,
+          "cpu_one_core_percent": 92.86135848939011,
+          "rss_bytes": 177618944,
+          "presented_fps": 33.96072539040553
+        },
+        {
+          "elapsed_s": 1.8260880000307225,
+          "points": 100,
+          "cpu_one_core_percent": 118.55956961847373,
+          "rss_bytes": 177938432,
+          "presented_fps": 30.950287647769986
+        },
+        {
+          "elapsed_s": 2.8352538000326604,
+          "points": 100,
+          "cpu_one_core_percent": 108.38159596747131,
+          "rss_bytes": 178225152,
+          "presented_fps": 35.673028158436274
+        },
+        {
+          "elapsed_s": 3.815446700027678,
+          "points": 100,
+          "cpu_one_core_percent": 105.20888286430576,
+          "rss_bytes": 180834304,
+          "presented_fps": 25.505183724680183
+        },
+        {
+          "elapsed_s": 4.8373778000241145,
+          "points": 100,
+          "cpu_one_core_percent": 99.38292317393429,
+          "rss_bytes": 182198272,
+          "presented_fps": 22.50640967877404
+        },
+        {
+          "elapsed_s": 5.812771400029305,
+          "points": 100,
+          "cpu_one_core_percent": 100.92079751135965,
+          "rss_bytes": 182374400,
+          "presented_fps": 21.529770135756728
+        },
+        {
+          "elapsed_s": 6.813559900037944,
+          "points": 100,
+          "cpu_one_core_percent": 99.9212121233775,
+          "rss_bytes": 182566912,
+          "presented_fps": 24.980303030844375
+        },
+        {
+          "elapsed_s": 7.856464500015136,
+          "points": 100,
+          "cpu_one_core_percent": 112.36646190127352,
+          "rss_bytes": 180207616,
+          "presented_fps": 23.012651397380818
+        },
+        {
+          "elapsed_s": 8.821466499997769,
+          "points": 100,
+          "cpu_one_core_percent": 110.10339875141419,
+          "rss_bytes": 180379648,
+          "presented_fps": 34.19682031808629
+        },
+        {
+          "elapsed_s": 9.832745400024578,
+          "points": 100,
+          "cpu_one_core_percent": 106.61005583834671,
+          "rss_bytes": 180576256,
+          "presented_fps": 28.676559947242247
+        },
+        {
+          "elapsed_s": 10.835786100011319,
+          "points": 100,
+          "cpu_one_core_percent": 73.21487552894988,
+          "rss_bytes": 180809728,
+          "presented_fps": 24.92421294602549
+        },
+        {
+          "elapsed_s": 11.868576700042468,
+          "points": 100,
+          "cpu_one_core_percent": 101.36372271091803,
+          "rss_bytes": 182796288,
+          "presented_fps": 36.7935184526795
+        },
+        {
+          "elapsed_s": 12.846140300040133,
+          "points": 100,
+          "cpu_one_core_percent": 102.29513455721836,
+          "rss_bytes": 183787520,
+          "presented_fps": 21.481978257015854
+        },
+        {
+          "elapsed_s": 13.85365050000837,
+          "points": 100,
+          "cpu_one_core_percent": 100.80543105489338,
+          "rss_bytes": 183959552,
+          "presented_fps": 24.81364456735837
+        },
+        {
+          "elapsed_s": 14.83681060001254,
+          "points": 100,
+          "cpu_one_core_percent": 109.65914910454839,
+          "rss_bytes": 184156160,
+          "presented_fps": 24.411080148490772
+        },
+        {
+          "elapsed_s": 15.85555810004007,
+          "points": 100,
+          "cpu_one_core_percent": 96.62600398758269,
+          "rss_bytes": 184356864,
+          "presented_fps": 25.52153502148216
+        },
+        {
+          "elapsed_s": 16.848300700017717,
+          "points": 100,
+          "cpu_one_core_percent": 113.32242617827946,
+          "rss_bytes": 184508416,
+          "presented_fps": 27.197382282787068
+        },
+        {
+          "elapsed_s": 17.852090000000317,
+          "points": 100,
+          "cpu_one_core_percent": 108.96210987893171,
+          "rss_bytes": 184692736,
+          "presented_fps": 31.87920014743602
+        },
+        {
+          "elapsed_s": 18.87236070004292,
+          "points": 100,
+          "cpu_one_core_percent": 117.92213575767325,
+          "rss_bytes": 184885248,
+          "presented_fps": 29.40396112399125
+        },
+        {
+          "elapsed_s": 19.83589440002106,
+          "points": 100,
+          "cpu_one_core_percent": 110.27118200682571,
+          "rss_bytes": 185253888,
+          "presented_fps": 28.021853309969828
+        },
+        {
+          "elapsed_s": 20.300353099999484,
+          "points": 100,
+          "cpu_one_core_percent": 74.01088622432302,
+          "rss_bytes": 185376768,
+          "presented_fps": 23.683483591783368
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 698
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 698,
+            "retained": 698,
+            "p50_ms": 21.576599983964112,
+            "p95_ms": 41.89740000059828,
+            "p99_ms": 52.37399997189641,
+            "max_ms": 307.8595999488607
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 1586,
+          "simulation_step": 389
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 1586,
+            "retained": 1586,
+            "p50_ms": 5.3127,
+            "p95_ms": 6.9751,
+            "p99_ms": 7.6338,
+            "max_ms": 8.6246
+          },
+          "simulation_step": {
+            "count": 389,
+            "retained": 389,
+            "p50_ms": 0.8205,
+            "p95_ms": 1.1758,
+            "p99_ms": 1.3932,
+            "max_ms": 2.0049
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 4,
+          "high_water": 105,
+          "received": 7820,
+          "delivered": 7816
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 7555,
+            "application_handler": 7555,
+            "command_queue_wait": 40,
+            "command_roundtrip": 40,
+            "command_to_worker": 40,
+            "driver_operation": 40,
+            "knob_to_application": 5994,
+            "delivered_transitions": 6994,
+            "knob_to_handler_complete": 5994,
+            "button_to_application": 1000,
+            "button_to_handler_complete": 1000
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 7555,
+              "retained": 7555,
+              "p50_ms": 30.053593,
+              "p95_ms": 57.160387,
+              "p99_ms": 113.7394,
+              "max_ms": 275.8609
+            },
+            "application_handler": {
+              "count": 7555,
+              "retained": 7555,
+              "p50_ms": 0.4745,
+              "p95_ms": 0.9745,
+              "p99_ms": 1.4178,
+              "max_ms": 55.4327
+            },
+            "command_queue_wait": {
+              "count": 40,
+              "retained": 40,
+              "p50_ms": 1.1187,
+              "p95_ms": 2.6955,
+              "p99_ms": 3.8406,
+              "max_ms": 13.0036
+            },
+            "command_roundtrip": {
+              "count": 40,
+              "retained": 40,
+              "p50_ms": 3.3917,
+              "p95_ms": 19.7232,
+              "p99_ms": 28.9165,
+              "max_ms": 31.6175
+            },
+            "command_to_worker": {
+              "count": 40,
+              "retained": 40,
+              "p50_ms": 1.2798,
+              "p95_ms": 4.0695,
+              "p99_ms": 7.3864,
+              "max_ms": 13.162
+            },
+            "driver_operation": {
+              "count": 40,
+              "retained": 40,
+              "p50_ms": 0.0112,
+              "p95_ms": 0.0377,
+              "p99_ms": 0.0377,
+              "max_ms": 0.0443
+            },
+            "knob_to_application": {
+              "count": 5994,
+              "retained": 5994,
+              "p50_ms": 30.652483,
+              "p95_ms": 57.466984,
+              "p99_ms": 114.3832,
+              "max_ms": 269.945291
+            },
+            "knob_to_handler_complete": {
+              "count": 5994,
+              "retained": 5994,
+              "p50_ms": 31.248186,
+              "p95_ms": 58.275788,
+              "p99_ms": 114.9613,
+              "max_ms": 270.565991
+            },
+            "button_to_application": {
+              "count": 1000,
+              "retained": 1000,
+              "p50_ms": 28.849404,
+              "p95_ms": 55.927003,
+              "p99_ms": 112.0551,
+              "max_ms": 243.909306
+            },
+            "button_to_handler_complete": {
+              "count": 1000,
+              "retained": 1000,
+              "p50_ms": 28.939708,
+              "p95_ms": 56.117903,
+              "p99_ms": 112.1605,
+              "max_ms": 244.053006
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 40,
+            "generated_encoder_edges": 11988,
+            "generated_button_edges": 1000,
+            "accepted_rotation_steps": 5994,
+            "accepted_button_presses": 500
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 40,
+              "retained": 40,
+              "p50_ms": 1.2798,
+              "p95_ms": 4.0695,
+              "p99_ms": 7.3864,
+              "max_ms": 13.162
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 5994,
+        "delivered_rotation_steps": 5994,
+        "decoded_button_presses": 500,
+        "delivered_button_presses": 500
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 1000,
+      "full_detail": false,
+      "duration_s": 20.469882000004873,
+      "rows": [
+        {
+          "elapsed_s": 0.3879618999781087,
+          "points": 1000,
+          "cpu_one_core_percent": 104.71389072559012,
+          "rss_bytes": 187334656,
+          "presented_fps": 10.310290779135027
+        },
+        {
+          "elapsed_s": 1.311627299990505,
+          "points": 1000,
+          "cpu_one_core_percent": 104.88105324579644,
+          "rss_bytes": 187428864,
+          "presented_fps": 12.991717563350269
+        },
+        {
+          "elapsed_s": 2.3749431999749504,
+          "points": 1000,
+          "cpu_one_core_percent": 101.39272816439322,
+          "rss_bytes": 187539456,
+          "presented_fps": 10.344997192425048
+        },
+        {
+          "elapsed_s": 3.362755699956324,
+          "points": 1000,
+          "cpu_one_core_percent": 113.88801012552618,
+          "rss_bytes": 187654144,
+          "presented_fps": 10.12337867782455
+        },
+        {
+          "elapsed_s": 4.326124000013806,
+          "points": 1000,
+          "cpu_one_core_percent": 108.66820092975193,
+          "rss_bytes": 187760640,
+          "presented_fps": 10.380246058961378
+        },
+        {
+          "elapsed_s": 5.396283200010657,
+          "points": 1000,
+          "cpu_one_core_percent": 103.664482817441,
+          "rss_bytes": 187871232,
+          "presented_fps": 14.016606127428641
+        },
+        {
+          "elapsed_s": 6.370213599991985,
+          "points": 1000,
+          "cpu_one_core_percent": 104.281065671579,
+          "rss_bytes": 187973632,
+          "presented_fps": 12.321208990118873
+        },
+        {
+          "elapsed_s": 7.316802599991206,
+          "points": 1000,
+          "cpu_one_core_percent": 110.59446074282091,
+          "rss_bytes": 188035072,
+          "presented_fps": 12.677096395594994
+        },
+        {
+          "elapsed_s": 8.397501899977215,
+          "points": 1000,
+          "cpu_one_core_percent": 104.09926239561412,
+          "rss_bytes": 188170240,
+          "presented_fps": 9.253267768499033
+        },
+        {
+          "elapsed_s": 9.31394540000474,
+          "points": 1000,
+          "cpu_one_core_percent": 107.41251369783663,
+          "rss_bytes": 188272640,
+          "presented_fps": 10.911747423272292
+        },
+        {
+          "elapsed_s": 10.42357310000807,
+          "points": 1000,
+          "cpu_one_core_percent": 84.48779712305189,
+          "rss_bytes": 188403712,
+          "presented_fps": 9.913234862438088
+        },
+        {
+          "elapsed_s": 11.346969300007913,
+          "points": 1000,
+          "cpu_one_core_percent": 109.9879986510853,
+          "rss_bytes": 188477440,
+          "presented_fps": 9.746628803542327
+        },
+        {
+          "elapsed_s": 12.353242399985902,
+          "points": 1000,
+          "cpu_one_core_percent": 107.14039757433474,
+          "rss_bytes": 188583936,
+          "presented_fps": 11.925192077838997
+        },
+        {
+          "elapsed_s": 13.357663000002503,
+          "points": 1000,
+          "cpu_one_core_percent": 102.67113199221075,
+          "rss_bytes": 188682240,
+          "presented_fps": 11.947186268184524
+        },
+        {
+          "elapsed_s": 14.345330599986482,
+          "points": 1000,
+          "cpu_one_core_percent": 99.66662873379339,
+          "rss_bytes": 188772352,
+          "presented_fps": 15.18729580705423
+        },
+        {
+          "elapsed_s": 15.391411099990364,
+          "points": 1000,
+          "cpu_one_core_percent": 115.01265915916944,
+          "rss_bytes": 188878848,
+          "presented_fps": 12.427341872782984
+        },
+        {
+          "elapsed_s": 16.358451800013427,
+          "points": 1000,
+          "cpu_one_core_percent": 103.40826399304098,
+          "rss_bytes": 188968960,
+          "presented_fps": 9.306743759373688
+        },
+        {
+          "elapsed_s": 17.394101999991108,
+          "points": 1000,
+          "cpu_one_core_percent": 120.6971234135752,
+          "rss_bytes": 189083648,
+          "presented_fps": 9.655769873086015
+        },
+        {
+          "elapsed_s": 18.363550500012934,
+          "points": 1000,
+          "cpu_one_core_percent": 104.76317204855481,
+          "rss_bytes": 189186048,
+          "presented_fps": 10.315143094011551
+        },
+        {
+          "elapsed_s": 19.314259200007655,
+          "points": 1000,
+          "cpu_one_core_percent": 113.40224403184561,
+          "rss_bytes": 189329408,
+          "presented_fps": 9.466622110484504
+        },
+        {
+          "elapsed_s": 20.33455979998689,
+          "points": 1000,
+          "cpu_one_core_percent": 102.60456575457312,
+          "rss_bytes": 189456384,
+          "presented_fps": 10.781136461376041
+        },
+        {
+          "elapsed_s": 20.463818899996113,
+          "points": 1000,
+          "cpu_one_core_percent": 72.52874265201577,
+          "rss_bytes": 189460480,
+          "presented_fps": 30.945596864860057
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 241
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 241,
+            "retained": 241,
+            "p50_ms": 84.06410000519827,
+            "p95_ms": 117.72899999981746,
+            "p99_ms": 161.1314999847673,
+            "max_ms": 317.69229996483773
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 802,
+          "simulation_step": 202,
+          "graph_redraws_deferred_for_input": 8
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 802,
+            "retained": 802,
+            "p50_ms": 15.3087,
+            "p95_ms": 20.3519,
+            "p99_ms": 21.368,
+            "max_ms": 22.2788
+          },
+          "simulation_step": {
+            "count": 202,
+            "retained": 202,
+            "p50_ms": 1.3408,
+            "p95_ms": 2.1227,
+            "p99_ms": 2.3443,
+            "max_ms": 2.5898
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 124,
+          "received": 15646,
+          "delivered": 15646
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 7603,
+            "application_handler": 7603,
+            "command_queue_wait": 38,
+            "command_roundtrip": 38,
+            "command_to_worker": 38,
+            "driver_operation": 38,
+            "knob_to_application": 6030,
+            "delivered_transitions": 7036,
+            "knob_to_handler_complete": 6030,
+            "button_to_application": 1006,
+            "button_to_handler_complete": 1006
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 7603,
+              "retained": 7603,
+              "p50_ms": 55.5027,
+              "p95_ms": 111.115794,
+              "p99_ms": 161.958191,
+              "max_ms": 327.949691
+            },
+            "application_handler": {
+              "count": 7603,
+              "retained": 7603,
+              "p50_ms": 0.4477,
+              "p95_ms": 0.8687,
+              "p99_ms": 1.2832,
+              "max_ms": 5.4121
+            },
+            "command_queue_wait": {
+              "count": 38,
+              "retained": 38,
+              "p50_ms": 1.0013,
+              "p95_ms": 2.6521,
+              "p99_ms": 4.3453,
+              "max_ms": 5.2397
+            },
+            "command_roundtrip": {
+              "count": 38,
+              "retained": 38,
+              "p50_ms": 3.39,
+              "p95_ms": 58.2917,
+              "p99_ms": 77.9511,
+              "max_ms": 80.7748
+            },
+            "command_to_worker": {
+              "count": 38,
+              "retained": 38,
+              "p50_ms": 1.2104,
+              "p95_ms": 2.833,
+              "p99_ms": 4.5289,
+              "max_ms": 5.5201
+            },
+            "driver_operation": {
+              "count": 38,
+              "retained": 38,
+              "p50_ms": 0.0111,
+              "p95_ms": 0.0189,
+              "p99_ms": 0.025,
+              "max_ms": 0.061
+            },
+            "knob_to_application": {
+              "count": 6030,
+              "retained": 6030,
+              "p50_ms": 55.720093,
+              "p95_ms": 111.476082,
+              "p99_ms": 161.958191,
+              "max_ms": 327.949691
+            },
+            "knob_to_handler_complete": {
+              "count": 6030,
+              "retained": 6030,
+              "p50_ms": 56.235985,
+              "p95_ms": 112.083491,
+              "p99_ms": 162.348491,
+              "max_ms": 328.403391
+            },
+            "button_to_application": {
+              "count": 1006,
+              "retained": 1006,
+              "p50_ms": 54.295206,
+              "p95_ms": 106.73061,
+              "p99_ms": 156.533502,
+              "max_ms": 301.329606
+            },
+            "button_to_handler_complete": {
+              "count": 1006,
+              "retained": 1006,
+              "p50_ms": 54.425606,
+              "p95_ms": 107.009109,
+              "p99_ms": 156.952902,
+              "max_ms": 301.360706
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 78,
+            "generated_encoder_edges": 24048,
+            "generated_button_edges": 2006,
+            "accepted_rotation_steps": 12024,
+            "accepted_button_presses": 1004
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 78,
+              "retained": 78,
+              "p50_ms": 1.2641,
+              "p95_ms": 4.0695,
+              "p99_ms": 7.3864,
+              "max_ms": 13.162
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 12024,
+        "delivered_rotation_steps": 12024,
+        "decoded_button_presses": 1004,
+        "delivered_button_presses": 1004
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 10000,
+      "full_detail": false,
+      "duration_s": 20.553071100031957,
+      "rows": [
+        {
+          "elapsed_s": 0.7671984999906272,
+          "points": 10000,
+          "cpu_one_core_percent": 107.94142585134318,
+          "rss_bytes": 190296064,
+          "presented_fps": 10.42754906337504
+        },
+        {
+          "elapsed_s": 1.8139485000283457,
+          "points": 10000,
+          "cpu_one_core_percent": 104.49008836499526,
+          "rss_bytes": 190451712,
+          "presented_fps": 8.598041556891038
+        },
+        {
+          "elapsed_s": 2.843791700026486,
+          "points": 10000,
+          "cpu_one_core_percent": 107.72270963210742,
+          "rss_bytes": 190627840,
+          "presented_fps": 11.65225929541669
+        },
+        {
+          "elapsed_s": 3.858326699992176,
+          "points": 10000,
+          "cpu_one_core_percent": 110.88823944349339,
+          "rss_bytes": 192045056,
+          "presented_fps": 6.899712676484033
+        },
+        {
+          "elapsed_s": 4.819838499999605,
+          "points": 10000,
+          "cpu_one_core_percent": 113.7531541465793,
+          "rss_bytes": 192143360,
+          "presented_fps": 6.240173027469493
+        },
+        {
+          "elapsed_s": 5.866364300018176,
+          "points": 10000,
+          "cpu_one_core_percent": 103.01943821937958,
+          "rss_bytes": 192245760,
+          "presented_fps": 5.73325569220895
+        },
+        {
+          "elapsed_s": 6.801286400004756,
+          "points": 10000,
+          "cpu_one_core_percent": 110.30330762475329,
+          "rss_bytes": 192352256,
+          "presented_fps": 6.417646989076554
+        },
+        {
+          "elapsed_s": 7.886333400034346,
+          "points": 10000,
+          "cpu_one_core_percent": 109.4422637883535,
+          "rss_bytes": 192475136,
+          "presented_fps": 5.529714380885229
+        },
+        {
+          "elapsed_s": 8.837666200008243,
+          "points": 10000,
+          "cpu_one_core_percent": 103.47325352673732,
+          "rss_bytes": 192569344,
+          "presented_fps": 8.409254889791987
+        },
+        {
+          "elapsed_s": 9.841864700021688,
+          "points": 10000,
+          "cpu_one_core_percent": 119.80947989704148,
+          "rss_bytes": 192675840,
+          "presented_fps": 7.966552429517564
+        },
+        {
+          "elapsed_s": 10.775564100011252,
+          "points": 10000,
+          "cpu_one_core_percent": 80.32563799531015,
+          "rss_bytes": 192774144,
+          "presented_fps": 5.355042533020676
+        },
+        {
+          "elapsed_s": 11.785823300015181,
+          "points": 10000,
+          "cpu_one_core_percent": 111.35756051472971,
+          "rss_bytes": 192774144,
+          "presented_fps": 5.939069894118918
+        },
+        {
+          "elapsed_s": 12.824737999995705,
+          "points": 10000,
+          "cpu_one_core_percent": 105.27813303830474,
+          "rss_bytes": 192778240,
+          "presented_fps": 5.775257583815574
+        },
+        {
+          "elapsed_s": 13.850965699995868,
+          "points": 10000,
+          "cpu_one_core_percent": 108.10222721524897,
+          "rss_bytes": 192778240,
+          "presented_fps": 7.795540892141898
+        },
+        {
+          "elapsed_s": 14.909302300016861,
+          "points": 10000,
+          "cpu_one_core_percent": 122.53899184572042,
+          "rss_bytes": 192778240,
+          "presented_fps": 5.669273839609234
+        },
+        {
+          "elapsed_s": 15.736108399985824,
+          "points": 10000,
+          "cpu_one_core_percent": 113.38813296553968,
+          "rss_bytes": 192712704,
+          "presented_fps": 6.04736709149545
+        },
+        {
+          "elapsed_s": 16.745046700001694,
+          "points": 10000,
+          "cpu_one_core_percent": 105.308719074624,
+          "rss_bytes": 192720896,
+          "presented_fps": 7.929127083265806
+        },
+        {
+          "elapsed_s": 17.86959980003303,
+          "points": 10000,
+          "cpu_one_core_percent": 105.5975035742564,
+          "rss_bytes": 192720896,
+          "presented_fps": 7.113937082897273
+        },
+        {
+          "elapsed_s": 18.87002550001489,
+          "points": 10000,
+          "cpu_one_core_percent": 109.32845887703917,
+          "rss_bytes": 192720896,
+          "presented_fps": 6.997021368130507
+        },
+        {
+          "elapsed_s": 19.76522300002398,
+          "points": 10000,
+          "cpu_one_core_percent": 111.70719310429779,
+          "rss_bytes": 193355776,
+          "presented_fps": 6.702431586257867
+        },
+        {
+          "elapsed_s": 20.546647700015455,
+          "points": 10000,
+          "cpu_one_core_percent": 107.97585487241497,
+          "rss_bytes": 193671168,
+          "presented_fps": 6.398569177624591
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 148
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 148,
+            "retained": 148,
+            "p50_ms": 143.4335999749601,
+            "p95_ms": 196.0020999633707,
+            "p99_ms": 270.4735000245273,
+            "max_ms": 435.188500045333
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 484,
+          "simulation_step": 123,
+          "graph_redraws_deferred_for_input": 25
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 484,
+            "retained": 484,
+            "p50_ms": 31.0481,
+            "p95_ms": 34.7167,
+            "p99_ms": 36.3568,
+            "max_ms": 37.754
+          },
+          "simulation_step": {
+            "count": 123,
+            "retained": 123,
+            "p50_ms": 4.6044,
+            "p95_ms": 5.429,
+            "p99_ms": 6.0165,
+            "max_ms": 6.1482
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 156,
+          "received": 23481,
+          "delivered": 23481
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 7609,
+            "application_handler": 7609,
+            "command_queue_wait": 37,
+            "command_roundtrip": 37,
+            "command_to_worker": 37,
+            "driver_operation": 37,
+            "knob_to_application": 6036,
+            "delivered_transitions": 7042,
+            "knob_to_handler_complete": 6036,
+            "button_to_application": 1006,
+            "button_to_handler_complete": 1006
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 7609,
+              "retained": 7609,
+              "p50_ms": 75.303891,
+              "p95_ms": 148.860686,
+              "p99_ms": 231.945491,
+              "max_ms": 401.613591
+            },
+            "application_handler": {
+              "count": 7609,
+              "retained": 7609,
+              "p50_ms": 0.438,
+              "p95_ms": 0.806,
+              "p99_ms": 1.1475,
+              "max_ms": 4.4603
+            },
+            "command_queue_wait": {
+              "count": 37,
+              "retained": 37,
+              "p50_ms": 1.0296,
+              "p95_ms": 3.5107,
+              "p99_ms": 3.5671,
+              "max_ms": 7.0996
+            },
+            "command_roundtrip": {
+              "count": 37,
+              "retained": 37,
+              "p50_ms": 4.0234,
+              "p95_ms": 125.0238,
+              "p99_ms": 132.5812,
+              "max_ms": 136.6095
+            },
+            "command_to_worker": {
+              "count": 37,
+              "retained": 37,
+              "p50_ms": 1.2245,
+              "p95_ms": 3.6529,
+              "p99_ms": 3.726,
+              "max_ms": 7.2762
+            },
+            "driver_operation": {
+              "count": 37,
+              "retained": 37,
+              "p50_ms": 0.011,
+              "p95_ms": 0.0263,
+              "p99_ms": 0.0278,
+              "max_ms": 0.0299
+            },
+            "knob_to_application": {
+              "count": 6036,
+              "retained": 6036,
+              "p50_ms": 75.586397,
+              "p95_ms": 149.154991,
+              "p99_ms": 231.945491,
+              "max_ms": 401.613591
+            },
+            "knob_to_handler_complete": {
+              "count": 6036,
+              "retained": 6036,
+              "p50_ms": 76.085998,
+              "p95_ms": 149.761893,
+              "p99_ms": 232.152191,
+              "max_ms": 402.268891
+            },
+            "button_to_application": {
+              "count": 1006,
+              "retained": 1006,
+              "p50_ms": 74.396711,
+              "p95_ms": 149.471804,
+              "p99_ms": 230.713006,
+              "max_ms": 399.802606
+            },
+            "button_to_handler_complete": {
+              "count": 1006,
+              "retained": 1006,
+              "p50_ms": 74.558611,
+              "p95_ms": 149.539904,
+              "p99_ms": 231.265106,
+              "max_ms": 399.835906
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 115,
+            "generated_encoder_edges": 36120,
+            "generated_button_edges": 3012,
+            "accepted_rotation_steps": 18060,
+            "accepted_button_presses": 1506
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 115,
+              "retained": 115,
+              "p50_ms": 1.2605,
+              "p95_ms": 3.726,
+              "p99_ms": 7.2762,
+              "max_ms": 13.162
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 18060,
+        "delivered_rotation_steps": 18060,
+        "decoded_button_presses": 1506,
+        "delivered_button_presses": 1506
+      }
+    }
+  ],
+  "warnings": []
+}

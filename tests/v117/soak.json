@@ -1,0 +1,1873 @@
+{
+  "results": [
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 100,
+      "full_detail": false,
+      "duration_s": 60.436651600000914,
+      "rows": [
+        {
+          "elapsed_s": 0.3987391000264324,
+          "points": 100,
+          "cpu_one_core_percent": 90.12785552662807,
+          "rss_bytes": 176377856,
+          "presented_fps": 20.063244360710247
+        },
+        {
+          "elapsed_s": 1.3878414000500925,
+          "points": 100,
+          "cpu_one_core_percent": 107.42063788291506,
+          "rss_bytes": 176930816,
+          "presented_fps": 29.319515280983875
+        },
+        {
+          "elapsed_s": 2.41200510005001,
+          "points": 100,
+          "cpu_one_core_percent": 111.37135596585703,
+          "rss_bytes": 177242112,
+          "presented_fps": 33.19781788790478
+        },
+        {
+          "elapsed_s": 3.40784200001508,
+          "points": 100,
+          "cpu_one_core_percent": 111.40127465038826,
+          "rss_bytes": 177455104,
+          "presented_fps": 32.13377612450636
+        },
+        {
+          "elapsed_s": 4.387617800035514,
+          "points": 100,
+          "cpu_one_core_percent": 110.03792908311421,
+          "rss_bytes": 181219328,
+          "presented_fps": 23.4747582043977
+        },
+        {
+          "elapsed_s": 5.4085707000340335,
+          "points": 100,
+          "cpu_one_core_percent": 108.66074233214957,
+          "rss_bytes": 181432320,
+          "presented_fps": 23.507450735518553
+        },
+        {
+          "elapsed_s": 6.397247000015341,
+          "points": 100,
+          "cpu_one_core_percent": 107.46692320025154,
+          "rss_bytes": 181624832,
+          "presented_fps": 26.29778826547332
+        },
+        {
+          "elapsed_s": 7.3997158000129275,
+          "points": 100,
+          "cpu_one_core_percent": 102.8710319964554,
+          "rss_bytes": 181821440,
+          "presented_fps": 23.940894719175077
+        },
+        {
+          "elapsed_s": 8.382828900008462,
+          "points": 100,
+          "cpu_one_core_percent": 98.53901855283995,
+          "rss_bytes": 182050816,
+          "presented_fps": 26.446601108375106
+        },
+        {
+          "elapsed_s": 9.38159160001669,
+          "points": 100,
+          "cpu_one_core_percent": 106.38162598495583,
+          "rss_bytes": 182226944,
+          "presented_fps": 31.038403816787113
+        },
+        {
+          "elapsed_s": 10.414764800050762,
+          "points": 100,
+          "cpu_one_core_percent": 105.86317956794966,
+          "rss_bytes": 182403072,
+          "presented_fps": 29.036757824351906
+        },
+        {
+          "elapsed_s": 11.41148670000257,
+          "points": 100,
+          "cpu_one_core_percent": 101.8965270101024,
+          "rss_bytes": 182583296,
+          "presented_fps": 28.092088677246693
+        },
+        {
+          "elapsed_s": 12.382986900047399,
+          "points": 100,
+          "cpu_one_core_percent": 125.45030870233083,
+          "rss_bytes": 181309440,
+          "presented_fps": 21.616053191786236
+        },
+        {
+          "elapsed_s": 13.391215000010561,
+          "points": 100,
+          "cpu_one_core_percent": 110.0321445157632,
+          "rss_bytes": 181469184,
+          "presented_fps": 22.812298130592033
+        },
+        {
+          "elapsed_s": 14.395621100033168,
+          "points": 100,
+          "cpu_one_core_percent": 112.00648820976687,
+          "rss_bytes": 181637120,
+          "presented_fps": 21.903491027687743
+        },
+        {
+          "elapsed_s": 15.391970199998468,
+          "points": 100,
+          "cpu_one_core_percent": 94.09352605754852,
+          "rss_bytes": 181800960,
+          "presented_fps": 27.09893550457397
+        },
+        {
+          "elapsed_s": 16.3938252000371,
+          "points": 100,
+          "cpu_one_core_percent": 107.61287810695438,
+          "rss_bytes": 181977088,
+          "presented_fps": 22.95741399615027
+        },
+        {
+          "elapsed_s": 17.4078703999985,
+          "points": 100,
+          "cpu_one_core_percent": 101.69665021236266,
+          "rss_bytes": 182153216,
+          "presented_fps": 33.52907740334866
+        },
+        {
+          "elapsed_s": 18.40949480002746,
+          "points": 100,
+          "cpu_one_core_percent": 107.63765339271181,
+          "rss_bytes": 182312960,
+          "presented_fps": 31.948103499749823
+        },
+        {
+          "elapsed_s": 19.41752150002867,
+          "points": 100,
+          "cpu_one_core_percent": 103.85389593338583,
+          "rss_bytes": 182484992,
+          "presented_fps": 30.753153661468282
+        },
+        {
+          "elapsed_s": 20.413362200022675,
+          "points": 100,
+          "cpu_one_core_percent": 108.26279745409984,
+          "rss_bytes": 184803328,
+          "presented_fps": 21.08771011279858
+        },
+        {
+          "elapsed_s": 21.407818200008478,
+          "points": 100,
+          "cpu_one_core_percent": 114.6983878639461,
+          "rss_bytes": 184954880,
+          "presented_fps": 25.139372682508736
+        },
+        {
+          "elapsed_s": 22.40727570001036,
+          "points": 100,
+          "cpu_one_core_percent": 110.9977162608627,
+          "rss_bytes": 185114624,
+          "presented_fps": 22.01194147821052
+        },
+        {
+          "elapsed_s": 23.41032940003788,
+          "points": 100,
+          "cpu_one_core_percent": 107.4842752656631,
+          "rss_bytes": 185282560,
+          "presented_fps": 23.92693432000848
+        },
+        {
+          "elapsed_s": 24.403515800018795,
+          "points": 100,
+          "cpu_one_core_percent": 114.84500794834882,
+          "rss_bytes": 185462784,
+          "presented_fps": 20.137206873135135
+        },
+        {
+          "elapsed_s": 25.421041299996432,
+          "points": 100,
+          "cpu_one_core_percent": 112.09792776938448,
+          "rss_bytes": 185614336,
+          "presented_fps": 34.39717235663305
+        },
+        {
+          "elapsed_s": 26.425030400045216,
+          "points": 100,
+          "cpu_one_core_percent": 110.49671753867598,
+          "rss_bytes": 185774080,
+          "presented_fps": 31.872855988620902
+        },
+        {
+          "elapsed_s": 27.420037600037176,
+          "points": 100,
+          "cpu_one_core_percent": 108.35348729222378,
+          "rss_bytes": 185946112,
+          "presented_fps": 34.17060700693897
+        },
+        {
+          "elapsed_s": 28.41321730002528,
+          "points": 100,
+          "cpu_one_core_percent": 114.84578269306769,
+          "rss_bytes": 186249216,
+          "presented_fps": 21.144209854723695
+        },
+        {
+          "elapsed_s": 29.399846200016327,
+          "points": 100,
+          "cpu_one_core_percent": 99.77155544591618,
+          "rss_bytes": 186392576,
+          "presented_fps": 24.325255423004325
+        },
+        {
+          "elapsed_s": 30.406144900014624,
+          "points": 100,
+          "cpu_one_core_percent": 76.0832742804195,
+          "rss_bytes": 186675200,
+          "presented_fps": 17.887333055314954
+        },
+        {
+          "elapsed_s": 31.410595800029114,
+          "points": 100,
+          "cpu_one_core_percent": 94.89015341479116,
+          "rss_bytes": 186789888,
+          "presented_fps": 27.87592703595176
+        },
+        {
+          "elapsed_s": 32.422079600044526,
+          "points": 100,
+          "cpu_one_core_percent": 105.04369916589968,
+          "rss_bytes": 186933248,
+          "presented_fps": 20.7615781880837
+        },
+        {
+          "elapsed_s": 33.434523300034925,
+          "points": 100,
+          "cpu_one_core_percent": 114.203881165043,
+          "rss_bytes": 187170816,
+          "presented_fps": 34.5698234877968
+        },
+        {
+          "elapsed_s": 34.39701340004103,
+          "points": 100,
+          "cpu_one_core_percent": 115.26092579995999,
+          "rss_bytes": 187301888,
+          "presented_fps": 29.09120831458145
+        },
+        {
+          "elapsed_s": 35.417800199997146,
+          "points": 100,
+          "cpu_one_core_percent": 104.08637729697135,
+          "rss_bytes": 187478016,
+          "presented_fps": 38.20582319606478
+        },
+        {
+          "elapsed_s": 36.41276140004629,
+          "points": 100,
+          "cpu_one_core_percent": 94.22477981590552,
+          "rss_bytes": 188022784,
+          "presented_fps": 33.16712249519874
+        },
+        {
+          "elapsed_s": 37.40839110000525,
+          "points": 100,
+          "cpu_one_core_percent": 109.85509974693313,
+          "rss_bytes": 188186624,
+          "presented_fps": 21.092179151411163
+        },
+        {
+          "elapsed_s": 38.40809820004506,
+          "points": 100,
+          "cpu_one_core_percent": 101.59225636784538,
+          "rss_bytes": 188346368,
+          "presented_fps": 26.00761763016842
+        },
+        {
+          "elapsed_s": 39.40645940002287,
+          "points": 100,
+          "cpu_one_core_percent": 111.11960280754701,
+          "rss_bytes": 188522496,
+          "presented_fps": 21.034471292020164
+        },
+        {
+          "elapsed_s": 40.42919819999952,
+          "points": 100,
+          "cpu_one_core_percent": 94.72115461172655,
+          "rss_bytes": 188678144,
+          "presented_fps": 23.466402174776125
+        },
+        {
+          "elapsed_s": 41.423915999999736,
+          "points": 100,
+          "cpu_one_core_percent": 108.38501130670076,
+          "rss_bytes": 188829696,
+          "presented_fps": 30.159307494038472
+        },
+        {
+          "elapsed_s": 42.409332300012466,
+          "points": 100,
+          "cpu_one_core_percent": 99.89432892344925,
+          "rss_bytes": 188989440,
+          "presented_fps": 31.45878548954338
+        },
+        {
+          "elapsed_s": 43.406774700037204,
+          "points": 100,
+          "cpu_one_core_percent": 101.82292230356468,
+          "rss_bytes": 189153280,
+          "presented_fps": 28.071796425844294
+        },
+        {
+          "elapsed_s": 44.399630500003695,
+          "points": 100,
+          "cpu_one_core_percent": 110.16201950342773,
+          "rss_bytes": 189935616,
+          "presented_fps": 23.165498958435087
+        },
+        {
+          "elapsed_s": 45.398182500037365,
+          "points": 100,
+          "cpu_one_core_percent": 93.88594684787466,
+          "rss_bytes": 188067840,
+          "presented_fps": 24.034802393055912
+        },
+        {
+          "elapsed_s": 46.41691550001269,
+          "points": 100,
+          "cpu_one_core_percent": 104.29621893329583,
+          "rss_bytes": 188239872,
+          "presented_fps": 28.466732697087803
+        },
+        {
+          "elapsed_s": 47.42595370003255,
+          "points": 100,
+          "cpu_one_core_percent": 105.29829296641981,
+          "rss_bytes": 188420096,
+          "presented_fps": 22.79398341861323
+        },
+        {
+          "elapsed_s": 48.406193000031635,
+          "points": 100,
+          "cpu_one_core_percent": 102.01590570801784,
+          "rss_bytes": 188522496,
+          "presented_fps": 26.52413548408464
+        },
+        {
+          "elapsed_s": 49.410931600024924,
+          "points": 100,
+          "cpu_one_core_percent": 99.52837484363394,
+          "rss_bytes": 188682240,
+          "presented_fps": 28.863228704653842
+        },
+        {
+          "elapsed_s": 50.41155640000943,
+          "points": 100,
+          "cpu_one_core_percent": 107.7451808126975,
+          "rss_bytes": 188825600,
+          "presented_fps": 29.981267704402782
+        },
+        {
+          "elapsed_s": 51.40971990005346,
+          "points": 100,
+          "cpu_one_core_percent": 125.22998486168471,
+          "rss_bytes": 188891136,
+          "presented_fps": 29.05335648791085
+        },
+        {
+          "elapsed_s": 52.40963410004042,
+          "points": 100,
+          "cpu_one_core_percent": 117.19755555179451,
+          "rss_bytes": 190943232,
+          "presented_fps": 23.001973569632202
+        },
+        {
+          "elapsed_s": 53.406553200038616,
+          "points": 100,
+          "cpu_one_core_percent": 101.87637091132461,
+          "rss_bytes": 191016960,
+          "presented_fps": 25.077260532018368
+        },
+        {
+          "elapsed_s": 54.44758310000179,
+          "points": 100,
+          "cpu_one_core_percent": 117.07156538377124,
+          "rss_bytes": 191045632,
+          "presented_fps": 21.13291846927563
+        },
+        {
+          "elapsed_s": 55.42929170001298,
+          "points": 100,
+          "cpu_one_core_percent": 109.8212850521746,
+          "rss_bytes": 191074304,
+          "presented_fps": 22.409908601950992
+        },
+        {
+          "elapsed_s": 56.414779300044756,
+          "points": 100,
+          "cpu_one_core_percent": 109.40015886199265,
+          "rss_bytes": 191115264,
+          "presented_fps": 21.3092483348577
+        },
+        {
+          "elapsed_s": 57.42160960001638,
+          "points": 100,
+          "cpu_one_core_percent": 100.87350371046865,
+          "rss_bytes": 191094784,
+          "presented_fps": 36.74899335175227
+        },
+        {
+          "elapsed_s": 58.41870180005208,
+          "points": 100,
+          "cpu_one_core_percent": 120.66336492823123,
+          "rss_bytes": 191131648,
+          "presented_fps": 28.081655837842906
+        },
+        {
+          "elapsed_s": 59.42479590000585,
+          "points": 100,
+          "cpu_one_core_percent": 107.15945954255562,
+          "rss_bytes": 191229952,
+          "presented_fps": 28.82434158130192
+        },
+        {
+          "elapsed_s": 60.33421990001807,
+          "points": 100,
+          "cpu_one_core_percent": 99.65098787670217,
+          "rss_bytes": 191291392,
+          "presented_fps": 28.589524797729727
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 1951
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 1951,
+            "retained": 1951,
+            "p50_ms": 24.518999978899952,
+            "p95_ms": 45.14700000640005,
+            "p99_ms": 60.88750001275912,
+            "max_ms": 275.82180000375956
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 4788,
+          "simulation_step": 1174,
+          "graph_redraws_deferred_for_input": 4
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 4788,
+            "retained": 4788,
+            "p50_ms": 5.3594,
+            "p95_ms": 6.9566,
+            "p99_ms": 7.6198,
+            "max_ms": 9.8474
+          },
+          "simulation_step": {
+            "count": 1174,
+            "retained": 1174,
+            "p50_ms": 0.8246,
+            "p95_ms": 1.2224,
+            "p99_ms": 1.6888,
+            "max_ms": 1.985
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 4,
+          "high_water": 113,
+          "received": 23372,
+          "delivered": 23368
+        },
+        "delivery": {
+          "counts": {
+            "command_queue_wait": 117,
+            "command_roundtrip": 117,
+            "command_to_worker": 117,
+            "driver_operation": 117,
+            "snapshot_to_application": 22661,
+            "application_handler": 22661,
+            "knob_to_application": 18003,
+            "delivered_transitions": 21005,
+            "knob_to_handler_complete": 18003,
+            "button_to_application": 3002,
+            "button_to_handler_complete": 3002
+          },
+          "timings": {
+            "command_queue_wait": {
+              "count": 117,
+              "retained": 117,
+              "p50_ms": 1.2389,
+              "p95_ms": 3.4598,
+              "p99_ms": 4.156,
+              "max_ms": 13.9953
+            },
+            "command_roundtrip": {
+              "count": 117,
+              "retained": 117,
+              "p50_ms": 3.6386,
+              "p95_ms": 28.6093,
+              "p99_ms": 36.436,
+              "max_ms": 39.4848
+            },
+            "command_to_worker": {
+              "count": 117,
+              "retained": 117,
+              "p50_ms": 1.4235,
+              "p95_ms": 3.8329,
+              "p99_ms": 13.9566,
+              "max_ms": 15.114
+            },
+            "driver_operation": {
+              "count": 117,
+              "retained": 117,
+              "p50_ms": 0.012,
+              "p95_ms": 0.0259,
+              "p99_ms": 0.0373,
+              "max_ms": 0.0765
+            },
+            "snapshot_to_application": {
+              "count": 22661,
+              "retained": 20000,
+              "p50_ms": 30.386985,
+              "p95_ms": 58.013975,
+              "p99_ms": 75.561179,
+              "max_ms": 298.149273
+            },
+            "application_handler": {
+              "count": 22661,
+              "retained": 20000,
+              "p50_ms": 0.4765,
+              "p95_ms": 0.9918,
+              "p99_ms": 1.4208,
+              "max_ms": 85.8861
+            },
+            "knob_to_application": {
+              "count": 18003,
+              "retained": 18003,
+              "p50_ms": 30.799056,
+              "p95_ms": 58.914971,
+              "p99_ms": 79.623271,
+              "max_ms": 298.149273
+            },
+            "knob_to_handler_complete": {
+              "count": 18003,
+              "retained": 18003,
+              "p50_ms": 31.339473,
+              "p95_ms": 59.522953,
+              "p99_ms": 80.373649,
+              "max_ms": 298.664373
+            },
+            "button_to_application": {
+              "count": 3002,
+              "retained": 3002,
+              "p50_ms": 29.063501,
+              "p95_ms": 55.848124,
+              "p99_ms": 73.060208,
+              "max_ms": 289.008516
+            },
+            "button_to_handler_complete": {
+              "count": 3002,
+              "retained": 3002,
+              "p50_ms": 29.243112,
+              "p95_ms": 56.016311,
+              "p99_ms": 73.129208,
+              "max_ms": 289.041616
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 117,
+            "generated_encoder_edges": 36006,
+            "generated_button_edges": 3002,
+            "accepted_rotation_steps": 18003,
+            "accepted_button_presses": 1502
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 117,
+              "retained": 117,
+              "p50_ms": 1.4235,
+              "p95_ms": 3.8329,
+              "p99_ms": 13.9566,
+              "max_ms": 15.114
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 18003,
+        "delivered_rotation_steps": 18003,
+        "decoded_button_presses": 1502,
+        "delivered_button_presses": 1502
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 1000,
+      "full_detail": false,
+      "duration_s": 60.44439710001461,
+      "rows": [
+        {
+          "elapsed_s": 0.002570000011473894,
+          "points": 1000,
+          "cpu_one_core_percent": 0.0,
+          "rss_bytes": 193179648,
+          "presented_fps": 0.0
+        },
+        {
+          "elapsed_s": 0.8561253999941982,
+          "points": 1000,
+          "cpu_one_core_percent": 111.66527679624438,
+          "rss_bytes": 193179648,
+          "presented_fps": 11.715701172064984
+        },
+        {
+          "elapsed_s": 1.8555582000408322,
+          "points": 1000,
+          "cpu_one_core_percent": 115.69061971410673,
+          "rss_bytes": 193187840,
+          "presented_fps": 10.00567521851734
+        },
+        {
+          "elapsed_s": 2.8570716000394896,
+          "points": 1000,
+          "cpu_one_core_percent": 112.32999977848606,
+          "rss_bytes": 193187840,
+          "presented_fps": 9.98488886919876
+        },
+        {
+          "elapsed_s": 3.868680600018706,
+          "points": 1000,
+          "cpu_one_core_percent": 100.39699132973965,
+          "rss_bytes": 193187840,
+          "presented_fps": 9.885242223235903
+        },
+        {
+          "elapsed_s": 4.816926400002558,
+          "points": 1000,
+          "cpu_one_core_percent": 102.16232964243001,
+          "rss_bytes": 193187840,
+          "presented_fps": 13.709525526209962
+        },
+        {
+          "elapsed_s": 5.817954500031192,
+          "points": 1000,
+          "cpu_one_core_percent": 110.82356229243382,
+          "rss_bytes": 193187840,
+          "presented_fps": 12.986648426380977
+        },
+        {
+          "elapsed_s": 6.832881500013173,
+          "points": 1000,
+          "cpu_one_core_percent": 106.22685178531474,
+          "rss_bytes": 192479232,
+          "presented_fps": 14.779388074478572
+        },
+        {
+          "elapsed_s": 7.873631199996453,
+          "points": 1000,
+          "cpu_one_core_percent": 109.59647646483342,
+          "rss_bytes": 192479232,
+          "presented_fps": 11.530149852738639
+        },
+        {
+          "elapsed_s": 8.811646400019526,
+          "points": 1000,
+          "cpu_one_core_percent": 106.60808054873755,
+          "rss_bytes": 192479232,
+          "presented_fps": 10.660808054873755
+        },
+        {
+          "elapsed_s": 9.814464099996258,
+          "points": 1000,
+          "cpu_one_core_percent": 109.06768000060019,
+          "rss_bytes": 192479232,
+          "presented_fps": 9.971902171483446
+        },
+        {
+          "elapsed_s": 10.862916300015058,
+          "points": 1000,
+          "cpu_one_core_percent": 110.28161321796703,
+          "rss_bytes": 192479232,
+          "presented_fps": 11.445443101540363
+        },
+        {
+          "elapsed_s": 11.87913000001572,
+          "points": 1000,
+          "cpu_one_core_percent": 107.62992075380278,
+          "rss_bytes": 192479232,
+          "presented_fps": 12.792584866737702
+        },
+        {
+          "elapsed_s": 12.820912500028498,
+          "points": 1000,
+          "cpu_one_core_percent": 107.84071693689577,
+          "rss_bytes": 192479232,
+          "presented_fps": 11.67997918824225
+        },
+        {
+          "elapsed_s": 13.85412480001105,
+          "points": 1000,
+          "cpu_one_core_percent": 110.39599509406368,
+          "rss_bytes": 192479232,
+          "presented_fps": 15.485684791276878
+        },
+        {
+          "elapsed_s": 14.814087700040545,
+          "points": 1000,
+          "cpu_one_core_percent": 109.05369363418464,
+          "rss_bytes": 192479232,
+          "presented_fps": 19.79243156106993
+        },
+        {
+          "elapsed_s": 15.896902200009208,
+          "points": 1000,
+          "cpu_one_core_percent": 109.6679071100698,
+          "rss_bytes": 192479232,
+          "presented_fps": 12.005749830997114
+        },
+        {
+          "elapsed_s": 16.854850700008683,
+          "points": 1000,
+          "cpu_one_core_percent": 109.28301469239463,
+          "rss_bytes": 192483328,
+          "presented_fps": 10.43897453778098
+        },
+        {
+          "elapsed_s": 17.870454200019594,
+          "points": 1000,
+          "cpu_one_core_percent": 110.77157571708972,
+          "rss_bytes": 192483328,
+          "presented_fps": 9.846362285963531
+        },
+        {
+          "elapsed_s": 18.89412569999695,
+          "points": 1000,
+          "cpu_one_core_percent": 105.31943108935344,
+          "rss_bytes": 192483328,
+          "presented_fps": 10.745634708247076
+        },
+        {
+          "elapsed_s": 19.914516100019682,
+          "points": 1000,
+          "cpu_one_core_percent": 108.72064260652428,
+          "rss_bytes": 192483328,
+          "presented_fps": 9.800170601151484
+        },
+        {
+          "elapsed_s": 20.816908000037074,
+          "points": 1000,
+          "cpu_one_core_percent": 112.54810686802772,
+          "rss_bytes": 192483328,
+          "presented_fps": 15.514323654423512
+        },
+        {
+          "elapsed_s": 21.83259830001043,
+          "points": 1000,
+          "cpu_one_core_percent": 104.60865876417944,
+          "rss_bytes": 192483328,
+          "presented_fps": 13.783729154809526
+        },
+        {
+          "elapsed_s": 22.880013199988753,
+          "points": 1000,
+          "cpu_one_core_percent": 108.89906187353341,
+          "rss_bytes": 192483328,
+          "presented_fps": 17.185167024426097
+        },
+        {
+          "elapsed_s": 23.833432000014,
+          "points": 1000,
+          "cpu_one_core_percent": 109.80221912681795,
+          "rss_bytes": 192483328,
+          "presented_fps": 11.53742720377311
+        },
+        {
+          "elapsed_s": 24.814341599994805,
+          "points": 1000,
+          "cpu_one_core_percent": 109.91073999286961,
+          "rss_bytes": 192483328,
+          "presented_fps": 11.214081297823219
+        },
+        {
+          "elapsed_s": 25.844588800042402,
+          "points": 1000,
+          "cpu_one_core_percent": 110.71371996422832,
+          "rss_bytes": 192483328,
+          "presented_fps": 9.706408325630976
+        },
+        {
+          "elapsed_s": 26.919638000021223,
+          "points": 1000,
+          "cpu_one_core_percent": 107.55321710139208,
+          "rss_bytes": 192483328,
+          "presented_fps": 10.232089843159462
+        },
+        {
+          "elapsed_s": 27.87270000000717,
+          "points": 1000,
+          "cpu_one_core_percent": 114.76168392152096,
+          "rss_bytes": 192483328,
+          "presented_fps": 9.443247134113724
+        },
+        {
+          "elapsed_s": 28.8123515000334,
+          "points": 1000,
+          "cpu_one_core_percent": 104.75958373636628,
+          "rss_bytes": 192483328,
+          "presented_fps": 14.899140798060982
+        },
+        {
+          "elapsed_s": 29.830835100030527,
+          "points": 1000,
+          "cpu_one_core_percent": 101.25347133747765,
+          "rss_bytes": 192466944,
+          "presented_fps": 13.745925805815148
+        },
+        {
+          "elapsed_s": 30.822842499997932,
+          "points": 1000,
+          "cpu_one_core_percent": 92.93025435397858,
+          "rss_bytes": 192495616,
+          "presented_fps": 13.104740952967827
+        },
+        {
+          "elapsed_s": 31.83486709999852,
+          "points": 1000,
+          "cpu_one_core_percent": 100.35576210295793,
+          "rss_bytes": 192495616,
+          "presented_fps": 12.845537549178614
+        },
+        {
+          "elapsed_s": 32.820459500013385,
+          "points": 1000,
+          "cpu_one_core_percent": 107.80318516903883,
+          "rss_bytes": 192507904,
+          "presented_fps": 10.146182133556595
+        },
+        {
+          "elapsed_s": 33.85963060002541,
+          "points": 1000,
+          "cpu_one_core_percent": 111.26656620710664,
+          "rss_bytes": 192507904,
+          "presented_fps": 9.623054374668682
+        },
+        {
+          "elapsed_s": 34.87589090003166,
+          "points": 1000,
+          "cpu_one_core_percent": 106.08748565631932,
+          "rss_bytes": 192516096,
+          "presented_fps": 11.807998403485977
+        },
+        {
+          "elapsed_s": 35.88539300003322,
+          "points": 1000,
+          "cpu_one_core_percent": 103.70211215988431,
+          "rss_bytes": 192516096,
+          "presented_fps": 9.905873400347158
+        },
+        {
+          "elapsed_s": 36.814646999991965,
+          "points": 1000,
+          "cpu_one_core_percent": 95.84300955815513,
+          "rss_bytes": 192536576,
+          "presented_fps": 17.21811259430717
+        },
+        {
+          "elapsed_s": 37.85374980000779,
+          "points": 1000,
+          "cpu_one_core_percent": 97.74057003643256,
+          "rss_bytes": 192561152,
+          "presented_fps": 19.247373791789798
+        },
+        {
+          "elapsed_s": 38.81983480002964,
+          "points": 1000,
+          "cpu_one_core_percent": 90.5717405797845,
+          "rss_bytes": 192589824,
+          "presented_fps": 13.456372886139413
+        },
+        {
+          "elapsed_s": 39.9312779000029,
+          "points": 1000,
+          "cpu_one_core_percent": 87.16145703035171,
+          "rss_bytes": 192589824,
+          "presented_fps": 9.897042862801227
+        },
+        {
+          "elapsed_s": 40.95050590002211,
+          "points": 1000,
+          "cpu_one_core_percent": 101.17952018395904,
+          "rss_bytes": 192589824,
+          "presented_fps": 8.830212670600062
+        },
+        {
+          "elapsed_s": 41.876420100044925,
+          "points": 1000,
+          "cpu_one_core_percent": 87.75111127791087,
+          "rss_bytes": 192598016,
+          "presented_fps": 7.560095740866166
+        },
+        {
+          "elapsed_s": 42.87037670001155,
+          "points": 1000,
+          "cpu_one_core_percent": 105.3240151567135,
+          "rss_bytes": 192618496,
+          "presented_fps": 9.054721303024921
+        },
+        {
+          "elapsed_s": 43.882922300021164,
+          "points": 1000,
+          "cpu_one_core_percent": 87.95900154931704,
+          "rss_bytes": 192622592,
+          "presented_fps": 6.913268893700708
+        },
+        {
+          "elapsed_s": 44.8510038999957,
+          "points": 1000,
+          "cpu_one_core_percent": 103.29707743916425,
+          "rss_bytes": 192622592,
+          "presented_fps": 10.329707743916426
+        },
+        {
+          "elapsed_s": 45.822769800026435,
+          "points": 1000,
+          "cpu_one_core_percent": 85.21856961371154,
+          "rss_bytes": 192626688,
+          "presented_fps": 10.29054425524064
+        },
+        {
+          "elapsed_s": 46.858081999991555,
+          "points": 1000,
+          "cpu_one_core_percent": 93.57080888572916,
+          "rss_bytes": 192626688,
+          "presented_fps": 15.454275532094623
+        },
+        {
+          "elapsed_s": 47.83921360003296,
+          "points": 1000,
+          "cpu_one_core_percent": 90.77528437188361,
+          "rss_bytes": 192626688,
+          "presented_fps": 9.173081368106134
+        },
+        {
+          "elapsed_s": 48.810776100028306,
+          "points": 1000,
+          "cpu_one_core_percent": 98.10228369297583,
+          "rss_bytes": 192626688,
+          "presented_fps": 8.234158893574364
+        },
+        {
+          "elapsed_s": 49.9224649000098,
+          "points": 1000,
+          "cpu_one_core_percent": 91.3587507598266,
+          "rss_bytes": 192626688,
+          "presented_fps": 7.196258521389419
+        },
+        {
+          "elapsed_s": 50.839460899995174,
+          "points": 1000,
+          "cpu_one_core_percent": 100.5320633911929,
+          "rss_bytes": 192626688,
+          "presented_fps": 8.724138382422163
+        },
+        {
+          "elapsed_s": 51.87796509999316,
+          "points": 1000,
+          "cpu_one_core_percent": 90.27406918545121,
+          "rss_bytes": 192638976,
+          "presented_fps": 7.703387237158504
+        },
+        {
+          "elapsed_s": 52.91273129999172,
+          "points": 1000,
+          "cpu_one_core_percent": 95.13018496365383,
+          "rss_bytes": 192643072,
+          "presented_fps": 12.56322442694603
+        },
+        {
+          "elapsed_s": 53.833922900026664,
+          "points": 1000,
+          "cpu_one_core_percent": 84.80863264171795,
+          "rss_bytes": 192647168,
+          "presented_fps": 11.941055475953888
+        },
+        {
+          "elapsed_s": 54.84337360004429,
+          "points": 1000,
+          "cpu_one_core_percent": 100.61164948246295,
+          "rss_bytes": 192671744,
+          "presented_fps": 12.878291133755257
+        },
+        {
+          "elapsed_s": 55.913867600029334,
+          "points": 1000,
+          "cpu_one_core_percent": 84.6571769680782,
+          "rss_bytes": 192671744,
+          "presented_fps": 10.275629756125355
+        },
+        {
+          "elapsed_s": 56.89158130000578,
+          "points": 1000,
+          "cpu_one_core_percent": 116.66247491750156,
+          "rss_bytes": 192630784,
+          "presented_fps": 9.205148705819301
+        },
+        {
+          "elapsed_s": 57.815549699997064,
+          "points": 1000,
+          "cpu_one_core_percent": 93.00913321365852,
+          "rss_bytes": 192667648,
+          "presented_fps": 7.576016669039821
+        },
+        {
+          "elapsed_s": 58.89980130002368,
+          "points": 1000,
+          "cpu_one_core_percent": 97.99386046319096,
+          "rss_bytes": 192684032,
+          "presented_fps": 9.222951573006208
+        },
+        {
+          "elapsed_s": 59.88463620003313,
+          "points": 1000,
+          "cpu_one_core_percent": 84.08769835350648,
+          "rss_bytes": 192720896,
+          "presented_fps": 7.107790351390737
+        },
+        {
+          "elapsed_s": 60.414977100037504,
+          "points": 1000,
+          "cpu_one_core_percent": 103.11763622143566,
+          "rss_bytes": 192729088,
+          "presented_fps": 9.427898168816974
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 693
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 693,
+            "retained": 693,
+            "p50_ms": 85.17759998561814,
+            "p95_ms": 134.201899995096,
+            "p99_ms": 168.12140000751242,
+            "max_ms": 368.6493999650702
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 2250,
+          "simulation_step": 577,
+          "graph_redraws_deferred_for_input": 63
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 2250,
+            "retained": 2250,
+            "p50_ms": 15.7523,
+            "p95_ms": 22.1453,
+            "p99_ms": 27.1429,
+            "max_ms": 52.6594
+          },
+          "simulation_step": {
+            "count": 577,
+            "retained": 577,
+            "p50_ms": 1.4064,
+            "p95_ms": 2.269,
+            "p99_ms": 2.8356,
+            "max_ms": 13.9713
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 133,
+          "received": 46724,
+          "delivered": 46724
+        },
+        "delivery": {
+          "counts": {
+            "command_queue_wait": 113,
+            "snapshot_to_application": 22687,
+            "application_handler": 22687,
+            "command_roundtrip": 113,
+            "command_to_worker": 113,
+            "driver_operation": 113,
+            "knob_to_application": 18015,
+            "delivered_transitions": 21019,
+            "knob_to_handler_complete": 18015,
+            "button_to_application": 3004,
+            "button_to_handler_complete": 3004
+          },
+          "timings": {
+            "command_queue_wait": {
+              "count": 113,
+              "retained": 113,
+              "p50_ms": 1.0872,
+              "p95_ms": 2.3691,
+              "p99_ms": 2.778,
+              "max_ms": 5.4114
+            },
+            "snapshot_to_application": {
+              "count": 22687,
+              "retained": 20000,
+              "p50_ms": 57.676451,
+              "p95_ms": 123.744856,
+              "p99_ms": 159.365247,
+              "max_ms": 352.534673
+            },
+            "application_handler": {
+              "count": 22687,
+              "retained": 20000,
+              "p50_ms": 0.4426,
+              "p95_ms": 0.9381,
+              "p99_ms": 1.7052,
+              "max_ms": 14.2273
+            },
+            "command_roundtrip": {
+              "count": 113,
+              "retained": 113,
+              "p50_ms": 3.1578,
+              "p95_ms": 38.7503,
+              "p99_ms": 73.5674,
+              "max_ms": 250.7338
+            },
+            "command_to_worker": {
+              "count": 113,
+              "retained": 113,
+              "p50_ms": 1.3331,
+              "p95_ms": 2.9643,
+              "p99_ms": 6.6129,
+              "max_ms": 7.9152
+            },
+            "driver_operation": {
+              "count": 113,
+              "retained": 113,
+              "p50_ms": 0.0114,
+              "p95_ms": 0.0187,
+              "p99_ms": 0.0387,
+              "max_ms": 0.0893
+            },
+            "knob_to_application": {
+              "count": 18015,
+              "retained": 18015,
+              "p50_ms": 57.444661,
+              "p95_ms": 122.169098,
+              "p99_ms": 158.015659,
+              "max_ms": 352.534673
+            },
+            "knob_to_handler_complete": {
+              "count": 18015,
+              "retained": 18015,
+              "p50_ms": 57.958779,
+              "p95_ms": 122.943054,
+              "p99_ms": 158.938746,
+              "max_ms": 352.989773
+            },
+            "button_to_application": {
+              "count": 3004,
+              "retained": 3004,
+              "p50_ms": 56.487727,
+              "p95_ms": 117.735515,
+              "p99_ms": 152.390621,
+              "max_ms": 351.088816
+            },
+            "button_to_handler_complete": {
+              "count": 3004,
+              "retained": 3004,
+              "p50_ms": 56.594128,
+              "p95_ms": 117.903715,
+              "p99_ms": 152.449521,
+              "max_ms": 351.123316
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 230,
+            "generated_encoder_edges": 72039,
+            "generated_button_edges": 6006,
+            "accepted_rotation_steps": 36018,
+            "accepted_button_presses": 3004
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 230,
+              "retained": 230,
+              "p50_ms": 1.364,
+              "p95_ms": 3.6141,
+              "p99_ms": 7.9152,
+              "max_ms": 15.114
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 36018,
+        "delivered_rotation_steps": 36018,
+        "decoded_button_presses": 3004,
+        "delivered_button_presses": 3004
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 10000,
+      "full_detail": false,
+      "duration_s": 60.43094530003145,
+      "rows": [
+        {
+          "elapsed_s": 0.27569819998461753,
+          "points": 10000,
+          "cpu_one_core_percent": 102.01372370791402,
+          "rss_bytes": 193454080,
+          "presented_fps": 7.254309241451664
+        },
+        {
+          "elapsed_s": 1.2144725000252947,
+          "points": 10000,
+          "cpu_one_core_percent": 88.21342893218501,
+          "rss_bytes": 193511424,
+          "presented_fps": 6.391312586784725
+        },
+        {
+          "elapsed_s": 2.246251000033226,
+          "points": 10000,
+          "cpu_one_core_percent": 106.00627944772957,
+          "rss_bytes": 193531904,
+          "presented_fps": 8.722802423127462
+        },
+        {
+          "elapsed_s": 3.247765999985859,
+          "points": 10000,
+          "cpu_one_core_percent": 85.80750163908124,
+          "rss_bytes": 193613824,
+          "presented_fps": 7.987898334401745
+        },
+        {
+          "elapsed_s": 4.218981400015764,
+          "points": 10000,
+          "cpu_one_core_percent": 91.70210850987087,
+          "rss_bytes": 195264512,
+          "presented_fps": 6.17782625750709
+        },
+        {
+          "elapsed_s": 5.368207000021357,
+          "points": 10000,
+          "cpu_one_core_percent": 89.73433936687287,
+          "rss_bytes": 195469312,
+          "presented_fps": 6.091058187327128
+        },
+        {
+          "elapsed_s": 6.339927799999714,
+          "points": 10000,
+          "cpu_one_core_percent": 112.55805165685052,
+          "rss_bytes": 195469312,
+          "presented_fps": 7.203715306038434
+        },
+        {
+          "elapsed_s": 7.223347400024068,
+          "points": 10000,
+          "cpu_one_core_percent": 104.35301638933369,
+          "rss_bytes": 195469312,
+          "presented_fps": 5.659824617726573
+        },
+        {
+          "elapsed_s": 8.295499800005928,
+          "points": 10000,
+          "cpu_one_core_percent": 106.38646147873179,
+          "rss_bytes": 195481600,
+          "presented_fps": 6.528922567461897
+        },
+        {
+          "elapsed_s": 9.270088799996302,
+          "points": 10000,
+          "cpu_one_core_percent": 99.40087565215373,
+          "rss_bytes": 195489792,
+          "presented_fps": 9.234661996071056
+        },
+        {
+          "elapsed_s": 10.267553700017743,
+          "points": 10000,
+          "cpu_one_core_percent": 104.95356778744762,
+          "rss_bytes": 195473408,
+          "presented_fps": 12.03049851653131
+        },
+        {
+          "elapsed_s": 11.308107700024266,
+          "points": 10000,
+          "cpu_one_core_percent": 100.6074648690445,
+          "rss_bytes": 195473408,
+          "presented_fps": 11.532318361108386
+        },
+        {
+          "elapsed_s": 12.261233400029596,
+          "points": 10000,
+          "cpu_one_core_percent": 104.91795573179988,
+          "rss_bytes": 195477504,
+          "presented_fps": 8.39343645854399
+        },
+        {
+          "elapsed_s": 13.33963770000264,
+          "points": 10000,
+          "cpu_one_core_percent": 111.56530069752809,
+          "rss_bytes": 195493888,
+          "presented_fps": 7.418368046381088
+        },
+        {
+          "elapsed_s": 14.270024700032081,
+          "points": 10000,
+          "cpu_one_core_percent": 109.1615639478907,
+          "rss_bytes": 195493888,
+          "presented_fps": 11.823037079894622
+        },
+        {
+          "elapsed_s": 15.233289700001478,
+          "points": 10000,
+          "cpu_one_core_percent": 113.54611659665292,
+          "rss_bytes": 195493888,
+          "presented_fps": 14.533902924371574
+        },
+        {
+          "elapsed_s": 16.26042669999879,
+          "points": 10000,
+          "cpu_one_core_percent": 98.8792147496059,
+          "rss_bytes": 195493888,
+          "presented_fps": 11.68295952733805
+        },
+        {
+          "elapsed_s": 17.248343400016893,
+          "points": 10000,
+          "cpu_one_core_percent": 105.96794243692969,
+          "rss_bytes": 196308992,
+          "presented_fps": 17.207928562892462
+        },
+        {
+          "elapsed_s": 18.27799979998963,
+          "points": 10000,
+          "cpu_one_core_percent": 104.70725962841065,
+          "rss_bytes": 196308992,
+          "presented_fps": 12.625571016063429
+        },
+        {
+          "elapsed_s": 19.2123591999989,
+          "points": 10000,
+          "cpu_one_core_percent": 105.35292950338307,
+          "rss_bytes": 196308992,
+          "presented_fps": 12.843023787079078
+        },
+        {
+          "elapsed_s": 20.23985230003018,
+          "points": 10000,
+          "cpu_one_core_percent": 104.92771192012673,
+          "rss_bytes": 196354048,
+          "presented_fps": 10.705667998807133
+        },
+        {
+          "elapsed_s": 21.27627490001032,
+          "points": 10000,
+          "cpu_one_core_percent": 111.56163518840229,
+          "rss_bytes": 196354048,
+          "presented_fps": 8.683716468718881
+        },
+        {
+          "elapsed_s": 22.292652200034354,
+          "points": 10000,
+          "cpu_one_core_percent": 112.22456463490768,
+          "rss_bytes": 196354048,
+          "presented_fps": 8.854979346535181
+        },
+        {
+          "elapsed_s": 23.281233299989253,
+          "points": 10000,
+          "cpu_one_core_percent": 113.79946471274074,
+          "rss_bytes": 196354048,
+          "presented_fps": 9.103957177019259
+        },
+        {
+          "elapsed_s": 24.260870199999772,
+          "points": 10000,
+          "cpu_one_core_percent": 111.64850976808407,
+          "rss_bytes": 196354048,
+          "presented_fps": 13.270222875292278
+        },
+        {
+          "elapsed_s": 25.237745199992787,
+          "points": 10000,
+          "cpu_one_core_percent": 100.76775431933856,
+          "rss_bytes": 196354048,
+          "presented_fps": 10.236724248313758
+        },
+        {
+          "elapsed_s": 26.21652489999542,
+          "points": 10000,
+          "cpu_one_core_percent": 114.93904092994303,
+          "rss_bytes": 196354048,
+          "presented_fps": 13.281844729682305
+        },
+        {
+          "elapsed_s": 27.26368570001796,
+          "points": 10000,
+          "cpu_one_core_percent": 101.4648371078378,
+          "rss_bytes": 196354048,
+          "presented_fps": 12.414521246135447
+        },
+        {
+          "elapsed_s": 28.214923300023656,
+          "points": 10000,
+          "cpu_one_core_percent": 101.84101217132267,
+          "rss_bytes": 201588736,
+          "presented_fps": 14.71766885572663
+        },
+        {
+          "elapsed_s": 29.268977500032634,
+          "points": 10000,
+          "cpu_one_core_percent": 102.2836396829326,
+          "rss_bytes": 201633792,
+          "presented_fps": 9.4871781734894
+        },
+        {
+          "elapsed_s": 30.347715799987782,
+          "points": 10000,
+          "cpu_one_core_percent": 76.76792416051528,
+          "rss_bytes": 201674752,
+          "presented_fps": 7.4160711641856265
+        },
+        {
+          "elapsed_s": 31.255642700009048,
+          "points": 10000,
+          "cpu_one_core_percent": 104.97816508990704,
+          "rss_bytes": 201674752,
+          "presented_fps": 8.811282053447934
+        },
+        {
+          "elapsed_s": 32.23743979999563,
+          "points": 10000,
+          "cpu_one_core_percent": 103.44550824339196,
+          "rss_bytes": 201687040,
+          "presented_fps": 9.166863499722117
+        },
+        {
+          "elapsed_s": 33.2838665000163,
+          "points": 10000,
+          "cpu_one_core_percent": 92.57695737129606,
+          "rss_bytes": 201740288,
+          "presented_fps": 22.9351946003727
+        },
+        {
+          "elapsed_s": 34.25295500003267,
+          "points": 10000,
+          "cpu_one_core_percent": 111.25144916917179,
+          "rss_bytes": 201748480,
+          "presented_fps": 13.414667494021874
+        },
+        {
+          "elapsed_s": 35.30239840003196,
+          "points": 10000,
+          "cpu_one_core_percent": 107.19968318451099,
+          "rss_bytes": 201760768,
+          "presented_fps": 16.19906323677055
+        },
+        {
+          "elapsed_s": 36.21669800003292,
+          "points": 10000,
+          "cpu_one_core_percent": 111.08229731249307,
+          "rss_bytes": 201773056,
+          "presented_fps": 10.937333889230086
+        },
+        {
+          "elapsed_s": 37.26500900002429,
+          "points": 10000,
+          "cpu_one_core_percent": 96.88203214583828,
+          "rss_bytes": 201777152,
+          "presented_fps": 13.354815508103247
+        },
+        {
+          "elapsed_s": 38.21951369999442,
+          "points": 10000,
+          "cpu_one_core_percent": 98.21847917871311,
+          "rss_bytes": 201916416,
+          "presented_fps": 10.476637779062731
+        },
+        {
+          "elapsed_s": 39.24020629998995,
+          "points": 10000,
+          "cpu_one_core_percent": 108.68845331149272,
+          "rss_bytes": 202063872,
+          "presented_fps": 10.776995933984631
+        },
+        {
+          "elapsed_s": 40.3193578000064,
+          "points": 10000,
+          "cpu_one_core_percent": 118.72753732728614,
+          "rss_bytes": 202186752,
+          "presented_fps": 11.119847398458019
+        },
+        {
+          "elapsed_s": 41.24380250001559,
+          "points": 10000,
+          "cpu_one_core_percent": 106.48284315873245,
+          "rss_bytes": 202293248,
+          "presented_fps": 14.062496112391333
+        },
+        {
+          "elapsed_s": 42.21477770002093,
+          "points": 10000,
+          "cpu_one_core_percent": 107.81686288117773,
+          "rss_bytes": 202457088,
+          "presented_fps": 13.388601480170129
+        },
+        {
+          "elapsed_s": 43.23198929999489,
+          "points": 10000,
+          "cpu_one_core_percent": 112.13251992301281,
+          "rss_bytes": 202661888,
+          "presented_fps": 13.763114774112257
+        },
+        {
+          "elapsed_s": 44.24898040003609,
+          "points": 10000,
+          "cpu_one_core_percent": 119.83880684409446,
+          "rss_bytes": 204374016,
+          "presented_fps": 12.782806063370076
+        },
+        {
+          "elapsed_s": 45.255266099993605,
+          "points": 10000,
+          "cpu_one_core_percent": 116.45549569565333,
+          "rss_bytes": 204439552,
+          "presented_fps": 10.931289195965325
+        },
+        {
+          "elapsed_s": 46.24406749999616,
+          "points": 10000,
+          "cpu_one_core_percent": 116.93450272188218,
+          "rss_bytes": 204599296,
+          "presented_fps": 10.11325428946008
+        },
+        {
+          "elapsed_s": 47.23559450003086,
+          "points": 10000,
+          "cpu_one_core_percent": 113.46135808310173,
+          "rss_bytes": 204603392,
+          "presented_fps": 13.111090267380645
+        },
+        {
+          "elapsed_s": 48.25450969999656,
+          "points": 10000,
+          "cpu_one_core_percent": 99.67708794943731,
+          "rss_bytes": 204603392,
+          "presented_fps": 7.851487543094138
+        },
+        {
+          "elapsed_s": 49.29307409998728,
+          "points": 10000,
+          "cpu_one_core_percent": 114.34052621201074,
+          "rss_bytes": 204894208,
+          "presented_fps": 10.591543480691522
+        },
+        {
+          "elapsed_s": 50.27068790001795,
+          "points": 10000,
+          "cpu_one_core_percent": 102.28988174764211,
+          "rss_bytes": 204922880,
+          "presented_fps": 13.297684627193474
+        },
+        {
+          "elapsed_s": 51.27922640001634,
+          "points": 10000,
+          "cpu_one_core_percent": 111.54755123396787,
+          "rss_bytes": 204922880,
+          "presented_fps": 13.881473042449334
+        },
+        {
+          "elapsed_s": 52.29770739999367,
+          "points": 10000,
+          "cpu_one_core_percent": 107.39031950761454,
+          "rss_bytes": 204922880,
+          "presented_fps": 9.818543497839045
+        },
+        {
+          "elapsed_s": 53.28374889999395,
+          "points": 10000,
+          "cpu_one_core_percent": 112.50794210990932,
+          "rss_bytes": 204922880,
+          "presented_fps": 11.155717076813543
+        },
+        {
+          "elapsed_s": 54.2420257999911,
+          "points": 10000,
+          "cpu_one_core_percent": 105.98450197464072,
+          "rss_bytes": 204922880,
+          "presented_fps": 8.34831769400247
+        },
+        {
+          "elapsed_s": 55.22912750003161,
+          "points": 10000,
+          "cpu_one_core_percent": 113.97001949787227,
+          "rss_bytes": 204922880,
+          "presented_fps": 10.130668399810869
+        },
+        {
+          "elapsed_s": 56.21869130001869,
+          "points": 10000,
+          "cpu_one_core_percent": 107.37054043547982,
+          "rss_bytes": 204922880,
+          "presented_fps": 9.094916366299469
+        },
+        {
+          "elapsed_s": 57.27920679998351,
+          "points": 10000,
+          "cpu_one_core_percent": 104.6071462450854,
+          "rss_bytes": 204922880,
+          "presented_fps": 10.372314219231002
+        },
+        {
+          "elapsed_s": 58.26809149998007,
+          "points": 10000,
+          "cpu_one_core_percent": 102.70408673564594,
+          "rss_bytes": 204922880,
+          "presented_fps": 12.134882863534783
+        },
+        {
+          "elapsed_s": 59.2604408999905,
+          "points": 10000,
+          "cpu_one_core_percent": 111.79278185569972,
+          "rss_bytes": 204922880,
+          "presented_fps": 12.092514995095405
+        },
+        {
+          "elapsed_s": 60.237692900002,
+          "points": 10000,
+          "cpu_one_core_percent": 103.92662281459077,
+          "rss_bytes": 204931072,
+          "presented_fps": 9.209497652492967
+        },
+        {
+          "elapsed_s": 60.41754930000752,
+          "points": 10000,
+          "cpu_one_core_percent": 95.56234862630717,
+          "rss_bytes": 204931072,
+          "presented_fps": 11.119982385606653
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 713
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 713,
+            "retained": 713,
+            "p50_ms": 81.07750002294779,
+            "p95_ms": 155.67820002092049,
+            "p99_ms": 207.63570001348853,
+            "max_ms": 276.61680000368506
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 1613,
+          "simulation_step": 557,
+          "graph_redraws_deferred_for_input": 201
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 1613,
+            "retained": 1613,
+            "p50_ms": 25.7005,
+            "p95_ms": 35.0351,
+            "p99_ms": 41.4955,
+            "max_ms": 70.6051
+          },
+          "simulation_step": {
+            "count": 557,
+            "retained": 557,
+            "p50_ms": 4.4543,
+            "p95_ms": 5.838,
+            "p99_ms": 6.3015,
+            "max_ms": 7.9072
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 814,
+          "received": 70070,
+          "delivered": 70070
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 22679,
+            "application_handler": 22679,
+            "command_queue_wait": 112,
+            "command_roundtrip": 112,
+            "command_to_worker": 112,
+            "driver_operation": 112,
+            "knob_to_application": 18012,
+            "delivered_transitions": 21014,
+            "knob_to_handler_complete": 18012,
+            "button_to_application": 3002,
+            "button_to_handler_complete": 3002
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 22679,
+              "retained": 20000,
+              "p50_ms": 66.415482,
+              "p95_ms": 1608.954061,
+              "p99_ms": 1956.75156,
+              "max_ms": 2108.579859
+            },
+            "application_handler": {
+              "count": 22679,
+              "retained": 20000,
+              "p50_ms": 0.4359,
+              "p95_ms": 3.146,
+              "p99_ms": 3.9911,
+              "max_ms": 7.0745
+            },
+            "command_queue_wait": {
+              "count": 112,
+              "retained": 112,
+              "p50_ms": 1.1538,
+              "p95_ms": 3.5839,
+              "p99_ms": 3.8967,
+              "max_ms": 12.7257
+            },
+            "command_roundtrip": {
+              "count": 112,
+              "retained": 112,
+              "p50_ms": 4.4531,
+              "p95_ms": 84.3601,
+              "p99_ms": 112.0264,
+              "max_ms": 251.07
+            },
+            "command_to_worker": {
+              "count": 112,
+              "retained": 112,
+              "p50_ms": 1.4329,
+              "p95_ms": 4.0209,
+              "p99_ms": 10.624,
+              "max_ms": 28.2207
+            },
+            "driver_operation": {
+              "count": 112,
+              "retained": 112,
+              "p50_ms": 0.0114,
+              "p95_ms": 0.0263,
+              "p99_ms": 0.0536,
+              "max_ms": 0.0756
+            },
+            "knob_to_application": {
+              "count": 18012,
+              "retained": 18012,
+              "p50_ms": 71.09555,
+              "p95_ms": 1582.425259,
+              "p99_ms": 1945.01086,
+              "max_ms": 2108.579859
+            },
+            "knob_to_handler_complete": {
+              "count": 18012,
+              "retained": 18012,
+              "p50_ms": 71.577148,
+              "p95_ms": 1583.514361,
+              "p99_ms": 1948.11036,
+              "max_ms": 2109.097659
+            },
+            "button_to_application": {
+              "count": 3002,
+              "retained": 3002,
+              "p50_ms": 70.62201,
+              "p95_ms": 1584.270823,
+              "p99_ms": 1943.136223,
+              "max_ms": 2100.943724
+            },
+            "button_to_handler_complete": {
+              "count": 3002,
+              "retained": 3002,
+              "p50_ms": 70.851831,
+              "p95_ms": 1584.309623,
+              "p99_ms": 1943.306223,
+              "max_ms": 2101.037424
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 342,
+            "generated_encoder_edges": 108063,
+            "generated_button_edges": 9008,
+            "accepted_rotation_steps": 54030,
+            "accepted_button_presses": 4504
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 342,
+              "retained": 342,
+              "p50_ms": 1.3655,
+              "p95_ms": 3.8329,
+              "p99_ms": 13.024,
+              "max_ms": 28.2207
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 54030,
+        "delivered_rotation_steps": 54030,
+        "decoded_button_presses": 4504,
+        "delivered_button_presses": 4504
+      }
+    }
+  ],
+  "warnings": []
+}

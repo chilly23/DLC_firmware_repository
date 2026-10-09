@@ -49,5 +49,6 @@ try:
     check('Requested Settings section is ready on its first paint',bool(spy.pages) and all(p=='control' for p in spy.pages))
     sw.removeEventFilter(spy);ctl.closeSettings()
 finally:
+    ctl.journal.close()
     ctl.session_lock.shutdown();ctl.knobs.shutdown();ctl.navigation.shutdown();ctl.system_settings.shutdown();ctl.notifications.timer.stop();ctl.settings_host.shutdown();ctl.timer.stop();w.close();engine.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.DeferredDelete);tmp.cleanup()
 if failed:raise SystemExit(1)

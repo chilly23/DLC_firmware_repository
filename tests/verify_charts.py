@@ -48,7 +48,8 @@ try:
     for _ in range(40):ctl.step(.05)
     check('Main window is 1600 by 720',w.width()==1600 and w.height()==720)
     a,b=ctl.instrument.lasers
-    check('Large Home graphs preserve the split ratio and enlarge both traces',abs(item('absorption0').height()-520*341/493)<.01 and abs(item('error0').height()-520*152/493)<.01)
+    usable=ctl.workspace.graphLayout['height']-ctl.workspace.graphLayout['gap']
+    check('Large Home graphs preserve the split ratio and enlarge both traces',abs(item('absorption0').height()-usable*341/493)<.01 and abs(item('error0').height()-usable*152/493)<.01)
     shot('01-home')
     tap('chartLabels0');check('Left chart labels open Signals',item('signalsPanel').isVisible() and item('signalsPanel').property('side')==0)
     shot('02-signals-split')
@@ -59,7 +60,7 @@ try:
     shot('03-signals-combined')
     tap('visibleMain');tap('visibleError');check('Visibility controls independently hide both signals',not a.chart.main_visible and not a.chart.error_visible)
     tap('visibleMain');tap('visibleError');tap('signalsClose')
-    check('Closing retains combined mode without applying another option',a.chart.mode=='combined' and item('absorption0').height()==526)
+    check('Closing retains combined mode without applying another option',a.chart.mode=='combined' and item('absorption0').height()==ctl.workspace.graphLayout['height'])
     shot('04-combined')
     tap('chartLabels0');tap('tabSplit');tap('tabYAxis');QTest.qWait(300)
     check('Y-axis subpage is shown',item('signalsPanel').property('axisPage'))
@@ -77,9 +78,9 @@ try:
     tap('keyCancel')
     slider=item('heightRatio');start=slider.mapToScene(QPointF(18,30)).toPoint();end=slider.mapToScene(QPointF(666,30)).toPoint()
     QTest.mousePress(w,Qt.MouseButton.LeftButton,Qt.KeyboardModifier.NoModifier,start);QTest.qWait(80)
-    check('Height slider minimum is 20/80',a.chart.main_ratio==.2 and abs(item('absorption0').height()-520*.2)<.01)
+    check('Height slider minimum is 20/80',a.chart.main_ratio==.2 and abs(item('absorption0').height()-(ctl.workspace.graphLayout['height']-ctl.workspace.graphLayout['gap'])*.2)<.01)
     QTest.mouseMove(w,end,70);QTest.qWait(80)
-    check('Height updates live before slider release at 80/20',a.chart.main_ratio==.8 and abs(item('error0').height()-520*.2)<.01)
+    check('Height updates live before slider release at 80/20',a.chart.main_ratio==.8 and abs(item('error0').height()-(ctl.workspace.graphLayout['height']-ctl.workspace.graphLayout['gap'])*.2)<.01)
     QTest.mouseRelease(w,Qt.MouseButton.LeftButton,Qt.KeyboardModifier.NoModifier,end)
     shot('06-height-adjustment')
     check('Axis/layout editing does not change Laser 2',b.chart.main_ratio==341/493 and b.chart.axes['main_scale']==2.75 and b.chart.axes['error_position']==0)
@@ -141,5 +142,6 @@ try:
     (ROOT/'tests'/'chart-validation.json').write_text(json.dumps({'checks':checks,'warnings':messages},indent=2),encoding='utf8')
     print(f'{len(checks)} checks passed',flush=True)
 finally:
+    ctl.journal.close()
     print('\n'.join(messages),flush=True)
     ctl.settings_host.shutdown();ctl.timer.stop();w.close();engine.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.Type.DeferredDelete);data.cleanup()

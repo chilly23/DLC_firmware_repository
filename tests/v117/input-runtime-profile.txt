@@ -1,0 +1,43 @@
+         9479014 function calls (9395590 primitive calls) in 54.029 seconds
+
+   Ordered by: cumulative time
+   List reduced from 913 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     5112    0.768    0.000   45.301    0.009 multiprocessing\connection.py:1044(wait)
+     7723    0.288    0.000   35.482    0.005 multiprocessing\connection.py:253(poll)
+     5112    0.777    0.000   29.315    0.006 multiprocessing\connection.py:1010(_exhaustive_wait)
+     5223    0.288    0.000   22.115    0.004 multiprocessing\connection.py:246(recv)
+     7630    8.051    0.001   20.119    0.003 {built-in method _winapi.WaitForMultipleObjects}
+  945/944    4.585    0.005   17.162    0.018 {built-in method qWait}
+61379/19053    1.591    0.000   14.556    0.001 {method 'emit' of 'PySide6.QtCore.SignalInstance' objects}
+    15006    0.482    0.000   12.923    0.001 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\hardware\service.py:109(receive)
+    13545    0.247    0.000   12.510    0.001 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\hardware\service.py:177(dispatch)
+      965    0.306    0.000   11.124    0.012 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\hardware\gpio.py:136(drain)
+     7626    1.064    0.000   10.546    0.001 {method 'cancel' of '_winapi.Overlapped' objects}
+      932    9.070    0.010    9.070    0.010 {method 'drawPath' of 'PySide6.QtGui.QPainter' objects}
+    13545    0.235    0.000    8.951    0.001 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:166(handle)
+     9030    0.216    0.000    5.664    0.001 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:149(adjustCorner)
+     5313    0.167    0.000    5.108    0.001 multiprocessing\connection.py:310(_recv_bytes)
+     7723    0.195    0.000    4.919    0.001 multiprocessing\connection.py:342(_poll)
+     9030    0.089    0.000    4.666    0.001 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\bridge.py:232(setKnobValue)
+      932    0.153    0.000    4.027    0.004 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\plot.py:247(paint)
+      932    0.637    0.001    4.008    0.004 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\plot.py:302(paint_trace)
+    27090    0.723    0.000    3.718    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:57(scope)
+18403/18398    0.915    0.000    3.432    0.000 {method 'GetOverlappedResult' of '_winapi.Overlapped' objects}
+     9030    0.091    0.000    3.233    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\bridge.py:226(setValue)
+    13545    0.195    0.000    3.093    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:197(operation)
+     9042    0.192    0.000    2.794    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\journal.py:16(record)
+    12937    1.883    0.000    2.691    0.000 {built-in method _winapi.PeekNamedPipe}
+   270984    1.102    0.000    2.532    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:43(find)
+    11713    0.468    0.000    2.379    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\bridge.py:204(channel)
+    14211    0.446    0.000    1.953    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:99(refresh_focus)
+     5214    0.153    0.000    1.929    0.000 multiprocessing\connection.py:348(_get_more_data)
+    18223    0.962    0.000    1.895    0.000 {built-in method _winapi.ReadFile}
+     4515    0.085    0.000    1.798    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\interaction\router.py:106(move_focus)
+      642    0.012    0.000    1.461    0.002 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\bridge.py:151(advance)
+    35139    0.456    0.000    1.434    0.000 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\settings_ui\preferences.py:113(trText)
+      642    0.038    0.000    1.362    0.002 C:\Users\Admin\Downloads\Nexatom\Versions\v1.17\controller\bridge.py:158(step)
+    18084    1.294    0.000    1.294    0.000 {method 'execute' of 'sqlite3.Connection' objects}
+
+

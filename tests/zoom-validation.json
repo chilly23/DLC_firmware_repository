@@ -2,22 +2,22 @@
   {
     "case": "same plot",
     "before": 13.0,
-    "after": 9.880000000000003
+    "after": 9.879999999999995
   },
   {
     "case": "split plots",
     "before": 13.0,
-    "after": 11.312133517598006
+    "after": 11.312133517597985
   },
   {
     "case": "held finger",
     "before": 13.0,
-    "after": 9.880000000000003
+    "after": 9.879999999999995
   },
   {
     "case": "right laser split plots",
     "before": 13.0,
-    "after": 11.312133517598006
+    "after": 11.312133517597985
   },
   {
     "case": "zoom out",
@@ -32,12 +32,12 @@
   {
     "case": "swapped local plots",
     "before": 13.0,
-    "after": 11.312133517598006
+    "after": 11.312133517597985
   },
   {
     "case": "combined plots",
     "before": 13.0,
-    "after": 11.312133517598
+    "after": 11.312133517597992
   },
   {
     "case": "fullscreen right laser",

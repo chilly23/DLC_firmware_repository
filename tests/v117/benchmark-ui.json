@@ -1,0 +1,13 @@
+{
+  "passed": 8,
+  "checks": [
+    "Separate benchmark window is visible",
+    "Slider configures 100 points on both lasers",
+    "Slider configures 1000 points on both lasers",
+    "Slider configures 10000 points on both lasers",
+    "Optional all-point raster is enabled",
+    "Peak-preserving default is restored",
+    "Benchmark point overrides do not change normal preferences",
+    "Report includes CPU, RSS, frames, UI and graph timings"
+  ]
+}

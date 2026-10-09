@@ -44,4 +44,5 @@ try:
     w.closeFullscreen();assert ctl.instrument.views==[0,1]
     (ROOT/'tests/zoom-validation.json').write_text(json.dumps(checks,indent=2)+'\n')
 finally:
+    ctl.journal.close()
     ctl.knobs.shutdown();ctl.navigation.shutdown();ctl.system_settings.shutdown();ctl.settings_host.shutdown();ctl.timer.stop();w.close();engine.deleteLater();QCoreApplication.sendPostedEvents(None,QEvent.Type.DeferredDelete);tmp.cleanup()

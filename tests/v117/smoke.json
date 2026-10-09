@@ -1,0 +1,691 @@
+{
+  "results": [
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 100,
+      "full_detail": false,
+      "duration_s": 5.822182700037956,
+      "rows": [
+        {
+          "elapsed_s": 0.7300584000186063,
+          "points": 100,
+          "cpu_one_core_percent": 96.31078828516733,
+          "rss_bytes": 191008768,
+          "presented_fps": 12.32778090050142
+        },
+        {
+          "elapsed_s": 1.6964408000349067,
+          "points": 100,
+          "cpu_one_core_percent": 108.32927006766079,
+          "rss_bytes": 191680512,
+          "presented_fps": 20.695741147254598
+        },
+        {
+          "elapsed_s": 2.858497900015209,
+          "points": 100,
+          "cpu_one_core_percent": 82.0204962403445,
+          "rss_bytes": 191942656,
+          "presented_fps": 12.908143670611592
+        },
+        {
+          "elapsed_s": 3.652977399993688,
+          "points": 100,
+          "cpu_one_core_percent": 106.20160747040744,
+          "rss_bytes": 193363968,
+          "presented_fps": 16.362914336181294
+        },
+        {
+          "elapsed_s": 4.664731400029268,
+          "points": 100,
+          "cpu_one_core_percent": 123.54781893187884,
+          "rss_bytes": 194957312,
+          "presented_fps": 14.82573827182546
+        },
+        {
+          "elapsed_s": 5.332765500003006,
+          "points": 100,
+          "cpu_one_core_percent": 112.26971797240351,
+          "rss_bytes": 194990080,
+          "presented_fps": 16.466225302619183
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 80
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 80,
+            "retained": 80,
+            "p50_ms": 53.07929998729378,
+            "p95_ms": 97.05210000742227,
+            "p99_ms": 175.95190002815798,
+            "max_ms": 304.7564000100828
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 244,
+          "simulation_step": 64,
+          "graph_redraws_deferred_for_input": 20
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 244,
+            "retained": 244,
+            "p50_ms": 6.1061,
+            "p95_ms": 8.8131,
+            "p99_ms": 10.2249,
+            "max_ms": 10.9927
+          },
+          "simulation_step": {
+            "count": 64,
+            "retained": 64,
+            "p50_ms": 0.829,
+            "p95_ms": 1.0138,
+            "p99_ms": 1.9177,
+            "max_ms": 3.0586
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 16,
+          "high_water": 121,
+          "received": 2019,
+          "delivered": 2003
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 1934,
+            "application_handler": 1934,
+            "command_roundtrip": 11,
+            "command_to_worker": 11,
+            "driver_operation": 11,
+            "knob_to_application": 1506,
+            "delivered_transitions": 1758,
+            "knob_to_handler_complete": 1506,
+            "button_to_application": 252,
+            "button_to_handler_complete": 252
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 1934,
+              "retained": 1934,
+              "p50_ms": 50.8716,
+              "p95_ms": 205.227802,
+              "p99_ms": 283.169198,
+              "max_ms": 307.616598
+            },
+            "application_handler": {
+              "count": 1934,
+              "retained": 1934,
+              "p50_ms": 0.4411,
+              "p95_ms": 1.3402,
+              "p99_ms": 2.4219,
+              "max_ms": 83.056
+            },
+            "command_roundtrip": {
+              "count": 11,
+              "retained": 11,
+              "p50_ms": 3.7325,
+              "p95_ms": 11.5502,
+              "p99_ms": 11.5502,
+              "max_ms": 49.256
+            },
+            "command_to_worker": {
+              "count": 11,
+              "retained": 11,
+              "p50_ms": 1.5174,
+              "p95_ms": 2.0007,
+              "p99_ms": 2.0007,
+              "max_ms": 3.9802
+            },
+            "driver_operation": {
+              "count": 11,
+              "retained": 11,
+              "p50_ms": 0.013,
+              "p95_ms": 0.039,
+              "p99_ms": 0.039,
+              "max_ms": 0.0939
+            },
+            "knob_to_application": {
+              "count": 1506,
+              "retained": 1506,
+              "p50_ms": 50.673596,
+              "p95_ms": 205.991598,
+              "p99_ms": 283.169198,
+              "max_ms": 307.616598
+            },
+            "knob_to_handler_complete": {
+              "count": 1506,
+              "retained": 1506,
+              "p50_ms": 51.437797,
+              "p95_ms": 206.348798,
+              "p99_ms": 283.596398,
+              "max_ms": 308.280798
+            },
+            "button_to_application": {
+              "count": 252,
+              "retained": 252,
+              "p50_ms": 49.332503,
+              "p95_ms": 205.227802,
+              "p99_ms": 294.397002,
+              "max_ms": 298.477402
+            },
+            "button_to_handler_complete": {
+              "count": 252,
+              "retained": 252,
+              "p50_ms": 49.412803,
+              "p95_ms": 205.381502,
+              "p99_ms": 294.859902,
+              "max_ms": 298.565902
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 11,
+            "generated_encoder_edges": 3012,
+            "generated_button_edges": 252,
+            "accepted_rotation_steps": 1506,
+            "accepted_button_presses": 126
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 11,
+              "retained": 11,
+              "p50_ms": 1.5174,
+              "p95_ms": 2.0007,
+              "p99_ms": 2.0007,
+              "max_ms": 3.9802
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 1506,
+        "delivered_rotation_steps": 1506,
+        "decoded_button_presses": 126,
+        "delivered_button_presses": 126
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 1000,
+      "full_detail": false,
+      "duration_s": 5.901005499996245,
+      "rows": [
+        {
+          "elapsed_s": 0.1019969999906607,
+          "points": 1000,
+          "cpu_one_core_percent": 91.91446808100648,
+          "rss_bytes": 196956160,
+          "presented_fps": 9.80420992864069
+        },
+        {
+          "elapsed_s": 0.6172807000111789,
+          "points": 1000,
+          "cpu_one_core_percent": 106.13085567779922,
+          "rss_bytes": 197054464,
+          "presented_fps": 9.703392519113072
+        },
+        {
+          "elapsed_s": 1.7146772000123747,
+          "points": 1000,
+          "cpu_one_core_percent": 111.05830937119555,
+          "rss_bytes": 197124096,
+          "presented_fps": 10.934971999625407
+        },
+        {
+          "elapsed_s": 2.8431538000004366,
+          "points": 1000,
+          "cpu_one_core_percent": 94.15348089727692,
+          "rss_bytes": 197267456,
+          "presented_fps": 8.861504084449592
+        },
+        {
+          "elapsed_s": 3.683876600000076,
+          "points": 1000,
+          "cpu_one_core_percent": 102.2185909553504,
+          "rss_bytes": 197332992,
+          "presented_fps": 11.894526947531682
+        },
+        {
+          "elapsed_s": 4.6305695999762975,
+          "points": 1000,
+          "cpu_one_core_percent": 105.63086449621129,
+          "rss_bytes": 197353472,
+          "presented_fps": 9.506777804659015
+        },
+        {
+          "elapsed_s": 5.595675599994138,
+          "points": 1000,
+          "cpu_one_core_percent": 111.71052713174204,
+          "rss_bytes": 197443584,
+          "presented_fps": 14.506178595658097
+        },
+        {
+          "elapsed_s": 5.8978652000078,
+          "points": 1000,
+          "cpu_one_core_percent": 93.07070792220664,
+          "rss_bytes": 197459968,
+          "presented_fps": 9.927542178368709
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 70
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 70,
+            "retained": 70,
+            "p50_ms": 83.94990000873804,
+            "p95_ms": 129.9009000160731,
+            "p99_ms": 142.62290003011003,
+            "max_ms": 339.69959995942185
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 143,
+          "simulation_step": 51,
+          "graph_redraws_deferred_for_input": 70
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 143,
+            "retained": 143,
+            "p50_ms": 21.826,
+            "p95_ms": 24.0694,
+            "p99_ms": 24.4538,
+            "max_ms": 25.9163
+          },
+          "simulation_step": {
+            "count": 51,
+            "retained": 51,
+            "p50_ms": 1.2422,
+            "p95_ms": 2.0921,
+            "p99_ms": 2.3399,
+            "max_ms": 3.1398
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 147,
+          "received": 4015,
+          "delivered": 4015
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 3875,
+            "application_handler": 3875,
+            "command_roundtrip": 22,
+            "command_to_worker": 22,
+            "driver_operation": 22,
+            "knob_to_application": 3015,
+            "delivered_transitions": 3519,
+            "knob_to_handler_complete": 3015,
+            "button_to_application": 504,
+            "button_to_handler_complete": 504
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 3875,
+              "retained": 3875,
+              "p50_ms": 75.7362,
+              "p95_ms": 270.162498,
+              "p99_ms": 351.803298,
+              "max_ms": 643.7614
+            },
+            "application_handler": {
+              "count": 3875,
+              "retained": 3875,
+              "p50_ms": 0.439,
+              "p95_ms": 1.2413,
+              "p99_ms": 2.3766,
+              "max_ms": 83.056
+            },
+            "command_roundtrip": {
+              "count": 22,
+              "retained": 22,
+              "p50_ms": 2.7673,
+              "p95_ms": 5.8269,
+              "p99_ms": 11.5502,
+              "max_ms": 49.256
+            },
+            "command_to_worker": {
+              "count": 22,
+              "retained": 22,
+              "p50_ms": 1.1968,
+              "p95_ms": 1.9589,
+              "p99_ms": 2.0007,
+              "max_ms": 3.9802
+            },
+            "driver_operation": {
+              "count": 22,
+              "retained": 22,
+              "p50_ms": 0.0125,
+              "p95_ms": 0.0175,
+              "p99_ms": 0.039,
+              "max_ms": 0.0939
+            },
+            "knob_to_application": {
+              "count": 3015,
+              "retained": 3015,
+              "p50_ms": 77.001599,
+              "p95_ms": 268.605498,
+              "p99_ms": 343.476498,
+              "max_ms": 376.503898
+            },
+            "knob_to_handler_complete": {
+              "count": 3015,
+              "retained": 3015,
+              "p50_ms": 77.823796,
+              "p95_ms": 268.846298,
+              "p99_ms": 344.107298,
+              "max_ms": 377.320398
+            },
+            "button_to_application": {
+              "count": 504,
+              "retained": 504,
+              "p50_ms": 75.220701,
+              "p95_ms": 265.837302,
+              "p99_ms": 330.695002,
+              "max_ms": 367.400302
+            },
+            "button_to_handler_complete": {
+              "count": 504,
+              "retained": 504,
+              "p50_ms": 75.250401,
+              "p95_ms": 265.867902,
+              "p99_ms": 330.763002,
+              "max_ms": 367.431502
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 22,
+            "generated_encoder_edges": 6033,
+            "generated_button_edges": 504,
+            "accepted_rotation_steps": 3015,
+            "accepted_button_presses": 252
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 22,
+              "retained": 22,
+              "p50_ms": 1.1968,
+              "p95_ms": 1.9589,
+              "p99_ms": 2.0007,
+              "max_ms": 3.9802
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 3015,
+        "delivered_rotation_steps": 3015,
+        "decoded_button_presses": 252,
+        "delivered_button_presses": 252
+      }
+    },
+    {
+      "version": "1.17.0",
+      "source": "synthetic electrical replay",
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+      "qt_platform": "windows",
+      "renderer": "software",
+      "points": 10000,
+      "full_detail": false,
+      "duration_s": 5.428770700003952,
+      "rows": [
+        {
+          "elapsed_s": 0.47744809999130666,
+          "points": 10000,
+          "cpu_one_core_percent": 114.54124542750458,
+          "rss_bytes": 198426624,
+          "presented_fps": 8.377873951268906
+        },
+        {
+          "elapsed_s": 1.547408499987796,
+          "points": 10000,
+          "cpu_one_core_percent": 87.62006519148522,
+          "rss_bytes": 198660096,
+          "presented_fps": 5.6076841722550546
+        },
+        {
+          "elapsed_s": 2.54624449997209,
+          "points": 10000,
+          "cpu_one_core_percent": 107.93813999665136,
+          "rss_bytes": 198676480,
+          "presented_fps": 10.011653564906792
+        },
+        {
+          "elapsed_s": 3.466887200018391,
+          "points": 10000,
+          "cpu_one_core_percent": 78.07046099033346,
+          "rss_bytes": 198877184,
+          "presented_fps": 6.517186308758271
+        },
+        {
+          "elapsed_s": 4.487788699974772,
+          "points": 10000,
+          "cpu_one_core_percent": 110.19672319494752,
+          "rss_bytes": 199114752,
+          "presented_fps": 14.692896425993004
+        },
+        {
+          "elapsed_s": 5.424601899983827,
+          "points": 10000,
+          "cpu_one_core_percent": 115.08430922937237,
+          "rss_bytes": 199184384,
+          "presented_fps": 11.741935318475093
+        }
+      ],
+      "ui": {
+        "counts": {
+          "ui_heartbeat_lateness": 59
+        },
+        "timings": {
+          "ui_heartbeat_lateness": {
+            "count": 59,
+            "retained": 59,
+            "p50_ms": 38.133499978575855,
+            "p95_ms": 202.63369999360293,
+            "p99_ms": 408.55639999266714,
+            "max_ms": 444.2167999898083
+          }
+        }
+      },
+      "graph": {
+        "counts": {
+          "plot_paint": 68,
+          "simulation_step": 46,
+          "graph_redraws_deferred_for_input": 122
+        },
+        "timings": {
+          "plot_paint": {
+            "count": 68,
+            "retained": 68,
+            "p50_ms": 38.2748,
+            "p95_ms": 43.1691,
+            "p99_ms": 44.3463,
+            "max_ms": 45.6905
+          },
+          "simulation_step": {
+            "count": 46,
+            "retained": 46,
+            "p50_ms": 4.5743,
+            "p95_ms": 6.1219,
+            "p99_ms": 6.9866,
+            "max_ms": 8.7217
+          }
+        }
+      },
+      "gpio": {
+        "queue": {
+          "pending": 0,
+          "high_water": 263,
+          "received": 5990,
+          "delivered": 5990
+        },
+        "delivery": {
+          "counts": {
+            "snapshot_to_application": 5789,
+            "application_handler": 5789,
+            "command_roundtrip": 32,
+            "command_to_worker": 32,
+            "driver_operation": 32,
+            "knob_to_application": 4524,
+            "delivered_transitions": 5280,
+            "knob_to_handler_complete": 4524,
+            "button_to_application": 756,
+            "button_to_handler_complete": 756
+          },
+          "timings": {
+            "snapshot_to_application": {
+              "count": 5789,
+              "retained": 5789,
+              "p50_ms": 112.917398,
+              "p95_ms": 462.333398,
+              "p99_ms": 625.108098,
+              "max_ms": 684.497398
+            },
+            "application_handler": {
+              "count": 5789,
+              "retained": 5789,
+              "p50_ms": 0.4461,
+              "p95_ms": 1.1767,
+              "p99_ms": 2.2459,
+              "max_ms": 83.056
+            },
+            "command_roundtrip": {
+              "count": 32,
+              "retained": 32,
+              "p50_ms": 2.7673,
+              "p95_ms": 49.256,
+              "p99_ms": 164.0203,
+              "max_ms": 250.3169
+            },
+            "command_to_worker": {
+              "count": 32,
+              "retained": 32,
+              "p50_ms": 1.1865,
+              "p95_ms": 2.0007,
+              "p99_ms": 2.9627,
+              "max_ms": 3.9802
+            },
+            "driver_operation": {
+              "count": 32,
+              "retained": 32,
+              "p50_ms": 0.0121,
+              "p95_ms": 0.0175,
+              "p99_ms": 0.039,
+              "max_ms": 0.0939
+            },
+            "knob_to_application": {
+              "count": 4524,
+              "retained": 4524,
+              "p50_ms": 114.572499,
+              "p95_ms": 460.321198,
+              "p99_ms": 624.119998,
+              "max_ms": 684.497398
+            },
+            "knob_to_handler_complete": {
+              "count": 4524,
+              "retained": 4524,
+              "p50_ms": 115.216999,
+              "p95_ms": 462.249898,
+              "p99_ms": 624.717898,
+              "max_ms": 685.192398
+            },
+            "button_to_application": {
+              "count": 756,
+              "retained": 756,
+              "p50_ms": 113.276801,
+              "p95_ms": 455.831902,
+              "p99_ms": 620.620502,
+              "max_ms": 665.422802
+            },
+            "button_to_handler_complete": {
+              "count": 756,
+              "retained": 756,
+              "p50_ms": 113.754302,
+              "p95_ms": 455.862302,
+              "p99_ms": 620.648302,
+              "max_ms": 665.455302
+            }
+          }
+        },
+        "capture": {
+          "counts": {
+            "command_to_worker": 32,
+            "generated_encoder_edges": 9051,
+            "generated_button_edges": 756,
+            "accepted_rotation_steps": 4524,
+            "accepted_button_presses": 378
+          },
+          "timings": {
+            "command_to_worker": {
+              "count": 32,
+              "retained": 32,
+              "p50_ms": 1.1865,
+              "p95_ms": 2.0007,
+              "p99_ms": 2.9627,
+              "max_ms": 3.9802
+            }
+          }
+        }
+      },
+      "notes": [
+        "CPU and RSS refer to the application process; child driver timing is in gpio.capture.",
+        "Plot paint is CPU paint time; presented_fps is the Qt frameSwapped rate, not panel scanout.",
+        "Button timings start at debounce completion; add configured stable interval for contact-to-app latency.",
+        "GPIO is input-only. Driver command ACK means completed userspace/libgpiod work, not laser/MCU acknowledgement.",
+        "No hard realtime or unmeasured physical GPIO latency claim."
+      ],
+      "exact_delivery": {
+        "expected_rotation_steps": 4524,
+        "delivered_rotation_steps": 4524,
+        "decoded_button_presses": 378,
+        "delivered_button_presses": 378
+      }
+    }
+  ],
+  "warnings": []
+}
