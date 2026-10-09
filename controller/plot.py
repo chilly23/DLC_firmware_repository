@@ -22,6 +22,7 @@ class SpectrumPlot(QQuickPaintedItem):
         self._channel = 0
         self._error = False
         self._large = False
+        self._right_axis = False
         self._combined = False
         self._bottom_axis = False
         self._minimum, self._maximum = 48.2, 68.2
@@ -41,7 +42,14 @@ class SpectrumPlot(QQuickPaintedItem):
 
     @Property(bool, notify=changed)
     def interactionLocked(self):
-        return self.controller.instrument.lasers[self._channel].locked
+        laser=self.controller.instrument.lasers[self._channel]
+        return laser.locked or not laser.emission
+
+    @Property(bool,notify=changed)
+    def rightAxis(self):return self._right_axis
+    @rightAxis.setter
+    def rightAxis(self,value):
+        if self._right_axis!=value:self._right_axis=value;self.changed.emit();self.update()
 
     @Property(bool, notify=changed)
     def showXAxis(self):
@@ -135,6 +143,7 @@ class SpectrumPlot(QQuickPaintedItem):
         values = chart.bounds(False)+chart.bounds(True)
         left = max(43, min(90, max(len(axis_label(n)) for n in values)*8+9))
         right = 72 if self._combined and chart.main_visible and chart.error_visible else 16
+        if self._right_axis:left,right=right,left
         return QRectF(left, 10, max(1,self.width()-left-right),
                       max(1,self.height()-((55 if self._large else 40) if self._bottom_axis else 20)))
 
@@ -237,15 +246,19 @@ class SpectrumPlot(QQuickPaintedItem):
             painter.setPen(QColor(appearance.foreground))
             value = lo + (hi - lo) * ratio
             if a.height()>145 or i % 2 == 0:
-                painter.drawText(QRectF(0, yy - 12, a.left() - 9, 24), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, axis_label(value))
+                r=QRectF(a.right()+9,yy-12,self.width()-a.right()-9,24) if self._right_axis else QRectF(0,yy-12,a.left()-9,24)
+                align=Qt.AlignmentFlag.AlignLeft if self._right_axis else Qt.AlignmentFlag.AlignRight
+                painter.drawText(r,align|Qt.AlignmentFlag.AlignVCenter,axis_label(value))
                 if self._combined and chart.main_visible and chart.error_visible:
                     elo,ehi = chart.bounds(True)
-                    painter.drawText(QRectF(a.right()+7,yy-12,62,24),Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,axis_label(elo+(ehi-elo)*ratio))
+                    r=QRectF(0,yy-12,a.left()-7,24) if self._right_axis else QRectF(a.right()+7,yy-12,62,24)
+                    align=Qt.AlignmentFlag.AlignRight if self._right_axis else Qt.AlignmentFlag.AlignLeft
+                    painter.drawText(r,align|Qt.AlignmentFlag.AlignVCenter,axis_label(elo+(ehi-elo)*ratio))
             label_x = min(a.right()-64, max(a.left()+3, xx-32))
             if self._bottom_axis:
                 painter.drawText(QRectF(label_x, a.bottom() + 5, 64, 25), Qt.AlignmentFlag.AlignHCenter, axis_label(self._minimum + ratio * (self._maximum - self._minimum)))
         painter.setPen(QPen(QColor('#A0A59E'), 1.3))
-        painter.drawLine(a.bottomLeft(), a.topLeft())
+        painter.drawLine(a.bottomRight(),a.topRight()) if self._right_axis else painter.drawLine(a.bottomLeft(),a.topLeft())
         painter.drawLine(a.bottomLeft(), a.bottomRight())
         signals = ([False] if chart.main_visible else []) + ([True] if chart.error_visible else []) if self._combined else [self._error]
         for error in signals:

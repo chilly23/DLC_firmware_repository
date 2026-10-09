@@ -60,9 +60,11 @@ class Controller(QObject):
         self.settingsRequested.emit()
     @Slot(str)
     def openSection(self,key):
-        self.openSettings();window=self.settings_host.window
+        window=self.settings_host.window
         if key in window.order:
             window.select(window.order.index(key));window.motion.position=window.selected;window.motion.target=None;window.motion.velocity=0
+            window.last_index=window.selected;window.slide.stop();window.transition=0
+        self.openSettings()
     @Slot(result=bool)
     def settingsVisible(self):return self.settings_host.window.isVisible()
     @Slot()
@@ -215,6 +217,7 @@ class Controller(QObject):
     @Slot(int)
     def toggleLock(self, index):
         laser = self.instrument.lasers[index]
+        if not laser.emission:return
         laser.locked = not laser.locked
         self.changed.emit()
         self.action_notice(f'Laser {index+1} graph '+('locked' if laser.locked else 'unlocked'),'graph-lock-'+str(index))
@@ -236,6 +239,7 @@ class Controller(QObject):
     @Slot(int)
     def toggleStabilisation(self, index):
         laser = self.instrument.lasers[index]
+        if not laser.emission:return
         laser.stabilised = not laser.stabilised
         self.changed.emit()
         self.action_notice(f'Laser {index+1} stabilisation '+('enabled' if laser.stabilised else 'disabled'),'stabilise-'+str(index))
