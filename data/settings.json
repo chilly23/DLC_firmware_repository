@@ -13,5 +13,7 @@
     "logging": true,
     "retention": "30 days"
   },
-  "history": []
+  "history": [
+    "system"
+  ]
 }
