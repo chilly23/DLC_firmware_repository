@@ -4,7 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import QObject,Property,Signal,Slot,QTimer,QAbstractListModel,QModelIndex,Qt
 
 class CardModel(QAbstractListModel):
-    FIELDS=('noticeId','text','level','decision','alpha','blurStep','revision')
+    FIELDS=('noticeId','text','level','decision','alpha','blurStep','revision','remaining','timed')
     def __init__(self,parent):super().__init__(parent);self.rows=[]
     def roleNames(self):return {Qt.UserRole+i+1:key.encode() for i,key in enumerate(self.FIELDS)}
     def rowCount(self,parent=QModelIndex()):return 0 if parent.isValid() else len(self.rows)
@@ -30,7 +30,7 @@ class Notifications(QObject):
     FADE_SECONDS=.65
     def __init__(self,path,parent=None):
         super().__init__(parent);self.path=Path(path);self.entries=[];self.pending={};self.serial=0
-        self._model=CardModel(self);self.waiting=[];self.renderer=None
+        self._model=CardModel(self);self.waiting=[];self.renderer=None;self._recent={}
         try:
             loaded=json.loads(self.path.read_text(encoding='utf8'))
             self.entries=[e for e in loaded if isinstance(e,dict) and all(k in e for k in ('id','text','level','time','key'))][-200:]
@@ -56,6 +56,14 @@ class Notifications(QObject):
         except OSError:pass
     def post(self,text,level='normal',key='',decision=None):
         if not text:return
+        text=str(text);key=key or text
+        signature=(key,text,level,decision is not None)
+        now_mono=time.monotonic()
+        # Repeated failures must not continually reset timers or fill history.
+        if decision is None and now_mono-self._recent.get(signature,-1e20)<8:return
+        if decision is not None and any(e['key']==key and e['decision'] for e in self.cards+self.waiting):return
+        self._recent={k:v for k,v in self._recent.items() if now_mono-v<8}
+        self._recent[signature]=now_mono
         if getattr(self,'journal',None):self.journal.record(text,'Requested' if decision else 'Failed' if level=='critical' else 'Passed',level,'Notification')
         if level not in ('normal','warning','critical'):level='normal'
         text=str(text);key=key or text;now=time.time();self.serial+=1
@@ -67,7 +75,7 @@ class Notifications(QObject):
             if decision is None and not old['decision'] and old['key']==key and old['text']==text and now-old['time']<2:
                 old.update(time=now,level=level,deadline=self.deadline(level,False),fading=None,alpha=1.,blurStep=0,revision=old['revision']+1)
                 self._model.promote(i);self.changed.emit();return
-        entry=dict(record,noticeId=record['id'],alpha=1.,blurStep=0,revision=0,deadline=0.,fading=None)
+        entry=dict(record,noticeId=record['id'],alpha=1.,blurStep=0,revision=0,deadline=0.,fading=None,remaining=1.,timed=False,duration=0.)
         if decision is not None:self.pending[entry['id']]=decision
         if len(self.cards)<self.MAX_CARDS:self.show(entry)
         else:
@@ -84,7 +92,10 @@ class Notifications(QObject):
     @staticmethod
     def deadline(level,decision):return 0. if decision or level=='critical' else time.monotonic()+(6 if level=='warning' else 3.2)
     def show(self,entry):
-        entry['deadline']=self.deadline(entry['level'],entry['decision']);self._model.insert(entry)
+        entry['deadline']=self.deadline(entry['level'],entry['decision'])
+        entry['timed']=bool(entry['deadline'])
+        entry['duration']=6. if entry['level']=='warning' else 3.2
+        self._model.insert(entry)
     def drain(self):
         while self.waiting and len(self.cards)<self.MAX_CARDS:
             protected=next((e for e in self.waiting if e['decision'] or e['level']=='critical'),None)
@@ -123,6 +134,9 @@ class Notifications(QObject):
         now=time.monotonic();dirty=False
         for i in range(len(self.cards)-1,-1,-1):
             entry=self.cards[i]
+            remaining=round(max(0.,min(1.,(entry['deadline']-now)/entry['duration'])),2) if entry['timed'] else 1.
+            if entry['remaining']!=remaining:
+                entry['remaining']=remaining;self._model.refresh(i);dirty=True
             if entry['fading'] is None and entry['deadline'] and now>=entry['deadline']:entry['fading']=now
             if entry['fading'] is None:continue
             progress=min(1,max(0,(now-entry['fading'])/self.FADE_SECONDS));dirty=True

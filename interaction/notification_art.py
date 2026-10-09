@@ -44,7 +44,10 @@ class NotificationArt:
         p.drawText(QRectF(56,8,right-56,height-16),Qt.AlignmentFlag.AlignVCenter|Qt.TextFlag.TextWordWrap,entry['text'])
         for rect,action in buttons(width,height,entry['decision']):
             selected=focus==action;ink=self.theme.activeInk if selected else self.theme.foreground
-            p.setPen(Qt.PenStyle.NoPen);p.setBrush(QColor(self.theme.active if selected else self.theme.raised));p.drawRoundedRect(rect,8,8)
+            p.setPen(Qt.PenStyle.NoPen);p.setBrush(QColor(self.theme.active if selected else self.theme.raised))
+            if action=='accept':p.drawRoundedRect(rect,8,8)
+            else:
+                c=rect.center();p.drawEllipse(c,19,19)
             p.setPen(QPen(QColor(ink),2))
             if action=='accept':p.drawText(rect,Qt.AlignmentFlag.AlignCenter,self.theme.trText('Confirm'))
             else:
@@ -57,6 +60,15 @@ class NotificationArt:
         self.cache[key]=image
         while len(self.cache)>128:self.cache.popitem(last=False)
         return image
+
+    def paint_progress(self,p,entry,width,height,left=0,top=0):
+        """Draw dynamic progress separately so the cached card is not rerendered."""
+        if not entry.get('timed'):return
+        rect=QRectF(left+width-59,top+height/2-21,42,42)
+        track=QColor(self.theme.foreground);track.setAlpha(45)
+        p.setBrush(Qt.BrushStyle.NoBrush);p.setPen(QPen(track,2));p.drawEllipse(rect)
+        p.setPen(QPen(QColor(self.theme.foreground),2.5))
+        p.drawArc(rect,90*16,-round(360*16*entry.get('remaining',1)))
 
 class NotificationImageProvider(QQuickImageProvider):
     def __init__(self,art):super().__init__(QQuickImageProvider.ImageType.Image);self.art=art

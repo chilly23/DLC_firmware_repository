@@ -5,8 +5,9 @@ import os
 import platform
 import shutil
 import sys
+import time
 
-from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, QProcess, QProcessEnvironment, QUrl
+from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, QProcess, QUrl
 from PySide6.QtGui import QGuiApplication, QDesktopServices
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,7 @@ class Workspace(QObject):
     logsRequested = Signal()
     closeLogsRequested = Signal()
     screenshotSaved = Signal(str)
+    previewChanged = Signal()
 
     def __init__(self, controller, theme, parent=None):
         super().__init__(parent)
@@ -34,6 +36,9 @@ class Workspace(QObject):
         self._files = []
         self._folder = theme.store.path.parent.resolve()
         self._metrics = []
+        self._runtime_started = time.monotonic()
+        self._preview = {}
+        self._sort = 'Newest'
         self._cpu_previous = None
         self._log_rows = []
         self._log_live = True
@@ -134,6 +139,17 @@ class Workspace(QObject):
     @Property(bool, notify=changed)
     def captureBusy(self): return self._capture_busy
 
+    @Property(str, constant=True)
+    def dataRoot(self): return str(self.theme.store.path.parent.resolve())
+
+    @Property('QVariantMap', notify=previewChanged)
+    def preview(self): return self._preview
+
+    @Slot()
+    def closePreview(self):
+        self._preview = {}
+        self.previewChanged.emit()
+
     @Property(str, notify=changed)
     def screenshotFolder(self): return str(self.theme.store.path.parent / 'screenshots')
 
@@ -150,7 +166,7 @@ class Workspace(QObject):
         try:
             folder = Path(self.screenshotFolder)
             folder.mkdir(parents=True, exist_ok=True)
-            path = folder / ('phototype_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '.png')
+            path = folder / ('screenshot_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '.png')
             focused = QGuiApplication.focusWindow()
             screen = focused.screen() if focused else self.home.screen() if self.home else QGuiApplication.primaryScreen()
             if screen is None:
@@ -209,7 +225,7 @@ class Workspace(QObject):
 
     def _capture_complete(self, path):
         self._capture_busy = False
-        self.report('Screenshot saved: ' + str(path))
+        self.report('Screenshot saved · File Manager / Screenshots')
         self.screenshotSaved.emit(str(path))
         if self._folder == path.parent:
             self.refreshFiles()
@@ -224,26 +240,34 @@ class Workspace(QObject):
     @Property(str, notify=filesChanged)
     def folder(self): return str(self._folder)
 
+    @Property(str, notify=filesChanged)
+    def fileSort(self): return self._sort
+
     @Slot(str)
     def browse(self, folder):
         requested = {'data': self.theme.store.path.parent, 'screenshots': Path(self.screenshotFolder),
-                     'exports': ROOT / 'exports', 'home': Path.home()}.get(folder, Path(folder))
+                     'exports': Path(self.dataRoot) / 'exports', 'recordings': Path(self.dataRoot) / 'recordings',
+                     'logs': Path(self.dataRoot) / 'logs' if (Path(self.dataRoot) / 'logs').exists() else ROOT / 'logs',
+                     'home': Path.home()}.get(folder, Path(folder))
         try:
-            if folder in ('screenshots', 'exports'):
+            if folder in ('screenshots', 'exports', 'recordings', 'logs'):
                 requested.mkdir(parents=True, exist_ok=True)
             requested = requested.resolve(strict=True)
             if not requested.is_dir():
                 return
-            entries = sorted(requested.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold()))
+            entries = list(requested.iterdir())
             items = []
             for path in entries:
                 try:
                     stat = path.stat()
-                    items.append(dict(name=path.name, path=str(path), directory=path.is_dir(),
+                    kind = 'image' if path.suffix.lower() in ('.png','.jpg','.jpeg','.webp','.bmp') else 'recording' if path.suffix.lower() in ('.mp4','.mkv','.mov','.avi') else 'file'
+                    items.append(dict(name=path.name, path=str(path), url=QUrl.fromLocalFile(str(path)).toString(), directory=path.is_dir(), kind=kind,
+                                      stamp=stat.st_mtime, bytes=stat.st_size,
                                       size='' if path.is_dir() else f'{stat.st_size / 1024:,.1f} KB',
                                       modified=datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M')))
                 except OSError:
                     continue
+            items.sort(key=lambda row:(not row['directory'], -row['stamp'] if self._sort=='Newest' else -row['bytes'] if self._sort=='Largest' else row['name'].casefold()))
             self._folder, self._files = requested, items
             self.filesChanged.emit()
         except OSError as exc:
@@ -256,10 +280,40 @@ class Workspace(QObject):
     def parentFolder(self): self.browse(str(self._folder.parent))
 
     @Slot(str)
+    def sortFiles(self, order):
+        if order in ('Name', 'Newest', 'Largest'):
+            self._sort = order
+            self.refreshFiles()
+
+    @Slot(str)
     def openFile(self, path):
-        if Path(path).is_dir():
-            self.browse(path)
-        elif not QDesktopServices.openUrl(QUrl.fromLocalFile(path)):
+        file = Path(path)
+        try:
+            if file.is_dir():
+                self.browse(path)
+                return
+            if not file.is_file():
+                self.report('This file is no longer available.', True)
+                self.refreshFiles()
+                return
+            suffix = file.suffix.lower()
+            kind = 'image' if suffix in ('.png','.jpg','.jpeg','.webp','.bmp') else 'text' if suffix in ('.txt','.md','.csv','.json','.log','.yaml','.yml','.ini') else 'external'
+            content = ''
+            if kind == 'text':
+                with file.open('rb') as stream:
+                    data = stream.read(262145)
+                content = data[:262144].decode('utf-8-sig', errors='replace')
+                if len(data)>262144:
+                    content += '\n\n[Preview limited to 256 KB. Open externally to read the complete file.]'
+            self._preview = dict(path=str(file), name=file.name, kind=kind, text=content,
+                                 url=QUrl.fromLocalFile(str(file)).toString(), size=f'{file.stat().st_size/1024:,.1f} KB')
+            self.previewChanged.emit()
+        except OSError:
+            self.report('This file could not be read.', True)
+
+    @Slot(str)
+    def openExternal(self, path):
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(path)):
             self.report('No application could open this file.', True)
 
     @Property('QVariantList', notify=metricsChanged)
@@ -318,7 +372,11 @@ class Workspace(QObject):
             ('CPU usage', cpu), ('Memory in use / total', memory), ('CPU temperature', temperature),
             ('Storage used / total', f'{usage.used/2**30:.1f} / {usage.total/2**30:.1f} GB'),
             ('System uptime', uptime), ('Control inputs', self.ctl.knobs.status),
-            ('Operating system', platform.system() + ' ' + platform.release()), ('Architecture', platform.machine()))]
+            ('Operating system', platform.system() + ' ' + platform.release()), ('Architecture', platform.machine()),
+            ('Application uptime', f'{int((time.monotonic()-self._runtime_started)//60)} min'),
+            ('Acquisition', f'{round(1000/self.ctl.timer.interval())} Hz · simulated'),
+            ('Laser 1', ('Emission on' if self.ctl.instrument.lasers[0].emission else 'Idle') + ' · '+str(len(self.ctl.instrument.lasers[0].signal.x_values))+' points'),
+            ('Laser 2', ('Emission on' if self.ctl.instrument.lasers[1].emission else 'Idle') + ' · '+str(len(self.ctl.instrument.lasers[1].signal.x_values))+' points'))]
         self.metricsChanged.emit()
 
     @Property('QVariantList', notify=logsChanged)
@@ -342,6 +400,8 @@ class Workspace(QObject):
     def refresh_logs(self):
         self.logsAboutToChange.emit()
         self._log_rows = self.ctl.journal.rows(self._log_level, limit=self.ctl.journal.LIMIT)
+        for row in self._log_rows:
+            row['color'] = '#FF453A' if row['level']=='critical' or (row['status']=='Failed' and row['level']!='warning') else '#FF9F0A' if row['level']=='warning' else '#32D74B' if row['status']=='Passed' and row['source'] not in ('System','Notification') else '#D9D9D9'
         self.logsChanged.emit()
 
     @Slot()
@@ -359,36 +419,14 @@ class Workspace(QObject):
     @Slot()
     def exportLogs(self):
         try:
-            self.ctl.journal.export(ROOT / 'exports')
-            self.report('Saved exports/logs.csv and exports/logs.md')
+            self.ctl.journal.export(Path(self.dataRoot) / 'exports')
+            self.report('Logs exported · File Manager / Exports')
         except OSError as exc: self.report('Log export failed: ' + str(exc), True)
 
     @Slot()
     def clearLogs(self):
         self.ctl.journal.clear()
         self.refresh_logs()
-
-    @Slot()
-    def openDlcModel(self):
-        # The existing model application keeps its own GPU backend and runtime.
-        override = os.environ.get('NEXATOM_VIEWER_DIR')
-        candidates = [Path(override).expanduser()] if override else [ROOT.parent / 'HMI-3D-RPi', ROOT.parent.parent / 'HMI-3D-RPi']
-        viewer = next((path for path in candidates if (path / 'main.py').is_file()), candidates[0])
-        python = viewer / ('.venv/Scripts/pythonw.exe' if sys.platform == 'win32' else '.venv/bin/python')
-        if not (viewer / 'main.py').exists() or not python.exists():
-            self.report('Install HMI-3D-RPi beside the application (or set NEXATOM_VIEWER_DIR), then run its setup.', True)
-            return
-        process = QProcess(self)
-        environment = QProcessEnvironment.systemEnvironment()
-        environment.remove('QT_QUICK_BACKEND')
-        environment.insert('QSG_RHI_BACKEND', 'opengl')
-        process.setProcessEnvironment(environment)
-        process.setProgram(str(python))
-        process.setArguments([str(viewer / 'main.py'), '--fullscreen', '--width', '1600', '--height', '720'])
-        process.setWorkingDirectory(str(viewer))
-        ok, _ = process.startDetached()
-        process.deleteLater()
-        if not ok: self.report('The 3D assembly viewer could not start.', True)
 
     def shutdown(self):
         self.monitor.stop();self.log_refresh.stop();self._capture_timeout.stop()

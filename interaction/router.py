@@ -28,6 +28,9 @@ class InputRouter(QObject):
     @Slot(int,result=int)
     def powerFor(self,corner):return self._power.get(corner,-3)
     def native(self):return self.host and self.host.window.isVisible()
+    def diagnostic_screen(self):
+        screen=getattr(getattr(self.ctl.workspace,'diagnostics',None),'screen',None)
+        return screen if screen and screen.isVisible() else None
     def find(self,name,root=None):
         if not self.window:return None
         stack=[root or self.surface().contentItem()]
@@ -75,6 +78,7 @@ class InputRouter(QObject):
             self._focus=dict(x=r.x(),y=r.y(),width=r.width(),height=r.height(),label=('Adjust · ' if self.adjusting else '')+str(self.target.property('navLabel')),active=True)
             self.changed.emit()
     def move_focus(self,direction,amount=1):
+        if self.diagnostic_screen():self.clear_focus();self.diagnostic_screen().navigate(direction*amount);return
         if self.native():self.clear_focus();self.host.window.navigate_knob(direction,amount);return
         if self.adjusting and self.target:
             self.target.stepFromKnob(direction*amount);return
@@ -85,6 +89,7 @@ class InputRouter(QObject):
         index=(origin+direction*amount)%len(entries)
         self.target=entries[index][0];self.refresh_focus()
     def activate(self):
+        if self.diagnostic_screen():self.diagnostic_screen().activate();return
         if self.native():self.host.window.activate_knob();return
         if not self.target or not isValid(self.target):self.move_focus(1);return
         if self.target.property('navKind') in ('slider','choice'):self.adjusting=not self.adjusting;self.refresh_focus();return
@@ -96,6 +101,7 @@ class InputRouter(QObject):
         if any(obj==previous for obj,rect,label in entries):self.target=previous;self.refresh_focus()
         elif self.scope().objectName() not in ('radialMenu','emissionConfirm'):self.move_focus(1)
     def back(self):
+        if self.diagnostic_screen():self.diagnostic_screen().close();self.clear_focus();return
         if self.adjusting:self.adjusting=False;self.refresh_focus();return
         if self.native():self.host.window.back_knob();return
         if self.surface()!=self.window:
