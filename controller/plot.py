@@ -1,8 +1,15 @@
 """QPainter plot: bounded geometry, native Qt text, no chart-package dependency."""
-from math import ceil
+from math import ceil, isfinite
 from PySide6.QtCore import Property, Signal, Slot, QRectF, QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen, QPolygonF
 from PySide6.QtQuick import QQuickPaintedItem
+
+
+def axis_label(value):
+    """Fixed notation, at most two decimals, and no negative zero."""
+    if abs(value) < .005:
+        value = 0.
+    return f'{value:.2f}'.rstrip('0').rstrip('.')
 
 
 class SpectrumPlot(QQuickPaintedItem):
@@ -24,6 +31,11 @@ class SpectrumPlot(QQuickPaintedItem):
             self.controller.changed.connect(self.state_changed)
 
     def state_changed(self):
+        if self.controller and hasattr(self.controller,'preferences'):
+            config=self.controller.preferences['graph'+str(self._channel+1)]
+            bounds=(config['x_min'],config['x_max'])
+            if getattr(self,'_configured_x',None)!=bounds:
+                self._configured_x=bounds;self._minimum,self._maximum=bounds
         self.changed.emit()
         self.refresh()
 
@@ -54,7 +66,7 @@ class SpectrumPlot(QQuickPaintedItem):
         self.state_changed()
 
     def refresh(self):
-        if self.isVisible():
+        if self.isVisible() and not self.controller.presentation_busy:
             self.update()
 
     @Property(int, notify=changed)
@@ -98,8 +110,19 @@ class SpectrumPlot(QQuickPaintedItem):
 
     @Slot(float, float)
     def setRange(self, lo, hi):
-        if hi - lo < .4 or hi - lo > 80:
+        if not (isfinite(lo) and isfinite(hi)) or hi - lo < .399999 or hi - lo > 80.000001:
             return
+        # Keep the acquired domain in view, with a small amount of overscroll.
+        width = hi-lo
+        domain=self.controller.instrument.lasers[self._channel].signal.x_values
+        start,end=domain[0],domain[-1]
+        if width <= end-start:
+            lower, upper = start-.1*width, end-.9*width
+        else:
+            middle=(start+end)/2
+            lower, upper = middle-.6*width, middle-.4*width
+        lo = max(lower, min(upper, lo))
+        hi = lo+width
         if self._minimum == lo and self._maximum == hi:
             return
         self._minimum, self._maximum = lo, hi
@@ -110,25 +133,33 @@ class SpectrumPlot(QQuickPaintedItem):
         chart = self.controller.instrument.lasers[self._channel].chart
         # Wider gutters are only needed when an edited axis has long labels.
         values = chart.bounds(False)+chart.bounds(True)
-        left = max(55 if self._large else 43, min(88, max(len(f'{n:.4g}') for n in values)*8+7))
+        left = max(43, min(90, max(len(axis_label(n)) for n in values)*8+9))
         right = 72 if self._combined and chart.main_visible and chart.error_visible else 16
         return QRectF(left, 10, max(1,self.width()-left-right),
                       max(1,self.height()-((55 if self._large else 40) if self._bottom_axis else 20)))
 
     @Slot(float, float)
     def pan(self, dx, dy):
-        if self.interactionLocked:
+        if self.interactionLocked or not (isfinite(dx) and isfinite(dy)):
             return
         a = self.area()
         delta = -dx / a.width() * (self._maximum - self._minimum)
         self.setRange(self._minimum + delta, self._maximum + delta)
         chart = self.controller.instrument.lasers[self._channel].chart
+        sample = self.controller.instrument.lasers[self._channel].signal.sample
+        domain=self.controller.instrument.lasers[self._channel].signal.x_values
+        visible_lo, visible_hi = max(domain[0],self._minimum), min(domain[-1],self._maximum)
+        samples = [sample(visible_lo+(visible_hi-visible_lo)*i/256) for i in range(257)]
         signals = [False, True] if self._combined else [self._error]
         for error in signals:
             prefix = 'error' if error else 'main'
             scale = chart.axes[prefix+'_scale']
             shift = chart.axes[prefix+'_position']+dy/a.height()*4*scale
-            chart.axes[prefix+'_position'] = round(max(-1000,min(1000,shift)),3)
+            values = [pair[1 if error else 0] for pair in samples]
+            # Retain some trace inside a 10% inset of the viewport, even after
+            # a very large swipe. Explicit axis edits remain unrestricted.
+            low, high = min(values)-1.6*scale, max(values)+1.6*scale
+            chart.axes[prefix+'_position'] = round(max(low,min(high,shift)),3)
         self.controller.changed.emit()
         self.update()
 
@@ -155,7 +186,8 @@ class SpectrumPlot(QQuickPaintedItem):
             for key in (prefix+'_scale',prefix+'_position'):
                 chart.axes[key] = AXIS_DEFAULTS[key]
         self.controller.changed.emit()
-        self.setRange(48.2, 68.2)
+        domain=self.controller.instrument.lasers[self._channel].signal.x_values
+        self.setRange(domain[0], domain[-1])
         self.update()
 
     @Slot(float)
@@ -181,10 +213,15 @@ class SpectrumPlot(QQuickPaintedItem):
         chart = laser.chart
         primary = self._error or (self._combined and not chart.main_visible)
         lo,hi = chart.bounds(primary)
-        x = lambda value: a.left() + (value - self._minimum) / (self._maximum - self._minimum) * a.width()
-        color = QColor('#C2C5C2')
-        font = QFont('Roboto')
-        font.setPixelSize(20 if self._large else 16)
+        minimum,maximum = self._minimum,self._maximum
+        left,x_scale = a.left(),a.width()/(maximum-minimum)
+        x = lambda value: left+(value-minimum)*x_scale
+        appearance=self.controller.theme
+        config=self.controller.preferences['graph'+str(self._channel+1)]
+        color = QColor(config['graph_color'])
+        if appearance.light and color.lightnessF()>.55:color=color.darker(190)
+        font = QFont(appearance.fontFamily)
+        font.setPixelSize(round(14*appearance.textScale))
         painter.setFont(font)
         painter.setPen(QPen(QColor('#535953'), .7))
         painter.drawRect(a)
@@ -195,16 +232,16 @@ class SpectrumPlot(QQuickPaintedItem):
             painter.setPen(QPen(QColor('#535953'), .7))
             painter.drawLine(QPointF(a.left(), yy), QPointF(a.right(), yy))
             painter.drawLine(QPointF(xx, a.top()), QPointF(xx, a.bottom()))
-            painter.setPen(color)
+            painter.setPen(QColor(appearance.foreground))
             value = lo + (hi - lo) * ratio
             if a.height()>145 or i % 2 == 0:
-                painter.drawText(QRectF(0, yy - 12, a.left() - 9, 24), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{value:.4g}')
+                painter.drawText(QRectF(0, yy - 12, a.left() - 9, 24), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, axis_label(value))
                 if self._combined and chart.main_visible and chart.error_visible:
                     elo,ehi = chart.bounds(True)
-                    painter.drawText(QRectF(a.right()+7,yy-12,62,24),Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,f'{elo+(ehi-elo)*ratio:.4g}')
+                    painter.drawText(QRectF(a.right()+7,yy-12,62,24),Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,axis_label(elo+(ehi-elo)*ratio))
             label_x = min(self.width() - 66, max(0, xx - 32))
             if self._bottom_axis:
-                painter.drawText(QRectF(label_x, a.bottom() + 5, 64, 25), Qt.AlignmentFlag.AlignHCenter, f'{self._minimum + ratio * (self._maximum - self._minimum):.1f}')
+                painter.drawText(QRectF(label_x, a.bottom() + 5, 64, 25), Qt.AlignmentFlag.AlignHCenter, axis_label(self._minimum + ratio * (self._maximum - self._minimum)))
         painter.setPen(QPen(QColor('#A0A59E'), 1.3))
         painter.drawLine(a.bottomLeft(), a.topLeft())
         painter.drawLine(a.bottomLeft(), a.bottomRight())
@@ -214,21 +251,25 @@ class SpectrumPlot(QQuickPaintedItem):
 
     def paint_trace(self,painter,a,laser,error,color,x):
         lo,hi = laser.chart.bounds(error)
-        y = lambda value: a.bottom()-(value-lo)/(hi-lo)*a.height()
+        bottom,y_scale = a.bottom(),a.height()/(hi-lo)
+        y = lambda value: bottom-(value-lo)*y_scale
         painter.save()
         painter.setClipRect(a.adjusted(1, 1, -1, -1))
         path = QPainterPath()
         # At most one sample per pixel, with a minimum for narrow peaks.
         count = min(1600, max(720, ceil(a.width())))
+        minimum,step = self._minimum,(self._maximum-self._minimum)/count
+        sample = laser.signal.sample
         for i in range(count + 1):
-            value = self._minimum + (self._maximum - self._minimum) * i / count
-            pair = laser.sample(value, self.controller.elapsed)
+            value = minimum+step*i
+            pair = sample(value)
             point = QPointF(x(value), y(pair[1 if error else 0]))
             if i == 0:
                 path.moveTo(point)
             else:
                 path.lineTo(point)
-        pen = QPen(color, 1.5 if error else 1.7)
+        width=self.controller.preferences['graph'+str(self._channel+1)]['line_width']
+        pen = QPen(color, width)
         if error:
             pen.setDashPattern([2.4, 2.4])
         painter.setPen(pen)
@@ -240,8 +281,9 @@ class SpectrumPlot(QQuickPaintedItem):
                 xx = x(center)
                 yy = y(laser.sample(center, self.controller.elapsed)[0])
                 selected = laser.selected == index
-                painter.setPen(QPen(QColor('#FFFFFF') if selected else color, 2 if selected else 1.2))
-                painter.setBrush(QColor('#D9D9D9') if selected else Qt.BrushStyle.NoBrush)
+                selected_color = QColor(self.controller.theme.foreground)
+                painter.setPen(QPen(selected_color if selected else color, 2 if selected else 1.2))
+                painter.setBrush(selected_color if selected else Qt.BrushStyle.NoBrush)
                 painter.drawEllipse(QPointF(xx, yy - 24), 5, 5)
                 painter.drawLine(QPointF(xx, yy - 19), QPointF(xx, yy + 2))
                 painter.drawPolygon(QPolygonF([QPointF(xx, yy - 2), QPointF(xx - 5, yy + 11), QPointF(xx + 5, yy + 11)]))

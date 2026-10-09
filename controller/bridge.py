@@ -3,12 +3,31 @@ import time
 from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, Qt
 from .model import Instrument, PARAMETERS, PEAKS, MODULES
 from .charts import axis_parameter, AXIS_DEFAULTS
+from .alarms import AlarmMonitor
 
 
 class Controller(QObject):
     changed = Signal()
     frame = Signal()
     settingsRequested = Signal()
+
+    def configure(self,values):
+        previous=getattr(self,'preferences',{})
+        self.preferences=values.copy()
+        rate=int(values.get('sampling_rate',20));self.timer.setInterval(round(1000/rate))
+        for i,laser in enumerate(self.instrument.lasers):
+            loaded = values.get('alarms'+str(i+1), {})
+            if isinstance(loaded, dict):
+                laser.alarms.update({k: loaded[k] for k in laser.alarms if k in loaded})
+            key='graph'+str(i+1);config=values[key]
+            laser.signal.configure(dict(config,sampling_rate=rate))
+            if self._live and not laser.signal.ready:laser.signal.advance(0,self.elapsed,laser.values,laser.stabilised)
+            for prefix,low,high in [('main','main_min','main_max'),('error','error_min','error_max')]:
+                old=previous.get(key,{})
+                if old.get(low)!=config[low] or old.get(high)!=config[high]:
+                    laser.chart.axes[prefix+'_position']=(config[low]+config[high])/2
+                    laser.chart.axes[prefix+'_scale']=(config[high]-config[low])/4
+        self.changed.emit();self.frame.emit()
 
     @Slot()
     def openSettings(self):
@@ -36,15 +55,28 @@ class Controller(QObject):
     def __init__(self, parent=None, *, animate=True):
         super().__init__(parent)
         self.instrument = Instrument()
+        self.alarm_monitors = [AlarmMonitor(), AlarmMonitor()]
+        self._alarm_elapsed = 0.
+        for laser in self.instrument.lasers:
+            laser.alarms = {'enabled': False, 'main_high': 8.5, 'error_high': 2.0}
         self.elapsed = 0.0
         self._started = time.monotonic()
         self._last_tick = self._started
         self._animate = animate
         self._live = False
+        self.presentation_busy = False
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.timer.setInterval(50)  # 20 display updates/s; unrelated to a real servo rate.
         self.timer.timeout.connect(self.advance)
+
+    @Slot(bool)
+    def setPresentationBusy(self, busy):
+        """Keep acquisition live while a brief menu reveal uses cached chart pixels."""
+        was_busy = self.presentation_busy
+        self.presentation_busy = busy
+        if was_busy and not busy:
+            self.frame.emit()
     @Slot()
     def startAcquisition(self):
         if self._live:
@@ -69,6 +101,16 @@ class Controller(QObject):
         self.elapsed += max(0,dt)
         for laser in self.instrument.lasers:
             laser.signal.advance(max(0,dt),self.elapsed,laser.values,laser.stabilised)
+        self._alarm_elapsed += max(0,dt)
+        if self._alarm_elapsed >= .1:
+            changed = False
+            for laser, monitor in zip(self.instrument.lasers,self.alarm_monitors):
+                samples = [laser.signal.sample(x) for x in laser.signal.x_values]
+                main = max((s[0] for s in samples),default=0.)
+                error = max((abs(s[1]) for s in samples),default=0.)
+                changed |= monitor.update(laser.alarms,laser.emission,main,error,self._alarm_elapsed)
+            self._alarm_elapsed = 0.
+            if changed:self.changed.emit()
         self.frame.emit()
 
     @Property(int, notify=changed)
@@ -92,10 +134,14 @@ class Controller(QObject):
                 "stabilised": laser.stabilised, "selected": laser.selected, "emission": laser.emission,
                 "showError": laser.chart.error_visible, "chart": laser.chart.snapshot(), "top": laser.top_field(),
                 "bottom": laser.bottom_field(), "values": laser.values.copy(),
-                "status": ("View locked" if laser.locked else "Scanning" if laser.emission else "Idle") + "; Emission " + ("ON" if laser.emission else "OFF")}
+                "status": self.theme.trText("View locked" if laser.locked else "Scanning" if laser.emission else "Idle") + "; " + self.theme.trText("Emission") + " " + self.theme.trText("ON" if laser.emission else "OFF")}
 
     @Slot(str, result="QVariantMap")
     def parameter(self, key):
+        if key == 'alarm_main_high':
+            return {'label':'Spectroscopy high limit', 'unit':'V', 'minimum':-1000., 'maximum':1000., 'decimals':3, 'module':'ALARM'}
+        if key == 'alarm_error_high':
+            return {'label':'Error high limit', 'unit':'V', 'minimum':0., 'maximum':1000., 'decimals':3, 'module':'ALARM'}
         axis = axis_parameter(key)
         if axis is not None:
             return axis
@@ -106,6 +152,18 @@ class Controller(QObject):
     @Slot(int, str, str, result=str)
     def setValue(self, index, key, value):
         laser = self.instrument.lasers[index]
+        if key.startswith('alarm_'):
+            try:
+                numeric = float(value)
+            except ValueError:
+                return 'Enter a number'
+            if key not in ('alarm_main_high', 'alarm_error_high') or not -1000 <= numeric <= 1000:
+                return 'Range: -1000 to 1000 V'
+            if key == 'alarm_error_high' and numeric < 0:return 'Range: 0 to 1000 V'
+            laser.alarms[key.removeprefix('alarm_')] = round(numeric, 3)
+            self._save_alarm(index)
+            self.changed.emit()
+            return ''
         error = laser.chart.set_axis(key, value) if key.startswith('chart_') else laser.set_value(key, value)
         if not error:
             self.changed.emit()
@@ -152,7 +210,34 @@ class Controller(QObject):
     @Slot(int, str, result=float)
     def value(self, index, key):
         laser = self.instrument.lasers[index]
+        if key.startswith('alarm_'):
+            return laser.alarms[key.removeprefix('alarm_')]
         return laser.chart.axes[key[6:]] if key.startswith('chart_') else laser.values[key]
+
+    @Slot(int, result='QVariantMap')
+    def alarm(self, index):
+        return dict(self.instrument.lasers[index].alarms, **self.alarm_monitors[index].snapshot())
+
+    @Slot(int)
+    def acknowledgeAlarm(self,index):
+        self.alarm_monitors[index].acknowledge();self.changed.emit()
+
+    @Slot(int)
+    def clearAlarmHistory(self,index):
+        self.alarm_monitors[index].events.clear();self.changed.emit()
+
+    @Slot(int)
+    def toggleAlarm(self, index):
+        laser = self.instrument.lasers[index]
+        laser.alarms['enabled'] = not laser.alarms['enabled']
+        self._save_alarm(index)
+        self.changed.emit()
+
+    def _save_alarm(self, index):
+        if not hasattr(self, 'theme'):
+            return
+        self.theme.store.values['alarms'+str(index+1)] = dict(self.instrument.lasers[index].alarms)
+        self.theme.store.save()
 
     @Slot(int, str)
     def setChartMode(self, index, mode):

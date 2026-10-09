@@ -45,6 +45,7 @@ class Laser:
     emission: bool = True
     stabilised: bool = False
     selected: int = -1
+    alarms: dict = field(default_factory=lambda: {'enabled': False, 'main_high': 8.5, 'error_high': 2.0})
     chart: ChartState = field(default_factory=ChartState)
     revision: int = 0
     signal: SignalSimulation = field(init=False)
