@@ -17,6 +17,7 @@ class Controller(QObject):
     def notify(self,message):self.notice.emit(message)
     def action_notice(self,text,key):
         if getattr(self,'notifications',None) and self.preferences.get('notification_actions',True):self.notifications.post(text,key=key)
+        elif getattr(self,'journal',None):self.journal.record(text,source='Controller')
     def gesture_notice(self,index,action):
         """Announce continuous changes once they settle, never once per edge/frame."""
         if not hasattr(self,'_gesture_timers'):self._gesture_timers={}
@@ -86,6 +87,7 @@ class Controller(QObject):
         if index in (0, 1) and key in PARAMETERS:
             setattr(self.instrument.lasers[index], "bottom" if bottom else "top", key)
             self.changed.emit()
+            if getattr(self,'journal',None):self.journal.record(f'Laser {index+1} '+('bottom' if bottom else 'top')+f' parameter selected: {key}',source='Parameter')
 
     def __init__(self, parent=None, *, animate=True):
         super().__init__(parent)
@@ -187,6 +189,11 @@ class Controller(QObject):
 
     @Slot(int, str, str, result=str)
     def setValue(self, index, key, value):
+        error=self.edit_value(index,key,value)
+        if getattr(self,'journal',None):self.journal.record(f'Laser {index+1}: {key} = {value}'+(' — '+error if error else ''),'Failed' if error else 'Passed','warning' if error else 'default','Parameter')
+        return error
+
+    def edit_value(self,index,key,value):
         laser = self.instrument.lasers[index]
         if key.startswith('alarm_'):
             try:
@@ -265,10 +272,12 @@ class Controller(QObject):
     @Slot(int)
     def acknowledgeAlarm(self,index):
         self.alarm_monitors[index].acknowledge();self.changed.emit()
+        self.action_notice(f'Laser {index+1} alarm acknowledged','alarm')
 
     @Slot(int)
     def clearAlarmHistory(self,index):
         self.alarm_monitors[index].events.clear();self.changed.emit()
+        self.action_notice(f'Laser {index+1} alarm history cleared','alarm')
 
     @Slot(int)
     def toggleAlarm(self, index):
@@ -276,6 +285,7 @@ class Controller(QObject):
         laser.alarms['enabled'] = not laser.alarms['enabled']
         self._save_alarm(index)
         self.changed.emit()
+        self.action_notice(f'Laser {index+1} alarm monitoring '+('enabled' if laser.alarms['enabled'] else 'disabled'),'alarm')
 
     def _save_alarm(self, index):
         if not hasattr(self, 'theme'):
@@ -294,6 +304,7 @@ class Controller(QObject):
     def placeSignal(self, index, error, upper):
         self.instrument.lasers[index].chart.main_upper = upper != error
         self.changed.emit()
+        self.action_notice(f'Laser {index+1} '+('error' if error else 'spectroscopy')+' placed '+('upper' if upper else 'lower'),'chart-position')
 
     @Slot(int)
     def swapLocal(self, index):
@@ -323,6 +334,7 @@ class Controller(QObject):
     def restoreChartAxes(self, index):
         self.instrument.lasers[index].chart.restore_axes()
         self.changed.emit()
+        self.action_notice(f'Laser {index+1} chart axes restored','chart-axes')
 
     @Slot(int, str, int)
     def stepAxis(self, index, key, direction):

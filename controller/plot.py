@@ -241,7 +241,7 @@ class SpectrumPlot(QQuickPaintedItem):
                 if self._combined and chart.main_visible and chart.error_visible:
                     elo,ehi = chart.bounds(True)
                     painter.drawText(QRectF(a.right()+7,yy-12,62,24),Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,axis_label(elo+(ehi-elo)*ratio))
-            label_x = min(self.width() - 66, max(0, xx - 32))
+            label_x = min(a.right()-64, max(a.left()+3, xx-32))
             if self._bottom_axis:
                 painter.drawText(QRectF(label_x, a.bottom() + 5, 64, 25), Qt.AlignmentFlag.AlignHCenter, axis_label(self._minimum + ratio * (self._maximum - self._minimum)))
         painter.setPen(QPen(QColor('#A0A59E'), 1.3))
@@ -249,6 +249,8 @@ class SpectrumPlot(QQuickPaintedItem):
         painter.drawLine(a.bottomLeft(), a.bottomRight())
         signals = ([False] if chart.main_visible else []) + ([True] if chart.error_visible else []) if self._combined else [self._error]
         for error in signals:
+            color=QColor(config['error_color' if error else 'main_color'])
+            if appearance.light and color.lightnessF()>.55:color=color.darker(190)
             self.paint_trace(painter,a,laser,error,color,x)
 
     def paint_trace(self,painter,a,laser,error,color,x):
@@ -270,10 +272,11 @@ class SpectrumPlot(QQuickPaintedItem):
                 path.moveTo(point)
             else:
                 path.lineTo(point)
-        width=self.controller.preferences['graph'+str(self._channel+1)]['line_width']
+        config=self.controller.preferences['graph'+str(self._channel+1)];prefix='error' if error else 'main'
+        width=config[prefix+'_width']
         pen = QPen(color, width)
-        if error:
-            pen.setDashPattern([2.4, 2.4])
+        if config[prefix+'_style']=='Dashed':pen.setDashPattern([2.4,2.4])
+        elif config[prefix+'_style']=='Dotted':pen.setDashPattern([1.,2.])
         painter.setPen(pen)
         painter.drawPath(path)
         if not error and laser.signal.level > 0.01:
