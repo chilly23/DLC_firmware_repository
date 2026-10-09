@@ -18,7 +18,7 @@ class KnobService(QObject):
         super().__init__(parent);self.store=ControlStore(path);self.worker_factory=worker_factory
         self.worker=None;self.connected=False;self.status_text='GPIO is available on the Raspberry Pi; touch controls remain active.'
         self.snapshots={};self.calibration=None;self.navigation=False;self.last_action='';self.held={};self.pushes={}
-        self.armed=set();self.quiet_since={};self.last_lost={};self.preview=False
+        self.armed=set();self.quiet_since={};self.last_lost={};self.preview=False;self.direction_gestures=set()
         self.timer=QTimer(self);self.timer.setInterval(25);self.timer.timeout.connect(self.tick);self.timer.start()
         if self.store.error:self.status_text=self.store.error
         if autostart:QTimer.singleShot(0,self.retry)
@@ -35,7 +35,7 @@ class KnobService(QObject):
     @Slot()
     def retry(self):
         self.stop_worker();self.snapshots.clear();self.armed.clear();self.held.clear();self.pushes.clear()
-        self.quiet_since.clear();self.last_lost.clear()
+        self.quiet_since.clear();self.last_lost.clear();self.direction_gestures.clear()
         if sys.platform!='linux' and self.worker_factory is None:
             self.set_status(False,'Desktop mode · no GPIO device. Configure mappings here; calibrate on the Pi.');return
         from .gpio import GPIOWorker
@@ -49,6 +49,7 @@ class KnobService(QObject):
         self.connected=connected;self.status_text=text+(' · '+self.store.error if self.store.error else '')
         LOG.info('%s | connected=%s',text,connected)
         if not connected:
+            self.direction_gestures.clear()
             self.armed.clear();self.held.clear();self.pushes.clear();self.quiet_since.clear();self.snapshots.clear()
             if self.calibration:self.calibration.error='GPIO disconnected. Cancel, reconnect and choose Retry GPIO.'
         self.changed.emit()
@@ -63,6 +64,7 @@ class KnobService(QObject):
                 continue
             lost=frame.get('lost',0)
             if lost!=self.last_lost.get(index,lost):
+                self.direction_gestures.discard(index)
                 self.armed.discard(index);self.held={k:v for k,v in self.held.items() if k[0]!=index};self.pushes.pop(index,None)
                 self.quiet_since.pop(index,None);self.notice.emit(f'Knob {index+1}: missed GPIO edges; release controls to resume.')
             self.last_lost[index]=lost
@@ -74,13 +76,21 @@ class KnobService(QObject):
                 else:self.quiet_since.pop(index,None)
                 continue
             mapping={v:k for k,v in config['directions'].items()};mapping[config['push_contact']]='push'
+            # Latch a tilt until ALL contacts release, independent of edge order.
+            # Inspect the entire batch so a short tilt ending in this frame also
+            # consumes its shared push contact before any push-release dispatch.
+            directions=set(config['directions'].values())
+            if (any(frame['switches'].get(c) for c in directions) or
+                    any(name in directions and value for name,value in frame.get('events',[]))):
+                self.direction_gestures.add(index)
+                if index in self.pushes:self.pushes[index][1]=True
             for name,value in frame.get('events',[]):
                 if name=='rotation':
                     delta=value*(-1 if config['reverse_encoder'] else 1)
                     self.dispatch(index,'clockwise' if delta>0 else 'anticlockwise',abs(delta));continue
                 operation=mapping[name]
                 if operation=='push':
-                    if value:self.pushes[index]=[now,False]
+                    if value:self.pushes[index]=[now,index in self.direction_gestures]
                     else:
                         press=self.pushes.pop(index,None)
                         if press and not press[1]:
@@ -94,6 +104,7 @@ class KnobService(QObject):
                     if len(active)>1:continue
                     self.dispatch(index,operation);self.held[key]=now+.45
                 else:self.held.pop(key,None)
+            if not any(frame['switches'].values()):self.direction_gestures.discard(index)
         self.liveChanged.emit()
     def dispatch(self,index,operation,amount=1):
         if self.calibration:return
@@ -135,7 +146,7 @@ class KnobService(QObject):
         self.store.update(index,'enabled',bool(enabled));self.retry();self.changed.emit()
     def start_calibration(self,index):
         if not self.connected or index not in self.snapshots:raise ValueError('Connect the knob GPIO first, then choose Retry GPIO.')
-        self.calibration=Calibration(index,self.store.config['knobs'][index]);self.held.clear();self.pushes.clear()
+        self.calibration=Calibration(index,self.store.config['knobs'][index]);self.held.clear();self.pushes.clear();self.direction_gestures.clear()
         frame=self.snapshots[index];self.calibration.feed(frame['levels'],frame['count'],time.monotonic());self.changed.emit()
     def calibration_next(self):
         if self.calibration:self.calibration.next(time.monotonic());self.changed.emit()
@@ -144,7 +155,7 @@ class KnobService(QObject):
         if not calibration:return
         cfg=deepcopy(self.store.config);cfg['knobs'][calibration.index]=calibration.result();self.store.commit(cfg)
         self.calibration=None;self.retry();self.notice.emit('Knob calibration saved.');self.changed.emit()
-    def cancel_calibration(self):self.calibration=None;self.held.clear();self.pushes.clear();self.armed.clear();self.quiet_since.clear();self.changed.emit()
+    def cancel_calibration(self):self.calibration=None;self.held.clear();self.pushes.clear();self.direction_gestures.clear();self.armed.clear();self.quiet_since.clear();self.changed.emit()
     def reset_calibration(self,index):
         cfg=deepcopy(self.store.config);old=cfg['knobs'][index];new=default_knob(index)
         for key in ('calibrated','directions','push_contact','released','reverse_encoder'):old[key]=new[key]

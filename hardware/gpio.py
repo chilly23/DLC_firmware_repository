@@ -8,7 +8,7 @@ from .decoder import Decoder
 
 def gpio_module():
     import gpiod
-    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.8 Pi launcher setup.')
+    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.9 Pi launcher setup.')
     return gpiod
 
 def discover(gpiod):

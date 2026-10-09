@@ -11,8 +11,8 @@ LOCATIONS=('Top left','Bottom left','Top right','Bottom right')
 PIN_MAPS=(
     dict(C=2,D=3,encoder_a=4,A=17,push=27,encoder_b=22,B=10),
     dict(C=14,B=15,encoder_b=18,push=23,A=24,encoder_a=25,D=8),
-    dict(B=26,encoder_b=19,C=13,D=6,encoder_a=5,A=0,push=21),
     {},
+    dict(B=26,encoder_b=19,C=13,D=6,encoder_a=5,A=0,push=21),
 )
 # Explicit commands cross the hardware/frontend seam. Labels are UI metadata.
 ACTIONS={
@@ -34,12 +34,30 @@ def default_knob(index):
     if index==1:
         mapping=dict(clockwise='focus.next',anticlockwise='focus.previous',up='graph.up',down='graph.down',
                      left='graph.left',right='graph.right',push='more.open')
-    return dict(name=f'Knob {index+1}',location=LOCATIONS[index],enabled=index<3,pins=dict(PIN_MAPS[index]),
+    return dict(name=f'Knob {index+1}',location=LOCATIONS[index],enabled=bool(PIN_MAPS[index]),pins=dict(PIN_MAPS[index]),
                 target=index,calibrated=False,directions=dict(up='A',right='D',down='C',left='B'),push_contact='push',
                 released=dict.fromkeys(CONTACTS,1),reverse_encoder=False,transitions_per_detent=2,
                 switch_debounce_ms=8,mapping=mapping)
 
-DEFAULTS=dict(schema=1,chip='auto',knobs=[default_knob(i) for i in range(4)])
+DEFAULTS=dict(schema=1,wiring_revision=2,chip='auto',knobs=[default_knob(i) for i in range(4)])
+
+def migrate_wiring(config):
+    """Move only the original stock Knob 3 wiring to the replacement Knob 4.
+
+    Custom pin layouts are left intact. Knobs 1/2 keep their calibration and
+    shortcuts. The replacement knob must be calibrated as a new physical unit.
+    """
+    cfg=deepcopy(config)
+    if cfg.get('wiring_revision',1)>=2:return cfg
+    old,new=cfg['knobs'][2:4]
+    if old['pins']==PIN_MAPS[3] and not new['pins']:
+        replacement=default_knob(3)
+        for key in ('mapping','transitions_per_detent','switch_debounce_ms'):
+            replacement[key]=deepcopy(old[key])
+        replacement['target']=3 if old['target']==2 else old['target']
+        cfg['knobs'][2]=default_knob(2);cfg['knobs'][3]=replacement
+    cfg['wiring_revision']=2
+    return validate(cfg)
 
 def validate(config):
     if config.get('schema')!=1 or len(config.get('knobs',[]))!=4:raise ValueError('Expected four knob slots and schema 1.')
@@ -67,8 +85,15 @@ class ControlStore:
     def __init__(self,path):
         self.path=Path(path);self.error='';self.config=deepcopy(DEFAULTS)
         if self.path.exists():
-            try:self.config=validate(json.loads(self.path.read_text(encoding='utf8')))
-            except (OSError,ValueError,TypeError,KeyError) as exc:self.error='Cannot load controls file; defaults loaded: '+str(exc)
+            try:
+                original=validate(json.loads(self.path.read_text(encoding='utf8')))
+                self.config=migrate_wiring(original)
+            except (OSError,ValueError,TypeError,KeyError) as exc:
+                self.error='Cannot load controls file; defaults loaded: '+str(exc)
+                return
+            if self.config!=original:
+                try:self.commit(self.config)
+                except OSError as exc:self.error='Updated wiring is active but could not be saved: '+str(exc)
     def commit(self,config):
         validate(config)
         self.path.parent.mkdir(parents=True,exist_ok=True)
