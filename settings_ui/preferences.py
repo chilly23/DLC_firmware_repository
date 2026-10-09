@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 """Shared visual preferences based on the supplied Tesla reference palette."""
 ACCENTS={
     'Red':'#FF453A', 'Orange':'#FF9F0A', 'Yellow':'#FFD60A',
-    'Green':'#32D74B', 'Mint':'#66D4CF', 'Teal':'#6AC4DC',
+    'Green':'#008622', 'Mint':'#66D4CF', 'Teal':'#6AC4DC',
     'Cyan':'#5AC8F5', 'Blue':'#0A84FF', 'Indigo':'#5E5CE6',
     'Purple':'#BF5AF2', 'Pink':'#FF375F', 'Brown':'#AC8E68',
     'Gray':'#98989D', 'Black':'#000000', 'White':'#FFFFFF',

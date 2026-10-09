@@ -1,8 +1,8 @@
 """Operator help is displayed as documents inside the right panel."""
 TOPICS={
  'Knob controls':[
- ('Physical layout','Knob 1 is top left, Knob 2 bottom left and Knob 3 top right. The bottom-right slot is not connected. Control Settings shows the live stick, centre press and encoder orientation.'),
- ('Calibrate before use','Open Control Settings, Configure, then Calibrate directions and push. Capture the released state. Move Up, Right, Down, Left and press the centre separately, releasing each time. Check both encoder directions and Save. Cancel keeps the previous calibration.'),
+ ('Physical layout','Knob 1 is top left, Knob 2 bottom left and Knob 4 bottom right. Knob 3 at the top right is not connected. Control Settings shows the live stick, centre press and encoder orientation.'),
+ ('Calibrate before use','Open Control Settings, Configure, then Calibrate directions and push. Capture the released state. Press the centre without tilting first, then move Up, Right, Down and Left, releasing completely after each movement. A direction may also close the centre contact; this is supported. Check both encoder directions and Save. Cancel keeps the previous calibration.'),
  ('Assign shortcuts','Choose the target corner and an action for clockwise, anticlockwise, four directions and a short push. Parameter actions follow the laser and module displayed in that corner. Changes are saved immediately.'),
  ('Select a digit','The top knobs initially use left/right to move the selected digit, rotation to increase/decrease it, and push to toggle graph lock. An underline identifies the digit. Parameter limits always apply.'),
  ('Navigation mode','Hold a calibrated knob push for 700 ms. Rotation moves focus; push or stick right activates; stick left goes back. Hold push again to restore assigned shortcuts. On a slider, push to adjust, rotate, then push to finish. In Settings, focus the wheel or scroll rail and push before rotating it.'),
@@ -38,5 +38,5 @@ TOPICS={
  ('Export settings','Export writes the current settings and graph preferences as JSON in the application exports folder.'),
  ('Export graph frame','Capture frame writes the current X, spectroscopy and error samples for both lasers to CSV. This is a snapshot, not continuous data logging.'),
  ('Search history','The history button beside Search shows the eight most recent non-empty queries. Queries are saved on Return or dismissal. Clear removes the persisted list.'),
- ('Version scope','Application v1.8 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.8.0.')]
+ ('Version scope','Application v1.9 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.9.0.')]
 }

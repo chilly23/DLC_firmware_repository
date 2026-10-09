@@ -71,10 +71,10 @@ for i,(title,body) in enumerate([('Export settings','Save preferences as a JSON 
     step(title,body,section='storage',row=i)
 for topic in ('Graphs','Analysis','Parameters','System','Storage'):
     step(topic+' help','Swipe this document to read the full topic. Back returns to the Help list.',section='help',route='help:'+topic)
-step('Three physical knobs','The cards match the panel: Knob 1 top left, Knob 2 bottom left, Knob 3 top right. Knob 4 is not connected. Calibration is required before GPIO shortcuts run.',section='control',knob_intro=True)
+step('Three physical knobs','The cards match the panel: Knob 1 top left, Knob 2 bottom left, Knob 4 bottom right. Knob 3 is not connected. Calibration is required before GPIO shortcuts run.',section='control',knob_intro=True)
 step('Live input feedback','The stick on each card follows the physical directions, centre press and encoder rotation. Retry GPIO reconnects after a wiring or permission correction.',[680,190,846,308],section='control')
 step('Choose a target corner','Each knob has a target corner. Parameter actions follow the module and laser currently displayed there, even after a channel swap.',section='control',route='knob:0',control_row=0)
-step('Calibrate physical directions','Choose Calibrate. Release the knob and capture its idle state. Move Up, Right, Down, Left and press the centre separately; release after each movement. Then check both rotation directions and Save.',section='control',route='knob:0',control_row=1)
+step('Calibrate physical directions','Choose Calibrate. Release the knob and capture its idle state. Press the centre alone first, then move Up, Right, Down and Left; release completely after each. Direction plus centre contact is accepted. Then check both rotation directions and Save.',section='control',route='knob:0',control_row=1)
 step('Encoder click sensitivity','If one physical click produces two steps, select four transitions per click. Two is the supplied demo default. This changes decoding without changing your shortcuts.',section='control',route='knob:0',control_row=2)
 step('Map every operation','Clockwise and anticlockwise rotation, four stick directions and a short push each have a dropdown. Pick an action; it is saved immediately. Not assigned disables just that operation.',section='control',route='knob:0',control_row=4)
 step('Edit one digit at a time','The default top knobs use left and right to select a digit; rotation changes it. An underline shows the selected digit. Values remain inside the selected parameter limits.',[7,7,418,80])

@@ -88,7 +88,8 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         for deg in range(0,360,30):
             a=math.radians(deg);line(p,c.x()+math.cos(a)*r*.84,c.y()+math.sin(a)*r*.84,c.x()+math.cos(a)*r*.95,c.y()+math.sin(a)*r*.95,self.theme.muted,1.5)
         center=c+QPointF(pose[0]*r*.22,pose[1]*r*.22)
-        push=pressed(cfg['push_contact']);p.setBrush(QColor(self.theme.active if push else self.theme.raised));p.setPen(QPen(QColor(self.theme.foreground),2));p.drawEllipse(center,r*.62,r*.62)
+        push=pressed(cfg['push_contact']) and not any(pressed(c) for c in mapping.values())
+        p.setBrush(QColor(self.theme.active if push else self.theme.raised));p.setPen(QPen(QColor(self.theme.foreground),2));p.drawEllipse(center,r*.62,r*.62)
         a=math.radians(pose[2]-90);line(p,center.x()+math.cos(a)*r*.25,center.y()+math.sin(a)*r*.25,center.x()+math.cos(a)*r*.53,center.y()+math.sin(a)*r*.53,self.theme.activeInk if push else self.theme.foreground,3)
         if not cfg['pins']:
             p.setPen(QPen(QColor(self.theme.muted),2));p.drawLine(c+QPointF(-r*.8,r*.8),c+QPointF(r*.8,-r*.8))
