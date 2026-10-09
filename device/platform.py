@@ -60,7 +60,10 @@ class LinuxDevice:
             if self.ddc_display:result['target']+=' / DDC display '+self.ddc_display
         for key in ('brightness','contrast'):
             if result[key] is None:
-                result['reasons'].setdefault(key,'No supported backlight/DDC control exposed by this display.')
+                fallback=('ddcutil is missing. Run the v1.8 Pi setup to install DDC/I2C support.' if not shutil.which('ddcutil') else
+                          'No accessible DDC display was detected. Check i2c-dev, I2C permissions and the monitor DDC/CI setting.' if self.ddc_display is None else
+                          'The detected monitor did not report this control. Use Retry display after reconnecting it.')
+                result['reasons'].setdefault(key,fallback)
         try:
             if os.environ.get('WAYLAND_DISPLAY') and shutil.which('wlr-randr'):
                 outputs=json.loads(self.run(['wlr-randr','--json']))
