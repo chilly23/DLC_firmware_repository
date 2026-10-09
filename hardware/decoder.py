@@ -25,25 +25,28 @@ class Decoder:
         self.raw=dict(levels);self.released=cfg['released'];self.stable={k:levels[k]!=self.released[k] for k in CONTACTS}
         self.changed_at=dict.fromkeys(CONTACTS,now);self.debounce=int(cfg['switch_debounce_ms']*1_000_000)
         self.encoder=Quadrature(levels['encoder_a'],levels['encoder_b'],cfg['transitions_per_detent'])
-        self.events=[];self.count=0;self.lost=0
+        self.events=[];self.event_times=[];self.count=0;self.lost=0;self.now=now
     def settle(self,now):
+        self.now=now
         for name in CONTACTS:
             active=self.raw[name]!=self.released[name]
             if active!=self.stable[name] and now-self.changed_at[name]>=self.debounce:
-                self.stable[name]=active;self.events.append((name,int(active)))
+                self.stable[name]=active;self.events.append((name,int(active)));self.event_times.append(self.changed_at[name]+self.debounce)
     def edge(self,name,level,now):
         self.settle(now)
         if level==self.raw[name]:return
         self.raw[name]=level
         if name.startswith('encoder_'):
             delta=self.encoder.feed(self.raw['encoder_a'],self.raw['encoder_b'])
-            if delta:self.count+=delta;self.events.append(('rotation',delta))
+            if delta:self.count+=delta;self.events.append(('rotation',delta));self.event_times.append(now)
         else:self.changed_at[name]=now
     def resync(self,levels,now):
         self.raw=dict(levels);self.encoder.reset(levels['encoder_a'],levels['encoder_b'])
         self.stable={k:levels[k]!=self.released[k] for k in CONTACTS}
-        self.changed_at=dict.fromkeys(CONTACTS,now);self.events=[];self.lost+=1
+        self.changed_at=dict.fromkeys(CONTACTS,now);self.events=[];self.event_times=[];self.lost+=1;self.now=now
     def snapshot(self):
+        ordered=sorted(zip(self.events,self.event_times),key=lambda pair:pair[1])
+        self.events=[p[0] for p in ordered];self.event_times=[p[1] for p in ordered]
         result=dict(levels=dict(self.raw),switches=dict(self.stable),count=self.count,
-                    invalid=self.encoder.invalid,lost=self.lost,events=self.events[:])
-        self.events.clear();return result
+                    invalid=self.encoder.invalid,lost=self.lost,events=self.events[:],event_times=self.event_times[:],captured_ns=self.now,released=dict(self.released))
+        self.events.clear();self.event_times.clear();return result

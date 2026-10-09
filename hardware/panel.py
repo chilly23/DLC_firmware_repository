@@ -1,4 +1,4 @@
-"""Dedicated panel contacts share the GPIO request with the knobs."""
+"""Debounce dedicated panel contacts; each contact has its own owner request."""
 from copy import deepcopy
 
 PANEL_DEFAULTS=dict(
@@ -13,14 +13,17 @@ PANEL_LABELS=dict(lock='System lock switch',right_emission='Button 1 - right emi
 class PanelDecoder:
     def __init__(self,config,levels,now):
         self.config=deepcopy(config);self.raw=dict(levels);self.changed=dict.fromkeys(levels,now)
-        self.stable={k:bool(v==config[k]['active_level']) for k,v in levels.items()};self.events=[]
+        self.stable={k:bool(v==config[k]['active_level']) for k,v in levels.items()};self.events=[];self.event_times=[];self.now=now
     def edge(self,key,value,now):
         self.settle(now)
         if value!=self.raw[key]:self.raw[key]=value;self.changed[key]=now
     def settle(self,now):
+        self.now=now
         for key,value in self.raw.items():
             active=value==self.config[key]['active_level']
             if active!=self.stable[key] and now-self.changed[key]>=self.config[key]['debounce_ms']*1_000_000:
-                self.stable[key]=active;self.events.append((key,active))
+                self.stable[key]=active;self.events.append((key,active));self.event_times.append(self.changed[key]+self.config[key]['debounce_ms']*1_000_000)
     def snapshot(self):
-        result=dict(levels=dict(self.raw),active=dict(self.stable),events=self.events[:]);self.events.clear();return result
+        ordered=sorted(zip(self.events,self.event_times),key=lambda pair:pair[1])
+        self.events=[p[0] for p in ordered];self.event_times=[p[1] for p in ordered]
+        result=dict(levels=dict(self.raw),active=dict(self.stable),events=self.events[:],event_times=self.event_times[:],captured_ns=self.now,released={k:1-v['active_level'] for k,v in self.config.items()});self.events.clear();self.event_times.clear();return result
