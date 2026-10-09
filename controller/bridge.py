@@ -11,30 +11,9 @@ class Controller(QObject):
     frame = Signal()
     settingsRequested = Signal()
     notice = Signal(str)
-    shortcutRequested=Signal(int,str)
 
     @Slot(str)
     def notify(self,message):self.notice.emit(message)
-    def action_notice(self,text,key):
-        if getattr(self,'notifications',None) and self.preferences.get('notification_actions',True):self.notifications.post(text,key=key)
-    def gesture_notice(self,index,action):
-        """Announce continuous changes once they settle, never once per edge/frame."""
-        if not hasattr(self,'_gesture_timers'):self._gesture_timers={}
-        if index not in self._gesture_timers:
-            timer=QTimer(self);timer.setSingleShot(True);timer.setInterval(650)
-            timer.timeout.connect(lambda i=index,t=timer:self.action_notice(f'Laser {i+1} '+t.property('action'),'graph-gesture-'+str(i)))
-            self._gesture_timers[index]=timer
-        timer=self._gesture_timers[index];timer.setProperty('action',action);timer.start()
-    @Slot(int,result=str)
-    def shortcutLabel(self,side):
-        from hardware.config import ACTIONS
-        key=self.preferences.get('shortcut_left' if side==0 else 'shortcut_right','none')
-        return 'Not set' if key=='none' else ACTIONS.get(key,'Not set')
-    @Slot(int)
-    def runShortcut(self,side):
-        key=self.preferences.get('shortcut_left' if side==0 else 'shortcut_right','none')
-        if key=='none':self.notify('Shortcut not set. Assign it in Control Settings.')
-        else:self.shortcutRequested.emit(side,key)
 
     def configure(self,values):
         previous=getattr(self,'preferences',{})
@@ -57,15 +36,6 @@ class Controller(QObject):
     @Slot()
     def openSettings(self):
         self.settingsRequested.emit()
-    @Slot(str)
-    def openSection(self,key):
-        self.openSettings();window=self.settings_host.window
-        if key in window.order:
-            window.select(window.order.index(key));window.motion.position=window.selected;window.motion.target=None;window.motion.velocity=0
-    @Slot(result=bool)
-    def settingsVisible(self):return self.settings_host.window.isVisible()
-    @Slot()
-    def closeSettings(self):self.settings_host.window.close()
 
     @Slot(int, int)
     def moveGraph(self, source, destination):
@@ -75,7 +45,6 @@ class Controller(QObject):
             views = self.instrument.views
             views[source], views[destination] = views[destination], views[source]
             self.changed.emit()
-            self.action_notice('Laser panels swapped','chart-move')
 
     @Slot(str, result="QVariantList")
     def fields(self, module):
@@ -161,7 +130,6 @@ class Controller(QObject):
         if side in (0, 1):
             self.instrument.switch_view(side)
             self.changed.emit()
-            self.action_notice(('Left' if side==0 else 'Right')+' panel switched to Laser '+str(self.instrument.views[side]+1),'view-'+str(side))
 
     @Slot(int, result="QVariantMap")
     def channel(self, index):
@@ -210,28 +178,20 @@ class Controller(QObject):
         laser = self.instrument.lasers[index]
         laser.locked = not laser.locked
         self.changed.emit()
-        self.action_notice(f'Laser {index+1} graph '+('locked' if laser.locked else 'unlocked'),'graph-lock-'+str(index))
 
     @Slot(int)
     def toggleEmission(self, index):
-        self.setEmission(index,not self.instrument.lasers[index].emission)
-    @Slot(int,bool)
-    def setEmission(self,index,enabled):
-        if getattr(self,'session_lock',None) and self.session_lock.locked:return
         laser = self.instrument.lasers[index]
-        if laser.emission==enabled:return
-        laser.emission = enabled
+        laser.emission = not laser.emission
         if self._live:
             laser.signal.emission(laser.emission)
         self.changed.emit()
-        self.action_notice(f'Laser {index+1} emission '+('enabled' if enabled else 'disabled'),'emission-'+str(index))
 
     @Slot(int)
     def toggleStabilisation(self, index):
         laser = self.instrument.lasers[index]
         laser.stabilised = not laser.stabilised
         self.changed.emit()
-        self.action_notice(f'Laser {index+1} stabilisation '+('enabled' if laser.stabilised else 'disabled'),'stabilise-'+str(index))
 
     @Slot(int)
     def nextTarget(self, index):
@@ -288,7 +248,6 @@ class Controller(QObject):
         if mode in ('combined', 'split'):
             self.instrument.lasers[index].chart.mode = mode
             self.changed.emit()
-            self.action_notice(f'Laser {index+1} charts: {mode}','chart-mode-'+str(index))
 
     @Slot(int, bool, bool)
     def placeSignal(self, index, error, upper):
@@ -301,7 +260,6 @@ class Controller(QObject):
         if not laser.locked and laser.chart.mode == 'split':
             laser.chart.main_upper = not laser.chart.main_upper
             self.changed.emit()
-            self.action_notice(f'Laser {index+1} spectroscopy/error positions swapped','chart-move')
 
     @Slot(int, bool)
     def toggleSignal(self, index, error):
@@ -309,7 +267,6 @@ class Controller(QObject):
         attr = 'error_visible' if error else 'main_visible'
         setattr(chart, attr, not getattr(chart, attr))
         self.changed.emit()
-        self.action_notice(f'Laser {index+1} '+('error' if error else 'spectroscopy')+(' visible' if getattr(chart,attr) else ' hidden'),'signal-'+str(index))
 
     @Slot(int, float)
     def setChartRatio(self, index, ratio):
@@ -317,7 +274,6 @@ class Controller(QObject):
         if isfinite(ratio):
             self.instrument.lasers[index].chart.main_ratio = max(.2, min(.8, ratio))
             self.changed.emit()
-            self.gesture_notice(index,'chart height ratio adjusted')
 
     @Slot(int)
     def restoreChartAxes(self, index):
