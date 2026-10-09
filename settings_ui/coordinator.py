@@ -195,6 +195,7 @@ class SettingsCoordinator(QObject):
 
     def tick(self):
         now=time.monotonic()
+        if getattr(self.ctl,'session_lock',None) and self.ctl.session_lock.locked:return
         if self.mode_deadline and now>=self.mode_deadline:self.revert_mode()
         if self._tour>=0 and self._tour_play and now>=self.tour_deadline:self.tourNext()
         minutes=self.store.values.get('idle_minutes',0)

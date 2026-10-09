@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = {
+    "notifications": "Notifications",
     "control": "Control Settings",
     "display": "Display Settings",
     "system": "System Settings",
@@ -17,7 +18,7 @@ LABELS = {
 }
 ORDERS = {
     32: ["display", "system", "function", "storage", "about", "help", "upgrade"],
-    58: ["display", "function", "control", "system", "storage", "help", "upgrade", "about"],
+    58: ["display", "function", "control", "system", "notifications", "storage", "help", "upgrade", "about"],
     59: ["system", "function", "storage", "help", "upgrade", "display", "about"],
 }
 DEFAULTS = {
@@ -35,7 +36,8 @@ DEFAULTS = {
     "retention": "30 days",
 }
 SEARCH = [
-    ("display", "Display Settings", "Screen brightness contrast resolution refresh rate UI scale accent color theme dark light appearance"),
+    ("notifications","Notifications","Action history warning critical error permission notifications clear"),
+    ("display", "Display Settings", "Screen brightness contrast resolution refresh rate UI scale accent color theme dark light appearance recommended preset corner number label font colors"),
     ("system", "System Settings", "Language font text size side button icons names date time clock automatic sleep shutdown idle factory reset restore defaults information tour tutorial guide"),
     (
         "function",
@@ -46,7 +48,7 @@ SEARCH = [
     ("about", "About", "Model organization firmware version serial number QR code"),
     ("help", "Help", "Touch gestures, navigation, search assistance"),
     ("upgrade", "Upgrade", "Firmware update, installed version"),
-    ("control", "Control Settings", "RKJXT knob GPIO rotary encoder joystick push directions calibration shortcuts mapping target corner screen touch test diagnostics navigation"),
+    ("control", "Control Settings", "RKJXT knob GPIO rotary encoder joystick push directions calibration shortcuts mapping target corner screen touch test diagnostics navigation buttons physical switch system lock shutdown countdown"),
 ]
 
 

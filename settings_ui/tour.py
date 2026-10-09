@@ -10,7 +10,7 @@ step('Emission and stabilisation','Emission raises traces from zero. Stabilise r
 step('Inspect and arrange','Pan or pinch to inspect. Hold a plot for 550 ms: move vertically to swap signals, or across the divider to swap laser panels.',[122,100,680,511])
 step('Signals and axes','The signal labels open this panel. All changes belong to the laser, even when it appears on both sides.',[830,60,740,600],action='signals')
 step('Fullscreen charts','Expand one laser. Signal labels still open chart controls; Exit returns to the shared workspace.',[19,90,1564,603],action='fullscreen')
-step('More controls','The radial menu contains Alarms, Settings, Display and Diagnostics. The red X closes it.',[0,180,455,490],action='more')
+step('More controls','The quarter-ring contains Settings, Display, Alarms, Diagnostics and Notifications. Rotate to move upright icons into the fixed white sector, then push to open. The red X closes it.',[0,330,600,390],action='more')
 step('Display preferences','Hardware controls report the connected screen capabilities. Unsupported controls explain why they are unavailable.',section='display')
 for side in (0,1):
     side_name='Left' if side==0 else 'Right'
@@ -32,6 +32,9 @@ for side in (0,1):
 
 display=[('Brightness','brightness','Move the value tile; release to send one hardware command. The preview stays steady until hardware readback finishes.'),
  ('Contrast','contrast','Changes monitor contrast through its driver, when supported. It never adds a fake dim layer.'),
+ ('Recommended themes','theme_preset','Choose Classic, Lab Light, Ion Cyber, Porcelain, Orchid or Clay. Presets update the actual interface palette and trace contrast.'),
+ ('Corner number color','corner_number_color','Choose a number color independently of labels and icons. Automatic selects readable ink for the current accent.'),
+ ('Corner label / icon color','corner_detail_color','Choose the foreground for all corner labels, units, chevrons and rules. This applies to all four corners.'),
  ('Accent color','accent','Choose from all fifteen supplied colors, including Black and White. Swipe the dropdown to see more.'),
  ('Appearance','appearance','Light and Dark update both the home screen and settings.'),
  ('Resolution','resolution','Only reported display modes appear. Confirm within 15 seconds or the previous mode returns.'),
@@ -77,8 +80,8 @@ step('Choose a target corner','Each knob has a target corner. Parameter actions 
 step('Calibrate physical directions','Choose Calibrate. Release the knob and capture its idle state. Press the centre alone first, then move Up, Right, Down and Left; release completely after each. Direction plus centre contact is accepted. Then check both rotation directions and Save.',section='control',route='knob:0',control_row=1)
 step('Encoder click sensitivity','If one physical click produces two steps, select four transitions per click. Two is the supplied demo default. This changes decoding without changing your shortcuts.',section='control',route='knob:0',control_row=2)
 step('Map every operation','Clockwise and anticlockwise rotation, four stick directions and a short push each have a dropdown. Pick an action; it is saved immediately. Not assigned disables just that operation.',section='control',route='knob:0',control_row=4)
-step('Edit one digit at a time','The default top knobs use left and right to select a digit; rotation changes it. An underline shows the selected digit. Values remain inside the selected parameter limits.',[7,7,418,80])
-step('Navigate without touching','Hold any calibrated knob push for 700 ms to enter navigation mode. Rotate to move the outlined focus, then short-push to activate. Stick left goes back; stick right activates. Hold push again to restore your shortcuts.',section='control',route='knob:0',control_row=10)
+step('Edit one digit at a time','Knob 1 and Knob 4 initially use left and right to select a digit; rotation changes it. An underline shows the selected digit. Values remain inside the selected parameter limits.',[7,7,418,80])
+step('Navigate without touching','Hold any calibrated knob push for 700 ms to enter navigation mode. Rotate to move the filled white focus, then short-push to activate. Stick left goes back; stick right activates. Hold push again to restore your shortcuts.',section='control',route='knob:0',control_row=10)
 step('Adjust sliders and scroll','In navigation mode, focus a slider or scroll rail and push once. Rotate to adjust; push again to finish. Hardware brightness and contrast are sent once on finish. Stick left cancels a pending hardware adjustment.',section='display')
 step('Navigate the Settings wheel','Focus the left Settings wheel and push to enter it. Rotate to change category. Push again to leave the wheel and choose controls in the right panel.',[15,306,577,108],section='control')
 step('Reset only what you need','Restore shortcut defaults keeps calibration. Reset calibration keeps the shortcuts and requires calibration again. Neither changes the supplied wiring.',section='control',route='knob:0',control_row=12)
@@ -88,3 +91,10 @@ step('About','Model, firmware, organization, serial number and the supplied QR i
 step('Search keyboard','Tap Search to open the custom keyboard. Suggestions complete words. Hold Backspace to clear; tap outside to dismiss.',[255,228,1090,456],section='display',action='keyboard')
 step('Search history','The history button shows real saved queries in a read-only list. Clear removes the saved list from disk.',[480,90,640,320],section='display',action='history')
 step('Touch help','Hold a supported control for 850 ms to show its tooltip without activating it. Backspace keeps its 650 ms clear action.',[0,124,96,90])
+
+step('Side-specific focus','The two left knobs navigate the left home half. Knob 4 navigates the right half. A knob cannot take over the opposite-side open panel. Shared Settings is accessible from either side.',[7,100,786,510])
+step('Emission confirmation','Tap Emission, then drag the slider fully across. With a knob, turn clockwise to fill it and push. The dedicated emission button opens this request; press it again after half a second to confirm. Outside tap or stick left cancels.',[7,230,88,86])
+step('Buttons and physical lock','Open Buttons & lock to view each GPIO input, select its pin and active level, calibrate its released/pressed states, and configure both side shortcuts.',section='control',route='panel')
+step('One pin per control','GPIO8 belongs to Knob 2 direction D. The left shortcut button is disabled until you wire it to a free GPIO and select that pin here. Software rejects duplicate assignments.',section='control',route='contact:left_shortcut')
+step('Locked screen and shutdown','GPIO20 defaults to locked when connected to ground. The blurred lock screen blocks touch and knobs. Unlock before the 60-second countdown ends to resume. The countdown is configurable; expiry requests actual OS shutdown.',section='control',route='panel')
+step('Notification history','Normal actions fade away. Warnings use a yellow triangle; critical errors remain until dismissed. History keeps the latest 200 entries. Clear asks for confirmation; Action updates can mute routine action notices.',section='notifications')
