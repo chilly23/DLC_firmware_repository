@@ -14,6 +14,7 @@ Item {
     signal editRequested(int channelIndex, string fieldKey, int side, bool bottom)
     signal fullscreenRequested(int side)
     signal moreRequested(int side)
+    signal emissionRequested(int side,int channelIndex)
     signal notice(string message)
     signal selectorRequested(int index, string key, int side, bool bottom, bool modules)
     signal graphMoveStarted(int side, bool errorSignal, real x, real y)
@@ -62,30 +63,30 @@ Item {
     }
     Rectangle { opacity:pane.idleOpacity;x: pane.mirrored ? 697 : 105; y: 111; width: 5; height: 494; color: pane.channelIndex === 0 ? theme.laser1Color : theme.laser2Color }
     TouchButton {
-        objectName: "lock" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Lock") : ""; x: pane.mirrored ? 711 : -1; y: 124; width: 96; height: 90; radius: 24
+        objectName: "lock" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Lock") : ""; x: pane.mirrored ? 705 : 7; y: 124; width: 88; height: 90; radius: 24
         opacity:pane.idleOpacity
         iconName: pane.channel.locked ? "lock" : "unlock"; iconSize: 64; ink: pane.channel.locked ? theme.activeInk : theme.foreground; normalColor: pane.channel.locked ? theme.active : "transparent"; selected: pane.channel.locked
         onClicked: ctl.toggleLock(pane.channelIndex)
     }
     TouchButton {
-        objectName: "emission" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Emission") : ""; x: pane.mirrored ? 711 : -1; y: 230; width: 96; height: 86; radius: 24
+        objectName: "emission" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Emission") : ""; x: pane.mirrored ? 705 : 7; y: 230; width: 88; height: 86; radius: 24
         iconName: "emission"; iconSize: 64; ink: pane.channel.emission ? theme.activeInk : theme.foreground; normalColor: pane.channel.emission ? theme.active : "transparent"
-        onClicked: ctl.toggleEmission(pane.channelIndex)
+        onClicked: pane.emissionRequested(pane.side,pane.channelIndex)
     }
     TouchButton {
-        objectName: "stabilise" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Stabilise") : ""; x: pane.mirrored ? 711 : -1; y: 323; width: 96; height: 88; radius: 24
+        objectName: "stabilise" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"Stabilise") : ""; x: pane.mirrored ? 705 : 7; y: 323; width: 88; height: 88; radius: 24
         opacity:pane.idleOpacity
         iconName: "stabilise"; iconSize: 64; ink: pane.channel.stabilised ? theme.activeInk : theme.foreground; normalColor: pane.channel.stabilised ? theme.active : "transparent"
         onClicked: ctl.toggleStabilisation(pane.channelIndex)
     }
     TouchButton {
-        objectName: "shortcut" + pane.side; x: pane.mirrored ? 712 : 0; y: 430; width: 96; height: 85
+        objectName: "shortcut" + pane.side; x: pane.mirrored ? 705 : 7; y: 430; width: 88; height: 85
         opacity:pane.idleOpacity
-        iconName:"";text:theme.translate(theme.language,"Not set");textSize:16;ink:theme.muted;normalColor:"transparent"
-        onClicked: pane.notice("Shortcut not set")
+        iconName:"";text:theme.translate(theme.language,ctl.shortcutLabel(pane.side));textSize:16;ink:theme.muted;normalColor:"transparent"
+        onClicked: ctl.runShortcut(pane.side)
     }
     TouchButton {
-        objectName: "more" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"More") : ""; x: pane.mirrored ? 712 : 0; y: 526; width: 96; height: 78
+        objectName: "more" + pane.side; caption:theme.buttonLabels?theme.translate(theme.language,"More") : ""; x: pane.mirrored ? 705 : 7; y: 526; width: 88; height: 78
         opacity:pane.idleOpacity
         iconName: "more"; iconSize: 64; onClicked: pane.moreRequested(pane.side)
     }
