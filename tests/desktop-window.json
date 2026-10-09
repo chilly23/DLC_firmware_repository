@@ -1,1 +1,1 @@
-{"visible": true, "exposed": true, "booting": false, "platform": "windows", "width": 1600, "height": 720}
+{"visible": true, "exposed": true, "booting": false, "platform": "windows", "width": 1600, "height": 720, "acquiring": true, "timer_active": true, "signal_levels": [0.8629649794057246, 0.8629649794057246], "elapsed": 1.151246599998558}
