@@ -25,7 +25,7 @@ qInstallMessageHandler(lambda kind, context, message: messages.append(message))
 temporary = tempfile.TemporaryDirectory()
 app, engine, ctl, window = create_application(skip_boot=False, animate=False, data_dir=temporary.name)
 host = ctl.settings_host
-previews = ROOT / 'screenshots'
+previews = ROOT / 'tests' / 'base-screenshots'
 previews.mkdir(exist_ok=True)
 
 def check(name, condition):
@@ -247,7 +247,7 @@ try:
         check(f'Closing settings {side+1} restores same home state',window.isVisible() and ctl.instrument.views==[0,1])
     errors=[m for m in messages if any(k in m for k in ('TypeError','ReferenceError','Cannot assign','Binding loop','failed to load','Error:'))]
     check('No QML runtime errors',not errors)
-    (ROOT/'tests'/'validation.json').write_text(json.dumps({'checks':checks,'count':len(checks),'warnings':messages,'platform':app.platformName(),'hardware_tested':False},indent=2),encoding='utf8')
+    (ROOT/'tests'/'base-validation.json').write_text(json.dumps({'checks':checks,'count':len(checks),'warnings':messages,'platform':app.platformName(),'hardware_tested':False},indent=2),encoding='utf8')
     print(f'{len(checks)} checks passed',flush=True)
 finally:
     host.shutdown();ctl.timer.stop();window.close();engine.deleteLater()
