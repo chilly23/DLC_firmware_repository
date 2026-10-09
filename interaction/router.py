@@ -17,7 +17,8 @@ class InputRouter(QObject):
         self.side=0;self.side_targets={};knobs.context_handler=self.operation
         self.timer=QTimer(self);self.timer.setInterval(60);self.timer.timeout.connect(self.refresh_focus);self.timer.start()
         knobs.command.connect(self.handle);knobs.notice.connect(controller.notify)
-    def attach(self,window,host):self.window=window;self.host=host
+    def attach(self,window,host):self.window=window;self.host=host;self.logs=window.findChild(QObject,'logsWindow')
+    def surface(self):return self.logs if getattr(self,'logs',None) and self.logs.isVisible() else self.window
     @Property('QVariantMap',notify=changed)
     def focus(self):return dict(x=0,y=0,width=0,height=0,label='',active=False,**self._focus) if not self._focus else self._focus
     @Property(int,notify=changed)
@@ -29,16 +30,19 @@ class InputRouter(QObject):
     def native(self):return self.host and self.host.window.isVisible()
     def find(self,name,root=None):
         if not self.window:return None
-        stack=[root or self.window.contentItem()]
+        stack=[root or self.surface().contentItem()]
         while stack:
             item=stack.pop()
             if item.objectName()==name:return item
             stack.extend(item.childItems())
     def scope(self):
+        if self.surface()!=self.window:
+            confirmation=self.find('logsClearConfirmation')
+            return confirmation if confirmation and confirmation.isVisible() else self.surface().contentItem()
         if self.ctl.notifications.toast['decision']:
             notice=self.find('notificationToast')
             if notice and notice.isVisible():return notice
-        for name in ('powerCountdown','tourOverlay','tooltipOverlay','emissionConfirm','keypad','alarmPanel','signalsPanel','radialMenu','selector'):
+        for name in ('powerCountdown','tourOverlay','tooltipOverlay','emissionConfirm','keypad','alarmPanel','signalsPanel','radialMenu','selector','lobby'):
             item=self.find(name)
             if item and item.isVisible():return item
         return self.window.contentItem()
@@ -48,7 +52,7 @@ class InputRouter(QObject):
         while parent:
             if parent.clip():rect=rect.intersected(parent.mapRectToScene(QRectF(0,0,parent.width(),parent.height())))
             parent=parent.parentItem()
-        return rect.intersected(QRectF(0,0,self.window.width(),self.window.height()))
+        return rect.intersected(QRectF(0,0,self.surface().width(),self.surface().height()))
     def targets(self):
         scope=self.scope();stack=[scope];found=[]
         while stack:
@@ -83,17 +87,21 @@ class InputRouter(QObject):
     def activate(self):
         if self.native():self.host.window.activate_knob();return
         if not self.target or not isValid(self.target):self.move_focus(1);return
-        if self.target.property('navKind')=='slider':self.adjusting=not self.adjusting;self.refresh_focus();return
+        if self.target.property('navKind') in ('slider','choice'):self.adjusting=not self.adjusting;self.refresh_focus();return
         previous=self.target;r=self.rect(previous);p=r.center();self.clear_focus()
         for typ,buttons in ((QEvent.Type.MouseButtonPress,Qt.MouseButton.LeftButton),(QEvent.Type.MouseButtonRelease,Qt.MouseButton.NoButton)):
-            event=QMouseEvent(typ,p,self.window.mapToGlobal(p.toPoint()),Qt.MouseButton.LeftButton,buttons,Qt.KeyboardModifier.NoModifier)
-            QCoreApplication.sendEvent(self.window,event)
+            event=QMouseEvent(typ,p,self.surface().mapToGlobal(p.toPoint()),Qt.MouseButton.LeftButton,buttons,Qt.KeyboardModifier.NoModifier)
+            QCoreApplication.sendEvent(self.surface(),event)
         entries=self.targets()
         if any(obj==previous for obj,rect,label in entries):self.target=previous;self.refresh_focus()
         elif self.scope().objectName() not in ('radialMenu','emissionConfirm'):self.move_focus(1)
     def back(self):
         if self.adjusting:self.adjusting=False;self.refresh_focus();return
         if self.native():self.host.window.back_knob();return
+        if self.surface()!=self.window:
+            if self.logs.property('confirmClear'):self.logs.setProperty('confirmClear',False)
+            else:self.logs.dismiss()
+            self.clear_focus();return
         if self.ctl.notifications.toast['decision']:self.ctl.notifications.dismiss();self.clear_focus();return
         self.clear_focus();self.window.dismissKnobPanel()
     def selection(self,corner):
@@ -140,6 +148,9 @@ class InputRouter(QObject):
         corner=self.knobs.store.config['knobs'][index]['target']
         if action=='settings.open':self.ctl.openSettings();return
         if action=='capture.frame':self.ctl.system_settings.export(True);return
+        if action=='capture.screenshot':self.ctl.workspace.captureScreen();return
+        if action=='lobby.open':self.ctl.workspace.openPage('lobby');return
+        if action=='logs.open':self.ctl.workspace.openLogs();return
         if self.native() and action in ('more.open','signals.open','view.fullscreen','editor.open'):
             self.host.window.close()
         self.window.performKnob(action,corner,amount)
@@ -168,10 +179,10 @@ class InputRouter(QObject):
         if owner is None:owner=scope.property('side')
         if owner is not None and int(owner)!=self.side:return True
         if name=='radialMenu':
-            if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)
+            if operation in ('clockwise','anticlockwise'):self.move_focus(1 if delta>0 else -1,abs(delta))
             elif operation=='push':scope.dismiss('')
-            elif operation in ('left','right'):scope.chooseCurrent()
-            else:scope.rotateSteps(-amount if operation=='up' else amount)
+            elif operation in ('left','right'):self.activate()
+            else:self.move_focus(-1 if operation=='up' else 1,amount)
         elif name=='emissionConfirm':
             if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)
             elif operation=='push':scope.knobConfirm()
