@@ -14,7 +14,7 @@ class AttachedSettings(ExtendedSettingsWindow):
     def __init__(self, data_dir,theme,system):
         super().__init__(theme,system)
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
-        self.setWindowTitle("NEXATOM v1.10 · Settings")
+        self.setWindowTitle("NEXATOM v1.11 · Settings")
         self.timer.stop()
 
     def open_search(self):

@@ -9,7 +9,7 @@ TOPICS={
  ('Reset and reconnect','Reset calibration preserves shortcuts and wiring. Restore shortcut defaults preserves calibration. Retry GPIO opens the configured lines again. Close the standalone RKJXT demo: two programs cannot own the same GPIO lines.'),
  ('Screen check','Test corner taps, trace an outline continuously, drag between targets, then inspect solid colors. Skipped tests remain not completed. This is a touch and visual inspection tool, not an automatic crack detector.')],
  'Buttons and system lock':[
- ('Dedicated inputs','Right emission: GPIO12. Left emission: GPIO1. Right shortcut: GPIO7. Left shortcut is requested on GPIO8 but disabled because Knob 2 D already occupies it. Wire the left shortcut to a free pin, choose that pin in Control Settings > Buttons & lock, then enable it. All numbers are BCM GPIO numbers.'),
+ ('Dedicated inputs','Right emission: GPIO12. Left emission: GPIO1. Right shortcut: GPIO7. Left shortcut: GPIO16. Both shortcut inputs are enabled and connect through their buttons to GND. GPIO8 remains assigned to Knob 2 D. All numbers are BCM GPIO numbers.'),
  ('Calibrate a button','Choose its input page. Release the contact, then select Calibrate. Press or operate it once and release completely. The measured active level is saved after release. Cancel discards the capture. Inputs default to pull-up, active LOW; do not infer polarity from an unconnected pin reading.'),
  ('Assign side shortcuts','Select Left shortcut or Right shortcut to choose an action. Touch and the dedicated button use the same assignment. Not assigned leaves the side button dim. Emission always uses the confirmation panel.'),
  ('Physical system lock','GPIO20 defaults to active LOW: connect to GND to lock. The screen is captured and blurred, inputs are blocked, and a countdown begins. Unlocking cancels a pending shutdown and restores the current application state. Knobs must be released before rearming.'),
@@ -49,5 +49,5 @@ TOPICS={
  ('Export settings','Export writes the current settings and graph preferences as JSON in the application exports folder.'),
  ('Export graph frame','Capture frame writes the current X, spectroscopy and error samples for both lasers to CSV. This is a snapshot, not continuous data logging.'),
  ('Search history','The history button beside Search shows the eight most recent non-empty queries. Queries are saved on Return or dismissal. Clear removes the persisted list.'),
- ('Version scope','Application v1.10 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.10.0.')]
+ ('Version scope','Application v1.11 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.11.0.')]
 }
