@@ -49,7 +49,7 @@ TOPICS={
  ('Export settings','Export writes the current settings and graph preferences as JSON in the application exports folder.'),
  ('Export graph frame','Capture frame writes the current X, spectroscopy and error samples for both lasers to CSV. This is a snapshot, not continuous data logging.'),
  ('Search history','The history button beside Search shows the eight most recent non-empty queries. Queries are saved on Return or dismissal. Clear removes the persisted list.'),
- ('Version scope','Application v1.13 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.13.0.')]
+ ('Version scope','Application v1.14 adds real GPIO knob controls. Upgrade remains a preview; laser signals remain simulated. Firmware V1.6.0 is the requested About identifier, independent of application version 1.14.0.')]
 }
 
 TOPICS["Logs and startup"]=[

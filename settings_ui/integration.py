@@ -14,7 +14,7 @@ class AttachedSettings(ConsoleWindow):
     def __init__(self, data_dir,theme,system):
         super().__init__(theme,system)
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
-        self.setWindowTitle("NEXATOM v1.13 · Settings")
+        self.setWindowTitle("NEXATOM v1.14 · Settings")
         self.timer.stop()
 
     def open_search(self):
@@ -53,6 +53,11 @@ class SettingsHost(QObject):
         self.controller = controller
         self.applying = False
         self.window = AttachedSettings(data_dir,theme,system)
+        # Keep the existing home surface mapped underneath the native settings
+        # surface. Hiding/re-showing fullscreen windows exposed the desktop and
+        # triggered the window manager's own transition on each navigation.
+        self.window.winId()
+        self.window.windowHandle().setTransientParent(home)
         self.window.valuesEdited.connect(self.apply_function_settings)
         controller.changed.connect(self.sync_function_settings)
         self.sync_function_settings()
@@ -87,16 +92,23 @@ class SettingsHost(QObject):
 
     def open(self):
         self.controller.system_settings.probe()
+        if self.window.isVisible():
+            self.window.raise_();self.window.activateWindow();return
+        self.window.slide.stop();self.window.transition=0
+        self.window.motion.position=self.window.selected
+        self.window.motion.target=None;self.window.motion.velocity=0
+        self.window.last_index=self.window.selected
         self.fullscreen = self.home.visibility() == self.home.Visibility.FullScreen
         self.window.setGeometry(self.home.x(), self.home.y(), self.home.width(), self.home.height())
         self.window.timer.start()
         self.window.showFullScreen() if self.fullscreen else self.window.show()
+        self.window.repaint()
         self.window.raise_()
         self.window.activateWindow()
-        self.home.hide()
 
     def return_home(self):
-        self.home.showFullScreen() if self.fullscreen else self.home.show()
+        if not self.home.isVisible():
+            self.home.showFullScreen() if self.fullscreen else self.home.show()
         self.home.requestActivate()
 
     def shutdown(self):
