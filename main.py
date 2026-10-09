@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch the self-contained QML mock. Hardware I/O is deliberately absent."""
+"""Launch the laser HMI: simulated signals, native host display/system controls."""
 import argparse
 import os
 from pathlib import Path
@@ -13,35 +13,48 @@ from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from controller.bridge import Controller
 from controller.plot import SpectrumPlot
 from settings_ui.integration import SettingsHost
+from settings_ui.model import SettingsStore
+from settings_ui.preferences import Appearance
+from settings_ui.coordinator import SettingsCoordinator
+from device.platform import make_device
 
 ROOT = Path(__file__).resolve().parent
 
 
-def create_application(*, skip_boot=False, animate=True, data_dir=None):
+def create_application(*, skip_boot=False, animate=True, data_dir=None, device=None):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.5")
-    app.setApplicationVersion("1.5.0")
+    app.setApplicationName("NEXATOM v1.7")
+    app.setApplicationVersion("1.7.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
     app.setFont(QFont("Roboto"))
     controller = Controller(animate=animate)
+    store=SettingsStore(Path(data_dir or ROOT/'data')/'settings.json')
+    theme=Appearance(store,app)
+    controller.theme=theme
+    system=SettingsCoordinator(app,controller,theme,device or make_device())
+    controller.system_settings=system
     SpectrumPlot.controller = controller
     qmlRegisterType(SpectrumPlot, "Nexatom", 1, 0, "SpectrumPlot")
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty("ctl", controller)
+    engine.rootContext().setContextProperty("theme", theme)
+    engine.rootContext().setContextProperty("systemSettings", system)
     engine.rootContext().setContextProperty("skipBoot", skip_boot)
     engine.load(QUrl.fromLocalFile(str(ROOT / "qml" / "Main.qml")))
     if not engine.rootObjects():
         raise RuntimeError("QML failed to load; see the messages above")
-    controller.settings_host = SettingsHost(app, engine.rootObjects()[0], controller, data_dir or ROOT / "data")
+    controller.settings_host = SettingsHost(app, engine.rootObjects()[0], controller, data_dir or ROOT / "data",theme,system)
+    system.host=controller.settings_host
     return app, engine, controller, engine.rootObjects()[0]
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--windowed", action="store_true", help="1600x720 desktop window instead of fullscreen")
+    parser.add_argument("--fullscreen", action="store_true", help="Fullscreen (the default); retained for existing launch commands")
     parser.add_argument("--skip-boot", action="store_true", help="Developer convenience; normal boot is always 3 seconds")
     parser.add_argument("--software", action="store_true", help="Use Qt Quick's software renderer for display-driver troubleshooting")
     parser.add_argument("--verify-startup", type=Path)
@@ -56,12 +69,14 @@ def main():
     if args.verify_startup:
         def report_startup():
             import json
-            args.verify_startup.write_text(json.dumps({"visible": window.isVisible(), "exposed": window.isExposed(), "booting": window.property("booting"), "platform": app.platformName(), "width": window.width(), "height": window.height(), "acquiring": controller._live, "timer_active": controller.timer.isActive(), "signal_levels": [l.signal.level for l in controller.instrument.lasers], "elapsed": controller.elapsed}), encoding="utf8")
+            args.verify_startup.write_text(json.dumps({"visible": window.isVisible(), "fullscreen":window.visibility()==window.Visibility.FullScreen, "exposed": window.isExposed(), "booting": window.property("booting"), "platform": app.platformName(), "width": window.width(), "height": window.height(), "acquiring": controller._live, "timer_active": controller.timer.isActive(), "signal_levels": [l.signal.level for l in controller.instrument.lasers], "elapsed": controller.elapsed}), encoding="utf8")
             app.quit()
         QTimer.singleShot(4200, report_startup)
     result = app.exec()
     controller.timer.stop()
     controller.settings_host.shutdown()
+    system=controller.system_settings
+    system.shutdown()
     engine.deleteLater()
     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
     return result

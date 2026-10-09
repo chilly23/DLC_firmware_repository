@@ -1,3 +1,0 @@
-@echo off
-cd /d "%~dp0"
-start "" "%~dp0runtime\pythonw.exe" "%~dp0desktop_launcher.py" --windowed %*
