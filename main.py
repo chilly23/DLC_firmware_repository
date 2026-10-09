@@ -20,10 +20,11 @@ ROOT = Path(__file__).resolve().parent
 def create_application(*, skip_boot=False, animate=True, data_dir=None):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.2")
-    app.setApplicationVersion("1.2.0")
+    app.setApplicationName("NEXATOM v1.6")
+    app.setApplicationVersion("1.6.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
+    QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
     app.setFont(QFont("Roboto"))
     controller = Controller(animate=animate)
     SpectrumPlot.controller = controller
@@ -55,7 +56,7 @@ def main():
     if args.verify_startup:
         def report_startup():
             import json
-            args.verify_startup.write_text(json.dumps({"visible": window.isVisible(), "exposed": window.isExposed(), "booting": window.property("booting"), "platform": app.platformName(), "width": window.width(), "height": window.height()}), encoding="utf8")
+            args.verify_startup.write_text(json.dumps({"visible": window.isVisible(), "exposed": window.isExposed(), "booting": window.property("booting"), "platform": app.platformName(), "width": window.width(), "height": window.height(), "acquiring": controller._live, "timer_active": controller.timer.isActive(), "signal_levels": [l.signal.level for l in controller.instrument.lasers], "elapsed": controller.elapsed}), encoding="utf8")
             app.quit()
         QTimer.singleShot(4200, report_startup)
     result = app.exec()

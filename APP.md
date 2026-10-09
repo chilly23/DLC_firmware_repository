@@ -1,91 +1,61 @@
-# NEXATOM v1.2 — mock1 base
+# Nexatom v1.6
 
-**Start here: [v1.2 instructions, changes and verification](START-HERE.md).** Double-click `Start Nexatom v1.2.cmd` or `Start Fullscreen v1.2.cmd`. Windows dependencies are included.
+Double-click **Start Nexatom v1.6.cmd** or **Start Fullscreen v1.6.cmd**.
+The Windows runtime is included. This is a separate working copy of v1.5;
+no older version is modified and no ZIP exports are created.
 
-The text below is the archived v1 README, retained as source history. Its original control descriptions and test paths are superseded where changed by [START-HERE.md](START-HERE.md).
+## Changes
 
----
+- Signals panels are centred within the opposite 800 × 720 half. Only that
+  half gets the dark scrim; the selected laser stays at normal brightness.
+  Active controls use the same `#BDC0BB` white as the home buttons.
+- Emission-off dims that laser's charts, labels and side controls smoothly.
+  Its emission button and both green parameter tiles retain full brightness.
+  The controls remain usable, and the zero traces remain visible.
+- The More menu expands and retracts over 800 ms with eased motion. Its cached
+  sectors scale from the More button; selecting an option finishes the closing
+  animation before opening that screen. Acquisition continues during animation;
+  chart repainting resumes with current data afterward.
+- Settings has no header strip. Its wheel spans the full height, and Settings
+  plus the close button sit at the top right. The native window frame and panel
+  outlines are removed. All input and keyboard fonts use the default Roboto.
+- Drag targets use your supplied `assets/dragndrop-white.png` unchanged.
+- Graph tick labels use 14 px type and at most two decimal places, without
+  scientific notation or negative zero. This applies to both axes/fullscreen.
+- Search uses the reference-inspired circular-key keyboard: letters, Shift,
+  backspace, caret arrows, space and Return. It occupies 65% of the design width
+  at the bottom centre, with the live native editor inside its header. Tap the
+  dark background or X to dismiss it. No number row or suggestion bar is shown.
+  Instrument and Y-axis numeric editors are retained.
+- Hold backspace for 650 ms to clear the entire search or numeric input. A short
+  press keeps normal backspace behavior; releasing after a hold does not repeat it.
+- History displays the last eight actual searches, saved on Return or keyboard
+  dismissal in `data/settings.json`. Clear removes the saved history immediately.
+- Graph panning permits a small offset but keeps the acquired X domain and some
+  trace visible. This also applies in fullscreen. Manual Y-axis entries retain
+  their existing range.
 
-## Archived v1 instructions
+The v1.5 per-laser Combined/Split, Y-axis, ratio, and drag behavior is preserved.
+Signals remain local simulations. Physical Raspberry Pi/touchscreen testing is
+still needed; on a provisioned Linux graphical session run `python3 main.py`.
 
-An executable recreation of the five supplied `mock1` frames. Scope is the three-second boot, two-channel home view, fullscreen graphs, numeric keypad, and expanding radial menu. All signals and values are simulated in memory; this app has no hardware transport.
+## Files for the next version
 
-## Run on Raspberry Pi 5
-
-Use **64-bit Raspberry Pi OS Desktop**, with its graphical session running. Copy/extract this folder onto the Pi, open a terminal inside it, and run:
-
-```bash
-bash run.sh
-```
-
-The first launch checks/install missing Qt desktop libraries with apt (sudo may request your password), creates `.venv`, and installs the pinned Python dependency. It needs internet for that first setup. Later launches run offline. The app opens fullscreen and plays the 3-second boot animation on every normal launch. The Python/install startup precedes this animation.
-
-Use the display's native **1600 × 720** mode with desktop scaling at 100% for the reference geometry. Other window sizes scale the complete canvas proportionally and letterbox it. There is no responsive rearrangement of controls.
-
-```bash
-bash run.sh --windowed             # Desktop review window
-bash run.sh --software             # Fallback when GPU/driver setup fails
-bash run.sh --windowed --skip-boot # Development only
-```
-
-The supported launch path is a Pi desktop session, not Raspberry Pi OS Lite or an unconfigured SSH console. No autostart, system service, GPIO or kiosk OS configuration is installed. The app has no extra exit control on the instrument screen; use the desktop window close action in windowed mode or Ctrl+C in its launch terminal.
-
-PySide6 Essentials 6.8.0.2 is pinned because its ARM64 Linux wheel supports the manylinux 2.31 baseline, suitable for Raspberry Pi OS Bookworm. The same version is used for local verification. The package contains Qt Quick, QML and QtTest; Qt Charts and extra Qt add-ons are not required. Python 3.11 on 64-bit Bookworm is the intended Pi test environment.
-
-## What works
-
-| Control | Mock behavior |
+| File | Purpose |
 |---|---|
-| Arrow above fullscreen | Changes that pane between Laser 1 and Laser 2. Never changes the opposite pane. Both panes can show one laser. |
-| Square fullscreen icon | Opens the selected pane's laser across the screen. Exit returns to the two-pane view. |
-| Green corner value | Opens the keypad for that parameter and laser. The selected value remains highlighted above the dimmed background. |
-| Keypad | Digits, decimal, sign toggle, cursor left/right, backspace, one Enter to apply, red X/outside tap to cancel. Invalid values stay in the editor. |
-| Upper lock button | Toggles mock lock. Uses the selected resonance; if none is selected, selects the strongest one. Stops mock resonance drift. |
-| Arrow/target button or target label | Selects the next resonance. A tap near a graph peak selects that resonance directly. |
-| Wave/lock button | Toggles stabilisation, reducing simulated drift and error noise. The live stream keeps updating. |
-| Graph drag | Pans X and Y display coordinates. Absorption and error keep their horizontal axes aligned. This does not write setpoints. |
-| Two-finger pinch / mouse wheel | Zooms X around the touch center / pointer. |
-| Double tap / double click | Resets that graph's view and the pair's horizontal range. |
-| More / red X | Opens the mirrored ring menu in 220 ms / closes it. |
+| `qml/Colors.js` | Shared active white and idle opacity |
+| `qml/SignalsPanel.qml` | Panel placement, opposite-half scrim and controls |
+| `qml/ChannelPane.qml` | Home idle appearance |
+| `qml/RadialMenu.qml` | Cached radial reveal |
+| `controller/plot.py` | Tick formatting and trace rendering |
+| `controller/bridge.py` | Acquisition and short presentation-busy state |
+| `settings_ui/keyboard.py` | Custom key geometry, drawing and hit regions |
+| `settings_ui/window.py` | Native editor, dim layer, input routing and full-height wheel |
+| `settings_ui/layout.py` | Keyboard and search dimensions |
 
-The menu has the **four options shown in Frame 5**. To keep this mock within the requested screens: Signals toggles the error trace; Settings opens the selected laser's top-parameter keypad; Display opens that pane fullscreen; Diagnostics briefly shows that laser's mock status. These are local mock mappings, not additional configuration pages.
-
-Laser 1 defaults to Current / Umax; Laser 2 to Temperature / TC PID P. These fields follow the laser when a pane changes channel. Two views of the same laser share its values, lock, stabilisation, target and trace visibility. Pan/zoom state belongs to the view. The editor captures the laser at opening, and its backdrop prevents other controls from being activated beneath it.
-
-## Code structure
-
-```text
-main.py                 Application lifecycle, font, QML registration
-controller/model.py     Pure Python laser state, validation, waveform fixture
-controller/bridge.py    QObject properties/signals/slots; 20 Hz simulation timer
-controller/plot.py      QQuickPaintedItem graph rendering, pan/zoom/peak selection
-qml/Main.qml            Screen composition and overlay routing
-qml/ChannelPane.qml     Reusable left/right channel view
-qml/FullscreenView.qml  Shared fullscreen view for either channel
-qml/ParameterTile.qml   Corner value component
-qml/NumberPad.qml       Captured edit session and keypad
-qml/RadialMenu.qml      Mirrored animated ring and polar hit testing
-qml/PlotView.qml        Touch and mouse gesture handling
-qml/Icon.qml            Vector icons drawn in Qt
-qml/TouchButton.qml     Shared button presentation and input
-assets/                 Supplied logo, Roboto font and font license
-tests/                  Model and Qt event tests
-screenshots/            Captures from the actual running Qt application
-```
-
-The renderer samples a six-resonance illustrative waveform with small continuous drift and noise. Current changes its mock amplitude. Temperature, Umax and PID edits update the model/readouts; a physical plant response is intentionally not invented for these fields. The 20 Hz timer is a display refresh target, not a real laser control-loop rate. This renderer uses CPU QPainter into Qt Quick textures; it is adequate as a bounded mock approach, and Pi performance must be measured on the actual display/driver combination.
-
-## Verification
-
-```bash
-.venv/bin/python -m unittest discover -s tests -p 'test_*.py'
-.venv/bin/python tests/verify_ui.py
-```
-
-The second command launches Qt offscreen, sends actual pointer events, exercises channel identity/editing/overlays/gestures, and writes screenshots plus `tests/ui-results.json`. Font and icon edges may differ slightly across graphics backends. The original screenshots are visual references, not screenshots used as interactive backgrounds.
-
-Validation was performed on Windows with Qt's offscreen/software renderer. Raspberry Pi hardware, physical multitouch calibration, and GPU frame timing are not verified here. The intended Pi dependency's ARM64 wheel availability was checked; no claim of on-device testing is made.
-
-## Assets and dependencies
-
-Logo: the exact supplied `full lockup transparent white.png`, copied without alteration. Font: Roboto supplied in the prior reference bundle, with its accompanying license. Icons and plots are rendered primitives. Qt/PySide licensing remains applicable to distribution; see the installed package's license material and [Qt for Python licensing](https://doc.qt.io/qtforpython-6/licenses.html).
+Checks: `runtime\python.exe tests\verify_v16.py`,
+`runtime\python.exe tests\verify_charts.py`, and
+`runtime\python.exe tests\verify_desktop.py`.
+Screenshots and results stay under `tests/`. `tests/profile_frames.py` is a small
+profiling helper for later HMI performance work. Startup errors go to
+`logs/startup.log`.
