@@ -1,0 +1,94 @@
+"""Small QObject API between QML and the simulation; one authoritative state."""
+import time
+from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, Qt
+from .model import Instrument, PARAMETERS, PEAKS
+
+
+class Controller(QObject):
+    changed = Signal()
+    frame = Signal()
+
+    def __init__(self, parent=None, *, animate=True):
+        super().__init__(parent)
+        self.instrument = Instrument()
+        self.elapsed = 0.0
+        self._started = time.monotonic()
+        self.timer = QTimer(self)
+        self.timer.setTimerType(Qt.TimerType.PreciseTimer)
+        self.timer.setInterval(50)  # 20 display updates/s; unrelated to a real servo rate.
+        self.timer.timeout.connect(self.advance)
+        if animate:
+            self.timer.start()
+
+    @Slot()
+    def advance(self):
+        self.elapsed = time.monotonic() - self._started
+        self.frame.emit()
+
+    @Property(int, notify=changed)
+    def leftChannel(self):
+        return self.instrument.views[0]
+
+    @Property(int, notify=changed)
+    def rightChannel(self):
+        return self.instrument.views[1]
+
+    @Slot(int)
+    def switchView(self, side):
+        if side in (0, 1):
+            self.instrument.switch_view(side)
+            self.changed.emit()
+
+    @Slot(int, result="QVariantMap")
+    def channel(self, index):
+        laser = self.instrument.lasers[index]
+        return {"number": laser.number, "locked": laser.locked,
+                "stabilised": laser.stabilised, "selected": laser.selected,
+                "showError": laser.show_error, "top": laser.top_field(),
+                "bottom": laser.bottom_field(), "values": laser.values.copy(),
+                "status": "Locked; Emission ON" if laser.locked else "Scanning; Emission ON"}
+
+    @Slot(str, result="QVariantMap")
+    def parameter(self, key):
+        p = PARAMETERS[key]
+        return {"label": p.label, "unit": p.unit, "minimum": p.minimum,
+                "maximum": p.maximum, "decimals": p.decimals}
+
+    @Slot(int, str, str, result=str)
+    def setValue(self, index, key, value):
+        error = self.instrument.lasers[index].set_value(key, value)
+        if not error:
+            self.changed.emit()
+        return error
+
+    @Slot(int)
+    def toggleLock(self, index):
+        laser = self.instrument.lasers[index]
+        if laser.selected < 0:
+            laser.selected = len(PEAKS) - 1
+        laser.locked = not laser.locked
+        self.changed.emit()
+
+    @Slot(int)
+    def toggleStabilisation(self, index):
+        laser = self.instrument.lasers[index]
+        laser.stabilised = not laser.stabilised
+        self.changed.emit()
+
+    @Slot(int)
+    def nextTarget(self, index):
+        laser = self.instrument.lasers[index]
+        laser.selected = (laser.selected + 1) % len(PEAKS)
+        self.changed.emit()
+
+    @Slot(int, int)
+    def selectTarget(self, index, target):
+        if 0 <= target < len(PEAKS):
+            self.instrument.lasers[index].selected = target
+            self.changed.emit()
+
+    @Slot(int)
+    def toggleError(self, index):
+        laser = self.instrument.lasers[index]
+        laser.show_error = not laser.show_error
+        self.changed.emit()
