@@ -34,7 +34,7 @@ class Controller(QObject):
     @Slot(int)
     def runShortcut(self,side):
         key=self.preferences.get('shortcut_left' if side==0 else 'shortcut_right','none')
-        if key=='none':self.notify('Shortcut not set. Assign it in Control Settings.')
+        if key=='none':self.notify('Shortcut not set. Assign it in Lobby > Buttons Panel.')
         else:self.shortcutRequested.emit(side,key)
 
     def configure(self,values):
@@ -57,18 +57,23 @@ class Controller(QObject):
 
     @Slot()
     def openSettings(self):
+        if hasattr(self,'workspace') and self.workspace.logsActive:self.workspace.closeLogsRequested.emit()
         self.settingsRequested.emit()
     @Slot(str)
     def openSection(self,key):
+        if key=='logs' and hasattr(self,'workspace'):
+            self.workspace.openLogs();return
         window=self.settings_host.window
         if key in window.order:
             window.select(window.order.index(key));window.motion.position=window.selected;window.motion.target=None;window.motion.velocity=0
             window.last_index=window.selected;window.slide.stop();window.transition=0
         self.openSettings()
     @Slot(result=bool)
-    def settingsVisible(self):return self.settings_host.window.isVisible()
+    def settingsVisible(self):return self.settings_host.window.isVisible() or (hasattr(self,'workspace') and self.workspace.logsActive)
     @Slot()
-    def closeSettings(self):self.settings_host.window.close()
+    def closeSettings(self):
+        if self.settings_host.window.isVisible():self.settings_host.window.close()
+        if hasattr(self,'workspace') and self.workspace.logsActive:self.workspace.closeLogsRequested.emit()
 
     @Slot(int, int)
     def moveGraph(self, source, destination):
