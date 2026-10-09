@@ -23,6 +23,8 @@ class KnobService(QObject):
         self.armed=set();self.quiet_since={};self.last_lost={};self.preview=False;self.direction_gestures=set()
         self.suspended=False;self.panel_snapshot={};self.panel_calibration=None;self.panel_armed=set();self.delivery={}
         self.context_handler=None;self.navigation_sides=set()
+        self.issues={};self.reconnect_attempt=0;self.stopping=False
+        self.reconnect=QTimer(self);self.reconnect.setSingleShot(True);self.reconnect.timeout.connect(self.retry)
         self.timer=QTimer(self);self.timer.setInterval(25);self.timer.timeout.connect(self.tick);self.timer.start()
         if self.store.error:self.status_text=self.store.error
         if autostart:QTimer.singleShot(0,self.retry)
@@ -38,8 +40,10 @@ class KnobService(QObject):
     def lastAction(self):return self.last_action
     @Slot()
     def retry(self):
+        if self.stopping:return
+        self.reconnect.stop()
         self.stop_worker();self.snapshots.clear();self.armed.clear();self.held.clear();self.pushes.clear()
-        self.panel_armed.clear()
+        self.panel_armed.clear();self.panel_snapshot={};self.issues={}
         self.quiet_since.clear();self.last_lost.clear();self.direction_gestures.clear()
         if sys.platform!='linux' and self.worker_factory is None:
             self.set_status(False,'Desktop mode · no GPIO device. Configure mappings here; calibrate on the Pi.');return
@@ -47,7 +51,11 @@ class KnobService(QObject):
         self.worker=(self.worker_factory or GPIOWorker)(self.store.config)
         self.worker.frames.connect(self.receive);self.worker.status.connect(self.set_status)
         if hasattr(self.worker,'panelFrames'):self.worker.panelFrames.connect(self.receive_panel)
+        if hasattr(self.worker,'availability'):self.worker.availability.connect(self.set_availability)
         self.worker.start()
+    def set_availability(self,issues):
+        if self.sender() is not None and self.sender()!=self.worker:return
+        self.issues=dict(issues);self.changed.emit()
     def stop_worker(self):
         if self.worker:self.worker.stop();self.worker.deleteLater();self.worker=None
         self.connected=False
@@ -59,6 +67,15 @@ class KnobService(QObject):
             self.direction_gestures.clear()
             self.armed.clear();self.held.clear();self.pushes.clear();self.quiet_since.clear();self.snapshots.clear()
             if self.calibration:self.calibration.error='GPIO disconnected. Cancel, reconnect and choose Retry GPIO.'
+            self.panel_snapshot={}
+            if not self.stopping and (sys.platform=='linux' or self.worker_factory is not None):
+                self.reconnect_attempt+=1
+                delay=min(8000,1000*2**min(3,self.reconnect_attempt-1))
+                self.reconnect.start(delay);self.status_text+=f' Retrying in {delay//1000}s.'
+        else:
+            self.reconnect_attempt=0
+            # The worker keeps partial inputs live and watches blocked pins.
+            self.reconnect.stop()
         self.changed.emit()
     def receive(self,frames):
         if self.sender() is not None and self.sender()!=self.worker:return
@@ -166,7 +183,9 @@ class KnobService(QObject):
         if not self.store.config['knobs'][index]['pins']:return
         self.store.update(index,'enabled',bool(enabled));self.retry();self.changed.emit()
     def start_calibration(self,index):
-        if not self.connected or index not in self.snapshots:raise ValueError('Connect the knob GPIO first, then choose Retry GPIO.')
+        if not self.connected or index not in self.snapshots:
+            reason=self.issues.get('knob:'+str(index),self.status_text)
+            raise ValueError(f'Knob {index+1} GPIO is not ready: {reason}')
         self.calibration=Calibration(index,self.store.config['knobs'][index]);self.held.clear();self.pushes.clear();self.direction_gestures.clear()
         frame=self.snapshots[index];self.calibration.feed(frame['levels'],frame['count'],time.monotonic());self.changed.emit()
     def calibration_next(self):
@@ -187,7 +206,7 @@ class KnobService(QObject):
     def preview_action(self,index,operation):
         # Explicit software preview never pretends GPIO was detected or calibrated.
         if operation in OPERATIONS and not self.calibration:self.dispatch(index,operation)
-    def shutdown(self):self.timer.stop();self.stop_worker()
+    def shutdown(self):self.stopping=True;self.reconnect.stop();self.timer.stop();self.stop_worker()
 
     def receive_panel(self,frame):
         if self.sender() is not None and self.sender()!=self.worker:return
@@ -195,7 +214,7 @@ class KnobService(QObject):
         # Calibrating an emission/shortcut contact must not suppress the lock.
         # Only the lock's own explicit polarity capture bypasses its action.
         if not self.panel_calibration or self.panel_calibration['key']!='lock':
-            self.lockChanged.emit(bool(frame.get('active',{}).get('lock',False)))
+            if 'lock' in frame.get('active',{}):self.lockChanged.emit(bool(frame['active']['lock']))
         if self.panel_calibration:
             cal=self.panel_calibration;key=cal['key'];cfg=self.store.config['panel'][key]
             value=cfg['active_level'] if frame.get('active',{}).get(key) else 1-cfg['active_level']
@@ -218,6 +237,8 @@ class KnobService(QObject):
         self.store.commit(cfg);self.panel_armed.clear();self.retry();self.changed.emit()
 
     def calibrate_panel(self,key):
-        if not self.connected or key not in self.panel_snapshot.get('levels',{}):raise ValueError('Enable this input on a free GPIO, then Retry GPIO first.')
+        if not self.connected or key not in self.panel_snapshot.get('levels',{}):
+            reason=self.issues.get('panel:'+key,self.status_text)
+            raise ValueError('Panel input is not ready: '+reason)
         self.panel_calibration=dict(key=key,released=self.panel_snapshot['levels'][key],pressed=None)
         self.held.clear();self.pushes.clear();self.notice.emit('Released level captured. Operate this control once, then release it.');self.changed.emit()
