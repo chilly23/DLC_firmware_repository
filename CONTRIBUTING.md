@@ -4,7 +4,7 @@
 
 ## Meaningful commits
 
-Commit coherent changes separately: input decoding, ownership/recovery, controller changes, UI changes, regression tests and documentation. Do not create empty commits, backdate contributions or repeatedly add/remove files just to pad history. The initial archive import is split by module and checkpoint, with its actual publication dates.
+Commit coherent changes separately: input decoding, ownership/recovery, controller changes, UI changes, regression tests and documentation. Do not backdate contributions or repeatedly add/remove files to imitate development. Empty commits are not implementation work. The initial archive import is split by module and checkpoint, with its actual publication dates.
 
 ```bash
 git switch main
@@ -44,3 +44,7 @@ git push origin v1.18.0
 Create a GitHub Release at that tag. Attach a Windows ZIP containing just that release's source, assets, runtime and packages, plus its SHA256 checksum. Keep libraries' supplied licence notices in the bundle. Mark the completed release Latest. GitHub supplies source ZIP/tar archives for every tag automatically. Source Git excludes installed dependencies, calibration-generated state, logs, captures and caches.
 
 For v1.17, `v1.17` is the exact source checkpoint import; `v1.17.0` is its publication with standalone test portability, repository guidance, CI and the separately supplied firmware sketch. Application behaviour is identical. Earlier local version folders have not been changed.
+
+## Requested activity checkpoints
+
+At the repository owner's explicit request, this publication includes labelled empty activity commits to reach 2,000 total commits. They contain no code changes, carry the actual publication date, and use `[skip ci]`. Version tags continue to identify real application checkpoints. This is a one-time activity batch, separate from normal development.
