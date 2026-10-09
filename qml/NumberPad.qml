@@ -16,7 +16,7 @@ Item {
 
     function open(index, key, paneSide, isBottom) {
         channelIndex=index; fieldKey=key; side=paneSide; lower=isBottom
-        acceptedValue=ctl.channel(index).values[key]
+        acceptedValue=ctl.value(index,key)
         draft=Number(acceptedValue).toFixed(spec.decimals)
         cursor=draft.length; replaceDraft=true; errorMessage=""; visible=true
         editor.forceActiveFocus()

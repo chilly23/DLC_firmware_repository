@@ -1,0 +1,69 @@
+import QtQuick
+
+Item {
+    id: pair
+    property int channelIndex: 0
+    property int revision: 0
+    property string suffix: "0"
+    property string mainObjectName: "absorption"+suffix
+    property string errorObjectName: "error"+suffix
+    property bool large: false
+    property bool canMove: true
+    property bool showLabels: true
+    property var chart: {revision;return ctl.channel(channelIndex).chart}
+    property bool combined: chart.mode === "combined"
+    property real gap: 18
+    property real mainHeight: (height-gap)*chart.mainRatio
+    property real errorHeight: height-gap-mainHeight
+    signal signalsRequested()
+    signal moveStarted(bool errorSignal, real x, real y)
+    signal moveUpdated(real x, real y)
+    signal moveFinished(real x, real y)
+    signal moveCancelled()
+    function viewRange() {return [main.xMinimum,main.xMaximum]}
+    function setViewRange(lo,hi) {main.setRange(lo,hi)}
+    PlotView {
+        id: main; objectName: pair.mainObjectName
+        width: parent.width; height: pair.combined ? pair.height : pair.mainHeight
+        y: pair.combined || pair.chart.mainUpper ? 0 : pair.errorHeight+pair.gap
+        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove
+        combined: pair.combined; bottomAxis: pair.combined || !pair.chart.mainUpper
+        onRangeChanged: function(lo,hi) {error.setRange(lo,hi)}
+        onMoveStarted: function(x,y) {pair.moveStarted(false,x,y)}
+        onMoveUpdated: function(x,y) {pair.moveUpdated(x,y)}
+        onMoveFinished: function(x,y) {pair.moveFinished(x,y)}
+        onMoveCancelled: pair.moveCancelled()
+    }
+    PlotView {
+        id: error; objectName: pair.errorObjectName
+        width: parent.width; height: pair.errorHeight
+        y: pair.chart.mainUpper ? pair.mainHeight+pair.gap : 0
+        visible: !pair.combined; errorPlot: true
+        channelIndex: pair.channelIndex; large: pair.large; canMove: pair.canMove
+        bottomAxis: pair.chart.mainUpper
+        onRangeChanged: function(lo,hi) {main.setRange(lo,hi)}
+        onMoveStarted: function(x,y) {pair.moveStarted(true,x,y)}
+        onMoveUpdated: function(x,y) {pair.moveUpdated(x,y)}
+        onMoveFinished: function(x,y) {pair.moveFinished(x,y)}
+        onMoveCancelled: pair.moveCancelled()
+    }
+    // Both labels are one touch target, present on both panes and in fullscreen.
+    Rectangle {
+        x: pair.large ? 70 : 59; y: 14; width: pair.large ? 330 : 284; height: 42
+        radius: 5; color: "#DA0E140F"; visible: pair.showLabels
+        Row {
+            anchors.centerIn: parent; spacing: 18
+            Row {
+                spacing: 7; opacity: !pair.combined || pair.chart.mainVisible ? 1 : .4
+                Rectangle {y:11;width:24;height:1.7;color:"#D9D9D9"}
+                Text {text:"Spectroscopy";color:"#FFFFFF";font.pixelSize:pair.large?20:17}
+            }
+            Row {
+                spacing: 7; opacity: !pair.combined || pair.chart.errorVisible ? 1 : .4
+                Row {y:11;spacing:2;Repeater {model:5;Rectangle {width:3;height:1.5;color:"#D9D9D9"}}}
+                Text {text:"Error";color:"#FFFFFF";font.pixelSize:pair.large?20:17}
+            }
+        }
+        MouseArea {objectName:"chartLabels"+pair.suffix;anchors.fill:parent;onClicked:pair.signalsRequested()}
+    }
+}

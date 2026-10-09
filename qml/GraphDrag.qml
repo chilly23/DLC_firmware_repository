@@ -4,6 +4,8 @@ Item {
     id: drag
     property int sourceSide: 0
     property int channelIndex: 0
+    property bool errorSignal: false
+    property var sourceChart: {revision;return ctl.channel(channelIndex).chart}
     property real pointerX: 0
     property real pointerY: 0
     property real anchorX: 0
@@ -18,9 +20,16 @@ Item {
         return ctl.channel(ctl.rightChannel);
     }
     property int targetSide: pointerX < 800 ? 0 : 1
-    function begin(side, index, x, y) {
+    property bool wholeChannel: targetSide !== sourceSide || sourceChart.mode === "combined"
+    property real upperHeight: 493*(sourceChart.mainUpper ? sourceChart.mainRatio : 1-sourceChart.mainRatio)
+    property bool targetUpper: pointerY < 100+upperHeight+9
+    property bool sourceUpper: errorSignal ? !sourceChart.mainUpper : sourceChart.mainUpper
+    property bool destinationLocked: (targetSide === 0 ? leftData : rightData).locked
+    property bool validDrop: pointerX >= 110 && pointerX <= 1495 && pointerY >= 100 && pointerY <= 611 && !destinationLocked
+    function begin(side, index, error, x, y) {
         sourceSide = side;
         channelIndex = index;
+        errorSignal = error;
         pointerX = anchorX = x;
         pointerY = anchorY = y;
         visible = true;
@@ -31,8 +40,10 @@ Item {
     }
     function finish(x, y) {
         move(x, y);
-        if (y >= 100 && y <= 617 && x >= 103 && x <= 1503)
-            ctl.moveGraph(sourceSide, targetSide);
+        if (validDrop) {
+            if (targetSide !== sourceSide) ctl.moveGraph(sourceSide,targetSide)
+            else if (!wholeChannel && targetUpper !== sourceUpper) ctl.swapLocal(channelIndex)
+        }
         visible = false;
     }
     Rectangle {
@@ -112,58 +123,46 @@ Item {
         model: 2
         Rectangle {
             required property int index
-            x: index === 0 ? 104 : 827
-            y: 111
-            width: 675
-            height: 466
-            radius: 20
-            color: "#404040"
-            border.width: drag.targetSide === index ? 2 : 0
-            border.color: "#D9D9D9"
-            Icon {
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 143
-                width: 132
-                height: 132
-                kind: "drag"
-                ink: "#BFC2BE"
-            }
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 304
-                text: "Drag & drop"
-                font.pixelSize: 18
-                color: "#BFC2BE"
+            x: index === 0 ? 122 : 815; y:100; width:680;height:511
+            radius:12;color:"#282F29"
+            border.width: drag.wholeChannel && drag.targetSide===index ? 2 : 0
+            border.color: drag.destinationLocked ? "#A92621" : "#D9D9D9"
+            property int paneSide: index
+            property var paneChart: (index===0?drag.leftData:drag.rightData).chart
+            property real paneUpperHeight: 493*(paneChart.mainUpper?paneChart.mainRatio:1-paneChart.mainRatio)
+            Repeater {
+                model: parent.paneChart.mode==="combined"?1:2
+                Rectangle {
+                    required property int index
+                    x:8;y:index===0?8:parent.paneUpperHeight+18
+                    width:parent.width-16;height:parent.paneChart.mode==="combined"?495:index===0?parent.paneUpperHeight-8:493-parent.paneUpperHeight-8
+                    radius:8
+                    color:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? "#525B53" : "#363E37"
+                    border.width:!drag.wholeChannel && parent.paneSide===drag.sourceSide && (index===0)===drag.targetUpper ? 2:0
+                    border.color:"#D9D9D9"
+                    Text {anchors.centerIn:parent;text:parent.parent.paneChart.mode==="combined"?"Combined":index===0?"Upper":"Lower";font.pixelSize:24;color:"#D9D9D9"}
+                }
             }
         }
     }
     Rectangle {
-        x: Math.max(103, Math.min(840, (drag.sourceSide === 0 ? 122 : 815) + drag.pointerX - drag.anchorX))
-        y: Math.max(105, Math.min(155, 110 + drag.pointerY - drag.anchorY))
-        width: 750
-        height: 539
+        x: Math.max(110, Math.min(1495-width, (drag.sourceSide === 0 ? 140 : 833) + drag.pointerX - drag.anchorX))
+        y: Math.max(102, Math.min(610-height, (drag.sourceUpper?110:118+drag.upperHeight) + drag.pointerY - drag.anchorY))
+        width: 630
+        height: drag.wholeChannel ? 475 : Math.max(100,493*(drag.errorSignal?1-drag.sourceChart.mainRatio:drag.sourceChart.mainRatio)-12)
         radius: 0
         color: "#101411"
         border.width: 1
         border.color: "#71766F"
+        opacity: .88
+        ChartPair {anchors.fill:parent;visible:drag.wholeChannel;channelIndex:drag.channelIndex;revision:drag.revision;suffix:"Drag";canMove:false;showLabels:false;enabled:false}
         PlotView {
-            x: 0
-            y: 0
-            width: 750
-            height: 358
-            channelIndex: drag.channelIndex
-            canMove: false
-            enabled: false
-        }
-        PlotView {
-            x: 0
-            y: 358
-            width: 750
-            height: 181
-            errorPlot: true
+            anchors.fill:parent;visible:!drag.wholeChannel
+            errorPlot: drag.errorSignal;bottomAxis:true
             channelIndex: drag.channelIndex
             canMove: false
             enabled: false
         }
     }
+    Text {x:435;y:649;width:730;height:40;horizontalAlignment:Text.AlignHCenter;font.pixelSize:21;color:"#D9D9D9";text:drag.destinationLocked?"Destination graph is locked":!drag.validDrop?"Release outside to cancel":drag.wholeChannel?"Move both signals with Laser "+(drag.channelIndex+1):"Move "+(drag.errorSignal?"Error":"Spectroscopy")+" · "+(drag.targetUpper?"Upper":"Lower")}
 }

@@ -13,12 +13,13 @@ Item {
     signal moreRequested(int side)
     signal notice(string message)
     signal selectorRequested(int index, string key, int side, bool bottom, bool modules)
-    signal graphMoveStarted(int side, real x, real y)
+    signal graphMoveStarted(int side, bool errorSignal, real x, real y)
+    signal signalsRequested(int side, int index)
     signal graphMoveUpdated(real x, real y)
     signal graphMoveFinished(real x, real y)
     signal graphMoveCancelled()
-    function viewRange() { return [absorption.xMinimum, absorption.xMaximum] }
-    function setViewRange(lo,hi) { absorption.setRange(lo,hi) }
+    function viewRange() { return charts.viewRange() }
+    function setViewRange(lo,hi) { charts.setViewRange(lo,hi) }
 
     ParameterTile {
         objectName: "topParameter" + pane.side
@@ -41,29 +42,12 @@ Item {
     Text { x: pane.mirrored ? 60 : 490; y: 69; width: 254; text: pane.channel.status; color: "#FFFFFF"; font.pixelSize: 16; horizontalAlignment: pane.mirrored ? Text.AlignLeft : Text.AlignRight }
     TouchButton { objectName: "switch" + pane.side; x: pane.mirrored ? 318 : 428; y: 2; width: 50; height: 44; iconName: "switch"; iconSize: 32; onClicked: ctl.switchView(pane.side) }
     TouchButton { objectName: "fullscreen" + pane.side; x: pane.mirrored ? 318 : 428; y: 48; width: 50; height: 47; iconName: "fullscreen"; iconSize: 32; onClicked: pane.fullscreenRequested(pane.side) }
-    PlotView {
-        id: absorption; objectName: "absorption" + pane.side
-        x: pane.mirrored ? 15 : 122; y: 100; width: 680; height: 341
-        channelIndex: pane.channelIndex
-        onRangeChanged: function(lo,hi) { error.setRange(lo,hi) }
-        onMoveStarted: function(x,y) {pane.graphMoveStarted(pane.side,x,y)}
-        onMoveUpdated: function(x,y) {pane.graphMoveUpdated(x,y)}
-        onMoveFinished: function(x,y) {pane.graphMoveFinished(x,y)}
-        onMoveCancelled: pane.graphMoveCancelled()
-    }
-    Item {
-        x: 185; y: 117; visible: !pane.mirrored
-        Rectangle { y: 7; width: 28; height: 1; color: "#D9D9D9" }
-        Text { x: 35; y: 0; text: "Spectroscopy"; font.pixelSize: 14; color: "#FFFFFF" }
-        Row { y: 31; spacing: 2; Repeater { model: 6; Rectangle { width: 3; height: 1; color: "#D9D9D9" } } }
-        Text { x: 35; y: 24; text: "Error"; font.pixelSize: 14; color: "#FFFFFF" }
-    }
-    PlotView {
-        id: error; objectName: "error" + pane.side
-        x: absorption.x; y: 459; width: 680; height: 152; errorPlot: true
-        channelIndex: pane.channelIndex
-        onRangeChanged: function(lo,hi) { absorption.setRange(lo,hi) }
-        onMoveStarted: function(x,y) {pane.graphMoveStarted(pane.side,x,y)}
+    ChartPair {
+        id: charts; objectName: "charts" + pane.side
+        x: pane.mirrored ? 15 : 122; y: 100; width: 680; height: 511
+        channelIndex: pane.channelIndex; revision: pane.revision; suffix: String(pane.side)
+        onSignalsRequested: pane.signalsRequested(pane.side,pane.channelIndex)
+        onMoveStarted: function(errorSignal,x,y) {pane.graphMoveStarted(pane.side,errorSignal,x,y)}
         onMoveUpdated: function(x,y) {pane.graphMoveUpdated(x,y)}
         onMoveFinished: function(x,y) {pane.graphMoveFinished(x,y)}
         onMoveCancelled: pane.graphMoveCancelled()
