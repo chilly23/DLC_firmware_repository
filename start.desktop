@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Nexatom
+Comment=Install and run Nexatom
+Exec=python3 -c "import os,sys,pathlib,urllib.parse; a=sys.argv[1]; p=pathlib.Path(urllib.parse.unquote(urllib.parse.urlparse(a).path) if a.startswith('file:') else a); os.execv('/bin/bash',['bash',str(p.parent/'start.sh')])" %k
+Terminal=true
+Categories=Science;

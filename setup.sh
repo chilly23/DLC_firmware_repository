@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Root-only, one-time Raspberry Pi OS dependencies and device access.
 set -euo pipefail
-if ((EUID != 0)); then echo 'This helper is invoked by run.sh through the OS authentication dialog.' >&2; exit 1; fi
+if ((EUID != 0)); then echo 'This helper is invoked by start.sh through the OS authentication dialog.' >&2; exit 1; fi
+APP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 device_user="${1:?Device username is required}"
 device_uid="$(id -u "$device_user")"
 case "$(uname -m)" in aarch64|x86_64) ;; *) echo 'Use 64-bit Raspberry Pi OS Desktop.' >&2; exit 1;; esac
@@ -33,4 +34,14 @@ done
 for file in /sys/class/backlight/*/brightness; do
   if [[ -f "$file" ]]; then chown "$device_uid" "$file"; fi
 done
-echo 'Nexatom OS dependencies and GPIO/display access installed.'
+if [[ -f /proc/device-tree/model ]] && grep -aq 'Raspberry Pi' /proc/device-tree/model; then
+  python3 "$APP_DIR/boot.py"
+fi
+# Raspberry Pi OS Desktop uses LightDM. Keep the selected desktop session;
+# only enable automatic login for the existing normal desktop account.
+if [[ -d /etc/lightdm ]]; then
+  mkdir -p /etc/lightdm/lightdm.conf.d
+  printf '[Seat:*]\nautologin-user=%s\nautologin-user-timeout=0\n' "$device_user" > /etc/lightdm/lightdm.conf.d/nexatom.conf
+  systemctl set-default graphical.target
+fi
+echo 'Nexatom dependencies, GPIO/display access, boot pins, and desktop login configured.'

@@ -1,8 +1,8 @@
-# Nexatom v1.12
+# Nexatom v1.13
 
-Restored sector wheel, GPIO recovery and notification blur/stacking.
+Logs, trace styles, lock controls, startup installer and error reports.
 
-Originally delivered **03 October 2026, 13:40 IST** as an in-place v1.8 build.
+Originally delivered **03 October 2026, 14:36 IST** as an in-place v1.8 build.
 Recovered and renumbered on 5 October 2026.
 
 ## Run
@@ -13,11 +13,14 @@ Recovered and renumbered on 5 October 2026.
 
 ## Changes in this release
 
-- Restored the earlier black four-sector More fan, with 800 ms expansion/contraction and a 16 px downward offset.
-- Added GPIO automatic retries and isolated busy/unavailable pins so they do not disable all controls.
-- Added newest-first notification stacking, independent timers and 650 ms blur/fade expiry; manual close remains immediate.
-- Preserved pending consent and kept routine cards underneath active editors/dropdowns.
-- This release still permits up to four visible notifications; the two-card limit arrives in v1.14.
+- Added manual lock settings and hold-to-unlock while keeping GPIO20 authoritative.
+- Added independent main/error trace colours, widths and stroke styles for each laser.
+- Replaced Display in More with persistent user Logs: timestamp, description, outcome, level, pause, scroll, export and confirmed clear.
+- Changed knob More routing: repeated push closes it; rotation/joystick navigate, with left/right opening the highlighted option.
+- Preserved live chart/theme/fullscreen state through the guide; adjusted axis corner spacing.
+- Added Small/Medium/Large notifications, neutral grip sliders, keyboard press feedback and retry icons.
+- Added short launchers, one-click Pi dependency/setup installer, desktop autostart controls and local error reports.
+- Originally delivered as Nexatom/app rather than another versioned folder.
 
 ## Historical scope
 
@@ -27,21 +30,25 @@ About firmware remains V1.6.0 as originally requested. GPIO and host controls ar
 laser traces remain simulated. Physical Pi hardware was not retested during recovery.
 
 The source change inventory and original file hashes are in [RELEASE.json](RELEASE.json).
-A local Git tag, **recovered-v1.12**, preserves this completed recovery.
+A local Git tag, **recovered-v1.13**, preserves this completed recovery.
 
 ## Files changed from the preceding release
 
 **Added**
 
-`interaction/notification_art.py`, `tests/test_gpio_recovery.py`, `tests/test_notifications.py`, `tests/verify_interaction_update.py`.
+`boot.py`, `install.py`, `interaction/faults.py`, `interaction/journal.py`, `launch.py`, `settings_ui/console.py`, `setup.sh`, `start.cmd`, `start.desktop`, `start.sh`, `startup.py`, `tests/console.py`, `tests/regress.py`, `tests/test_console.py`.
 
 **Modified**
 
-`README.md`, `hardware/gpio.py`, `hardware/service.py`, `interaction/notifications.py`, `main.py`, `qml/NotificationToast.qml`, `qml/RadialMenu.qml`, `settings_ui/control_panel.py`, `settings_ui/extended_controls.py`, `settings_ui/help_content.py`, `settings_ui/tour.py`, `tests/test_gpio_adapter.py`, `tests/verify_control_update.py`, `tests/verify_refinements.py`, `tests/verify_v18.py`.
+`README.md`, `controller/bridge.py`, `controller/plot.py`, `hardware/gpio.py`, `interaction/icons.py`, `interaction/notification_art.py`, `interaction/notifications.py`, `interaction/router.py`, `interaction/session_lock.py`, `main.py`, `qml/ChartPair.qml`, `qml/Icon.qml`, `qml/Main.qml`, `qml/NotificationToast.qml`, `qml/RadialMenu.qml`, `qml/ReferenceSlider.qml`, `qml/SignalsPanel.qml`, `settings_ui/controls.py`, `settings_ui/coordinator.py`, `settings_ui/drawing.py`, `settings_ui/extended_controls.py`, `settings_ui/help_content.py`, `settings_ui/integration.py`, `settings_ui/keyboard.py`, `settings_ui/model.py`, `settings_ui/operational.py`, `settings_ui/preferences.py`, `settings_ui/refined.py`, `settings_ui/tooltips.py`, `settings_ui/tour.py`, `tests/verify_charts.py`, `tests/verify_control_update.py`, `tests/verify_desktop.py`.
+
+**Removed**
+
+`Start Fullscreen v1.8.cmd`, `Start Nexatom v1.8.cmd`, `desktop_launcher.py`, `install_pi_shortcut.py`, `previews/README.md`, `previews/index.html`, `run.sh`, `setup_pi.sh`.
 
 ## Recovery verification
 
-42 unit tests and 20 UI checks passed. The actual Windows `start.cmd`
+48 unit tests and 37 UI checks passed. The actual Windows `start.cmd`
 completed fullscreen boot and live acquisition. Python compilation and Bash syntax
 passed. All retained dependencies/assets and recovered source text were verified.
 

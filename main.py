@@ -23,6 +23,7 @@ from interaction.icons import IconProvider
 from interaction.notifications import Notifications
 from interaction.notification_art import NotificationArt,NotificationImageProvider
 from interaction.session_lock import SessionLock
+from interaction.journal import Journal
 
 ROOT = Path(__file__).resolve().parent
 
@@ -39,8 +40,8 @@ def configure_logging(data_dir=None):
 def create_application(*, skip_boot=False, animate=True, data_dir=None, device=None, gpio_factory=None, gpio_autostart=True):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.12")
-    app.setApplicationVersion("1.12.0")
+    app.setApplicationName("NEXATOM v1.13")
+    app.setApplicationVersion("1.13.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
@@ -49,15 +50,29 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     store=SettingsStore(Path(data_dir or ROOT/'data')/'settings.json')
     theme=Appearance(store,app)
     controller.theme=theme
+    journal=Journal(Path(data_dir or ROOT/'data')/'events.db',app);controller.journal=journal;theme.journal=journal
+    journal.record('Application started',source='System')
     notifications=Notifications(Path(data_dir or ROOT/'data')/'notifications.json',app);controller.notifications=notifications
+    notifications.journal=journal
     notifications.renderer=NotificationArt(notifications,theme)
     controller.notice.connect(lambda text:notifications.post(text))
     system=SettingsCoordinator(app,controller,theme,device or make_device())
     controller.system_settings=system
-    system.message.connect(lambda text:notifications.post(text,'critical' if 'failed' in text.lower() else 'normal'))
+    system.message.connect(lambda text:notifications.post(text,getattr(system,'messageLevel','normal')))
     knobs=KnobService(Path(data_dir or ROOT/'data')/'controls.json',app,worker_factory=gpio_factory,autostart=gpio_autostart)
     navigation=InputRouter(controller,knobs,app)
     controller.knobs=knobs;controller.navigation=navigation
+    from copy import deepcopy
+    last_gpio=[None];last_config=[deepcopy(knobs.store.config)]
+    def gpio_status():
+        if last_config[0]!=knobs.store.config:
+            journal.record('Control wiring, calibration or shortcuts updated',source='GPIO',details={'before':last_config[0],'after':knobs.store.config})
+            last_config[0]=deepcopy(knobs.store.config)
+        value=(knobs.online,knobs.status)
+        if value!=last_gpio[0]:
+            last_gpio[0]=value
+            journal.record(knobs.status,'Passed' if knobs.online or sys.platform!='linux' else 'Failed','default' if knobs.online or sys.platform!='linux' else 'warning','GPIO')
+    knobs.changed.connect(gpio_status)
     SpectrumPlot.controller = controller
     qmlRegisterType(SpectrumPlot, "Nexatom", 1, 0, "SpectrumPlot")
     engine = QQmlApplicationEngine()
@@ -113,6 +128,8 @@ def main():
     if args.software:
         os.environ["QT_QUICK_BACKEND"] = "software"
     configure_logging(args.data_dir)
+    from interaction.faults import install
+    install(Path(args.data_dir)/'logs' if args.data_dir else ROOT/'logs')
     app, engine, controller, window = create_application(skip_boot=args.skip_boot, data_dir=args.data_dir)
     if not args.windowed:
         app.setOverrideCursor(Qt.CursorShape.BlankCursor)

@@ -1,303 +1,101 @@
-# Nexatom v1.8 — RKJXT control integration
+# Nexatom interface
 
-Application **1.8.0**, based on `mock1.7-pyside6`. Updated 3 October 2026.
-The original 1600 × 720 home layout, two lasers, chart tools, settings wheel and
-saved appearance preferences are retained. Earlier version folders were not edited.
-About still reports firmware **V1.6.0**, as requested.
+Current working copy: **app**, based on the preserved `../Versions/mock1.8-pyside6`.
+Updated 3 October 2026. Application version remains 1.8.0; About still reports
+firmware V1.6.0. Earlier application folders are untouched.
 
-## Start the application
+## Run
 
-**Windows:** double-click [Start Nexatom v1.8.cmd](Start%20Nexatom%20v1.8.cmd).
-Python and Qt are included. The application opens fullscreen after its three-second
-boot screen. `Start Fullscreen v1.8.cmd` is an equivalent launcher.
-Keep the source, `assets`, `runtime` and `packages` folders together.
+**Windows:** double-click [start.cmd](start.cmd). Python and Qt are included.
+The application opens fullscreen after its three-second boot animation.
 
-**Raspberry Pi OS Desktop, 64-bit:** copy this folder to a writable local folder,
-open a terminal in that folder, and run this single command:
+**Raspberry Pi OS Desktop, 64-bit:** copy this folder to the Pi or a USB drive and
+open [start.desktop](start.desktop). Choose Execute / Allow Launching if the file
+manager asks. The equivalent single command, from this folder, is:
 
 ```bash
-bash run.sh
+bash start.sh
 ```
 
-The first run downloads and installs the Qt/GPIO/display dependencies, creates a
-local Python environment, grants GPIO and display access, and adds **Nexatom v1.8**
-to the desktop and application menu. It requests OS authentication through `pkexec`
-where available. Later launches reuse the installation and need no pip commands.
-Run as the normal desktop user; the application does not run as root. First setup
-needs network access. Windows `runtime` and `packages` are not used on the Pi.
-If the desktop asks whether to trust the generated shortcut, choose Allow Launching.
+Setup copies the app to **~/nexatom**, installs OS/Python dependencies, configures
+GPIO/display access, creates shortcuts, enables desktop login and registers app
+startup. Windows `runtime` and `packages` are excluded from the Pi installation.
+Existing saved calibration and settings in ~/nexatom are retained.
+First setup needs internet access. Passwordless sudo is used when already permitted;
+otherwise the OS authentication dialog appears. The app runs as the normal user.
 
-**Close the standalone RKJXT demo before starting GPIO control here.** It requests
-the same pins. Its old launcher also installed an autostart entry; disable that
-entry in your desktop session's startup applications if it keeps returning after
-reboot. v1.8 reports the owning process/driver instead of taking pins from it.
+Select **Restart now** when offered to apply boot pin changes. The next desktop
+session launches the app automatically. **Settings > System Settings > Startup**
+contains Start on login and Repair setup / dependencies. Disabling app startup
+leaves desktop autologin enabled. Restart the app after repair.
 
-**First use on the Pi:** More → Settings → Control Settings → Configure →
-Calibrate directions and push. Calibrate Knobs 1, 2 and 4 separately. Touch is
-needed for initial calibration; knob shortcuts are intentionally inactive until
-that knob is calibrated.
+No manual kernel edits or pip commands are needed on the supported OS. The installer
+uses APT and LightDM/labwc/XDG hooks; it does not provision Yocto or Pi OS Lite.
+It disables header I2C/SPI/UART functions conflicting with the supplied wiring and
+backs up boot files as config.txt.previous and cmdline.txt.previous. Other desktop
+startup commands are preserved; a process lock prevents duplicate app launches.
 
-Development launches:
+Close the standalone RKJXT demo before using this app. Other owners of GPIO pins
+are reported; setup does not kill unrelated applications or remove custom overlays.
 
-```powershell
-.\runtime\python.exe main.py --windowed --skip-boot
-```
+## Changes
 
-```bash
-bash run.sh --windowed --skip-boot
-# Repeat OS setup if permissions or display packages need repair:
-bash run.sh --repair-setup
-```
+| Area | Implemented behavior |
+| --- | --- |
+| Lock screen | Lock now, shutdown timeout including Never, and digital-lock calibration. Hold Unlock for one second to resume a manual lock. An active physical lock cannot be bypassed by touch. |
+| Trace settings | Independent Main/Error colors, widths and Solid/Dashed/Dotted strokes for both lasers. Existing limits and axes remain live. |
+| More | Alarms, Settings, Logs, Diagnostics. Display stays inside Settings. Restored 800 ms expand/retract fan, moved slightly down. Options rotate smoothly; icons remain upright. |
+| Knob menu operation | Push opens/closes; rotation and up/down navigate; left/right opens the highlighted option. Touch selects a sector directly. Side ownership is preserved. |
+| Logs | Persistent live/paused monitor, severity filter, scrolling, consent before clear, CSV/Markdown export. Timestamp, description, outcome and level. |
+| Chart labels | Right label button at the outer right; background opacity 55%. X labels stay out of the Y-label gutter. |
+| Notifications | Small/Medium/Large sizes, centered glyphs, newest above older, independent timers, blur/fade expiry and immediate close. |
+| Sliders | Active-white thumbs with three vertical grip lines, independent of accent color. |
+| Keyboard | Earlier orange press feedback restored; suggestions, real history, caret/selection and hold-to-clear retained. |
+| Guide | Combined mode is a preview, not a chart-state write. Prior fullscreen, ranges, settings page, scroll and search are restored. Theme and operational chart state are preserved. |
+| Deployment/debugging | Short launch names, automatic Pi setup/startup, retry icons, persistent Python/Qt/handled-error reports. |
 
-For a provisioned Yocto image, use its native Python, PySide6, Qt Quick/Widgets/SVG,
-Wayland platform plugin and Python libgpiod v2. The Debian installer is for
-Raspberry Pi OS, not Yocto:
+The existing two-laser home layout, adaptive corner colors, CC/TC/PC selectors,
+numeric editor, shared X scale, graph lock, pinch/wheel zoom, bounded pan, drag swaps,
+height ratio, emission confirmation, alarms, themes and settings wheel remain.
+Laser acquisition and parameter effects are still the requested visual simulation.
+GPIO inputs and supported OS display/clock/power actions are real. Upgrade remains
+the previously requested preview.
 
-```bash
-QT_QPA_PLATFORM=wayland python3 main.py
-```
+## Digital lock wiring
 
-Use the active graphical session's `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR`.
+This copy assumes the existing GPIO20 lock is a **dry contact/key switch**.
+All GPIO numbers are BCM numbers, not connector positions.
 
-## What changed
+| Contact | Connect to |
+| --- | --- |
+| Common / isolated relay COM | Pi GND |
+| Contact closed in the locked position | GPIO20 |
+| Power to a mechanical contact | None |
 
-| Area | v1.8 implementation |
-|---|---|
-| Home readouts | White values, labels, units, icons and dividers; pale Yellow/Mint/Teal/Cyan/White accents adapt all foreground elements together |
-| CC / TC / PC | v1.4/v1.5 module chooser geometry and dark selected/unselected surfaces restored; light appearance still adapts |
-| Graph gestures | One pinch handler per laser spans both plots; pinch takes over a long-press drag; linked X ranges, lock guard and wheel/knob zoom retained |
-| Graph bounds | Existing overscroll and vertical trace-retention limits retained; knob pan/zoom use the same limits |
-| Physical inputs | One input-only libgpiod request for 21 knob signals and 5 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
-| Calibration | Released-state capture, centre-only contact first, four directions with optional shared push, clockwise/anticlockwise verification and atomic save |
-| Assignment | Per-knob target corner plus seven operation dropdowns; live parameter preview; separate shortcut/calibration resets |
-| Navigation | Hold push for universal navigation; visible focus, modal-aware targets, dropdown scrolling, numeric digit stepping, Settings wheel/slider/keyboard control |
-| Touch diagnostics | Corner taps, continuous trace, drag targets, solid-color inspection and honest pass/not-completed results |
-| Display recovery | Failed capability detection can be retried; Retry display button; Pi installer includes DDC/I2C and permissions |
-| Icons | Shared outline Control, Alarm, Knob, Calibration, Screen Check and Diagnostics glyphs; Alarms has its own bell |
-| Help | 97-step guide, dedicated paused Knob guide, in-app Knob controls document, more explanatory tooltips |
-| Data and diagnostics | Separate validated `controls.json`, rotating GPIO log, read-only `--list-gpio`, controls included in settings exports |
+On a standard Raspberry Pi 40-pin header, GPIO20 is physical pin 38 and pin 39
+is GND. Verify your custom CM5 carrier's connector labels. The app requests an
+input pull-up and uses 30 ms debounce: closed to GND locks; open unlocks.
+Change pin/polarity or calibrate under **Control Settings > Buttons & lock > System lock**.
 
-Existing emission/stabilisation, chart split/combined mode, independent Y scales,
-20:80–80:20 ratio, drag swaps, alarms, search/history, numpad, themes and six-language
-navigation remain available. New detailed knob instructions use English fallback
-where a translation is not available. Upgrade remains the previously requested
-preview. Laser signals and laser parameter effects remain a visual simulation;
-the GPIO inputs and supported host display controls are real.
+For a powered digital-lock module, use its **isolated dry-contact relay output**
+as the switch above, with a separate supply specified by its manufacturer. Do not
+connect a 5 V/12 V/24 V status output directly to GPIO. A logic-output module needs
+a verified compatible interface or isolation; its model/output specification is
+required to choose that interface. Standard Raspberry Pi GPIO inputs allow at most
+3.3 V; a custom CM5 carrier may select a different GPIO reference.
+[Raspberry Pi GPIO guidance](https://pip-assets.raspberrypi.com/categories/685-whitepapers-app-notes/documents/RP-006553-WP/A-history-of-GPIO-usage-on-Raspberry-Pi-devices-and-current-best-practices),
+[CM5 datasheet](https://datasheets.raspberrypi.com/cm5/cm5-datasheet.pdf).
 
-## v1.8 corrections - 30 September 2026
+Locking captures and blurs the current screen and blocks touch, keys and knobs.
+Acquisition continues. Unlock before expiry to cancel pending shutdown and resume.
+The default timeout is 60 seconds; Never disables it. Expiry requests actual OS
+shutdown. Failures are shown and logged while the interface stays locked. This is
+an application interface lock, not an authenticated OS lock or a hardware laser interlock.
 
-- Automatic corner foregrounds use one adaptive ink; the October update adds independent number and detail overrides. The original green
-  is restored to **`#008622`**; other accent choices are unchanged.
-- Pinch zoom now works with one finger on spectroscopy and the other on error,
-  including when the first finger has already started the graph-move gesture.
-  The shared gesture cancels that move without swapping signals. Both graphs
-  keep the same X range. One-finger pan and long-press swaps remain available.
-  Zoom requires an unlocked graph; touch pinch requires a multitouch screen.
-- Calibration identifies the centre-only contact before learning directions.
-  A direction plus centre is accepted as one tilt. Runtime decoding suppresses
-  the accompanying push shortcut and long-push navigation, regardless of contact
-  press/release order. Standalone centre presses still work normally.
-- **Knob 3 is disabled; Knob 4 is wired and targets the bottom right.** Existing
-  stock `controls.json` files migrate on startup (`wiring_revision: 2`). Knobs 1/2
-  retain all saved settings. Old Knob 3 shortcuts/encoder resolution move to
-  Knob 4, but its calibration resets because this is a replacement physical unit.
-  A custom non-stock pin layout is preserved for explicit configuration.
+## Control wiring
 
-For an existing Pi installation, copy the updated code into its v1.8 folder while
-keeping its existing `data` directory, then run `bash run.sh`. The saved wiring
-migrates automatically. Open **Control Settings > Knob 4 > Configure > Calibrate**.
-Recalibrate Knobs 1/2 if their previous calibration was incomplete or incorrect.
-No other version folder is changed.
-
-The original repro commands were `tests/test_shared_contact.py` (calibration rejected
-combined contacts; tilt fired hold-navigation) and `tests/verify_zoom_paths.py`
-(cross-plot and held-finger pinch left the range unchanged). Both now pass against
-the actual state machine and Qt touch paths. The fix uses Qt's documented
-[targetless PinchHandler](https://doc.qt.io/qt-6/qml-qtquick-pinchhandler.html)
-to change the data range without scaling the plot widget itself.
-
-## Control update - 1 October 2026
-
-This update remains **v1.8.0** in the same development folder. Keep the Pi's existing
-`data` directory when replacing the application code: configuration migration adds
-the new panel inputs without discarding saved knob calibration or shortcuts.
-
-| Change | Implemented behavior |
-|---|---|
-| Lost rotation steps | Removed the 24-step dispatch limit; consecutive same-direction edges are batched without dropping steps or merging reversals. Cold focus navigation also consumes the complete batch. A replay of 320 valid encoder edges delivers all 160 decoded steps to the current readout. |
-| Side ownership | Knobs 1/2 stay on the left home half; Knob 4 stays on the right. Rotation, push and Back continue to operate the active panel. Knob 3 remains blank and disabled. |
-| Right edge | All five right-side buttons fit inside the 1600-pixel frame, with a seven-pixel outer margin. |
-| More menu | Earlier four-sector fan restored in the 3 October correction below; 800 ms expansion and reverse closing, upright icons and labels, and a filled `#D9D9D9` selection. |
-| Emission confirmation | Touch uses slide-to-confirm. Knob rotation fills the track and push commits. A dedicated emission button opens the request; a second deliberate press after 500 ms confirms. The laser state changes only after confirmation. |
-| Noise | Independent seeded broadband noise and correlated pickup on each laser, while retaining smooth emission fade, stabilisation and optional bandwidth filtering. These are simulated samples. |
-| Themes | Six coordinated presets, with real application screenshots in [the offline gallery](previews/index.html). Separate corner-number and label/icon foreground settings. |
-| Feedback | Compact normal, yellow-warning and red-critical notices, explicit consent callbacks, close buttons and a persistent 200-entry inbox. Continuous graph changes are announced once they settle. |
-| Physical lock | GPIO20 captures and blurs the current screen, blocks touch/keyboard/knob commands and starts a real OS-shutdown countdown. Unlock cancels a pending request. |
-| Calibration | Buttons & lock page supports pin, enable, polarity, debounce and release/press calibration. Duplicate GPIO ownership is rejected. |
-
-### Additional wiring - GPIO7 and GPIO16
-
-All numbers below are **BCM GPIO**, with the contact common connected to GND.
-The application requests pull-ups. Defaults are active LOW (grounded).
-
-| Input | GPIO | Shipped state | Operation |
-|---|---:|---|---|
-| System lock | 20 | Enabled, active LOW | Lock while grounded; unlock when released |
-| Button 1 | 12 | Enabled | Right displayed panel emission confirmation |
-| Button 2 | 1 | Enabled | Left displayed panel emission confirmation |
-| Button 3 | 7 | Enabled | Right side's configured shortcut |
-| Button 4 | 16 | Enabled | Left side's configured shortcut |
-
-**Right shortcut = GPIO7; left shortcut = GPIO16.** Both inputs are enabled,
-active LOW, and use internal pull-ups. Wire each GPIO through its button to GND.
-GPIO8 remains connected to Knob 2 D.
-
-Wiring revision 3 automatically migrates the previous stock disabled GPIO8
-shortcut to enabled GPIO16 on startup, preserving knob calibration and mappings.
-Custom panel pin assignments are retained. The current folder's `controls.json`
-already contains this change. Keep your Pi's existing `data` directory when copying
-updated source; the migration updates that existing configuration on launch.
-
-For contact calibration: release it, select **Calibrate**, operate it once, then
-release completely. The measured active level is saved only after release. The
-lock's own calibration temporarily captures its contact without locking the UI;
-calibrating any other contact does not suppress the lock. Locking cancels unfinished
-calibration and input gestures. Inputs held at startup do not trigger button actions
-until released; an already-active physical lock does lock immediately.
-
-Choose each side's shortcut on the Buttons & lock page. **Not assigned** leaves its
-home shortcut dim. The touch shortcut and the dedicated button share the same
-assignment. Knob mappings remain independent of those two side shortcuts.
-
-### Locked state and shutdown
-
-The supplied assumption is **grounded GPIO20 = locked, 60 seconds to shutdown**.
-Both polarity and the 30/60/120/300-second countdown are configurable. The locked
-screen shows the remaining time. Unlocking restores the current screen and data;
-knobs re-arm only after release. A queued request rechecks the current lock cycle
-immediately before sending the host command, so unlocking cancels stale work.
-
-On expiry Linux calls `systemctl poweroff`; Windows calls `shutdown.exe /s /t 0`.
-OS permissions still apply. Failure is shown and recorded; the interface stays
-locked. Once the OS has accepted shutdown, unlocking cannot undo that OS operation.
-This interface lock is an application control, not a hardware laser interlock.
-Desktop tests used a recording power backend and did not power off this computer.
-
-### Themes and corner text
-
-Use **Settings > Display settings > Recommended theme**:
-
-| Preset | Intended appearance |
-|---|---|
-| Lab Light | Recommended light workspace: blue controls, cool pale surfaces, dark traces |
-| Ion Cyber | Cyan controls and deep blue surfaces |
-| Classic | Original green `#008622` on `#111111` |
-| Porcelain | Sage/teal, quiet light surfaces |
-| Orchid | Violet and lavender |
-| Clay | Orange and warm neutral surfaces |
-
-A preset applies accent, appearance, trace color and Laser 1 identity contrast.
-**Corner number color** and **Corner label / icon color** are separate. Automatic
-adapts to the accent; a manual choice stays in place when switching presets. This
-allows different numeric and supporting-text colors without changing the layout.
-
-### Notifications and consent
-
-Settings > Notifications opens the inbox. Normal notices last 3.2 seconds, warnings
-six seconds, and critical errors remain until closed. Lock, stabilise, emission,
-channel switches, graph swaps, visibility, layout and completed pan/zoom gestures
-create feedback. Identical rapid messages coalesce; records are capped at 200.
-Use **Action updates** to mute routine controller notices. Warnings/errors remain.
-Up to four cards stack with the newest above older cards, each with its own timer
-and close button. Automatic expiry adds a **650 ms blur and fade**; tapping Close
-removes that card immediately, including during its fade. The same software-compatible
-renderer is used on home and in Settings. Touching a card cannot operate controls
-underneath it. Routine cards stay beneath modal editors and open dropdowns, so
-numeric keys and selections remain usable. Additional cards queue until a slot opens; the oldest routine card
-starts its exit early to make room. Critical errors and consent requests stay until
-explicitly closed or confirmed.
-
-Clear history and application resets request explicit confirmation in their own
-cards; Close or knob Back cancels. New notices keep existing consent callbacks intact.
-Only that card's Confirm action can execute its callback, once. A stored history
-entry cannot repeat its earlier action.
-
-## Interaction and GPIO recovery - 3 October 2026
-
-- **More:** restores the earlier black four-sector fan, mirrored on both sides.
-  The entire wheel is 16 design pixels lower (`centerY: 555`). Full expansion and
-  contraction each take 800 ms with cubic easing; cancelling midway reverses from
-  the current scale. The options are Alarms, Settings, Display and Diagnostics.
-  Touch selects a sector directly; knob rotation cycles the filled highlight and
-  push selects. Notification history remains in Settings. Graph acquisition continues
-  while chart repaint is deferred during the cached fan animation.
-- **GPIO isolation:** one busy auxiliary contact no longer prevents all knobs from
-  opening. A busy knob contact excludes that whole knob, leaving complete unaffected
-  knobs and available panel contacts live. The app reports each blocked GPIO and its
-  owner; it never takes ownership from another process. Available lines still share
-  one input-only libgpiod request.
-- **Recovery:** failed capture retries automatically after 1, 2, 4 and then 8 seconds
-  (8-second maximum backoff). Partial capture checks blocked pins every two seconds
-  and reconnects when a pin is released. Retry GPIO remains available. Calibration
-  and mappings are preserved; held controls must be released before they rearm.
-- **Status:** Control Settings distinguishes Unused slot, Disabled, GPIO busy,
-  GPIO unavailable, Waiting for GPIO, Reading - calibrate to operate, and Ready.
-  A GPIO reading is not proof that a physical knob is plugged in. Disconnected passive
-  contacts cannot be distinguished from released contacts just by their logic level.
-  Discovery failures include chip labels/access errors. A missing lock sample is
-  not treated as an unlock.
-- **Notifications:** independent newest-first cards, queued overflow, per-card
-  confirmation and immediate Close, with cached actual blur on timed dismissal.
-
-The original reproducer was `tests/test_gpio_recovery.py`: a busy GPIO1 blocked all
-three knobs, and a failed first connection never retried. Both cases now pass,
-along with recovery after a blocked pin is freed and preservation of a held lock.
-This is a verified software correction; the user's physical Pi connection has not
-been inspected. Permission, pin-multiplexing and wiring faults still require the
-specific status from that device. Start with Control Settings and `logs/controls.log`.
-
-### Verification - 3 October 2026
-
-- **42 unit/contract tests** passed, including four GPIO recovery cases and five
-  notification lifetime/consent/queue cases. Existing decoder, calibration, migration,
-  step-delivery and panel-input contracts remain green.
-- **20 focused Qt checks** passed for intermediate opening/closing frames, lowered
-  wheel, wrapping knob selection, newest-first placement, software blur pixels,
-  immediate per-card Close, body hit isolation, dropdown priority and consent.
-  Evidence: [interaction-update-validation.json](tests/interaction-update-validation.json)
-  and [rendered states](tests/interaction-update-screenshots/).
-- **33 control integration checks**, **54 chart checks**, **46 v1.8 checks** and
-  **31 reference-control/tour checks** passed again. This includes rapid chart edits
-  with notifications present, numpad entry, touch/knob emission confirmation, system
-  lock cancellation, and a recording backend for shutdown. The guide visits 97 steps.
-- Both actual Windows `.cmd` launchers reached fullscreen, completed boot and
-  produced live simulated traces. Python compilation passed. No physical Pi was
-  connected for these checks; earlier hardware-contract results below are retained
-  evidence, not physical Pi acceptance.
-
-Run focused checks from this folder:
-
-```powershell
-.\runtime\python.exe -m unittest discover -s tests -p "test_*.py"
-.\runtime\python.exe tests\verify_interaction_update.py
-```
-
-Run animation suites sequentially; competing software-rendered Qt processes can
-starve intermediate-frame timing assertions on a development machine.
-
-Use the live Decoded steps / Dispatched actions / Lost edge batches readout on a
-knob's configuration page for the remaining physical acceptance check. Electrical
-edge loss, a different detent resolution or a contact fault needs device evidence;
-this update specifically removes software truncation after successful decoding.
-
-## Wiring — BCM GPIO numbers
-
-The letters refer to the RKJXT contacts, not assumed compass directions. Calibration
-learns which physical movement activates each contact. These numbers are **BCM**
-identifiers, not physical header pin positions.
-
-| Contact | Knob 1 · top left | Knob 2 · bottom left | Knob 4 · bottom right |
-|---|---:|---:|---:|
+| Signal | Knob 1: top left | Knob 2: bottom left | Knob 4: bottom right |
+| --- | ---: | ---: | ---: |
 | A | 17 | 24 | 0 |
 | B | 10 | 15 | 26 |
 | C | 2 | 14 | 13 |
@@ -305,243 +103,116 @@ identifiers, not physical header pin positions.
 | Encoder A | 4 | 25 | 5 |
 | Encoder B | 22 | 18 | 19 |
 | Push | 27 | 23 | 21 |
-| Common / GND | GND | GND | GND |
+| Common | GND | GND | GND |
 
-Knob 3 is not connected and stays disabled. Knob 4 now uses the former Knob 3 pins. Connect the relevant
-switch and encoder common contacts to GND, following the same working demo wiring.
-Inputs use pull-ups; a grounded contact normally reads LOW. The app never configures
-these lines as outputs. Do not connect signal contacts to 5 V.
+Knob 3 remains disabled. Button 1: GPIO12, right emission. Button 2: GPIO1,
+left emission. Button 3: GPIO7, right shortcut. Button 4: GPIO16, left shortcut.
+Each button closes its GPIO to GND. GPIO8 remains Knob 2 D.
 
-The reported unconnected GPIO0–8 HIGH / GPIO9–27 LOW readings are boot/bias states,
-not a direction map. v1.8 requests pull-ups and records each contact's released
-state during calibration. It never interprets the original boot pattern as a
-pressed joystick. After startup/reconnection, a calibrated knob must remain
-released for 250 ms before shortcuts can run.
+Calibrate each knob in Control Settings before shortcuts operate. Capture released
+state, center-only push, then Up/Right/Down/Left, releasing between gestures. Direction
+plus push contact is supported. Check the encoder and save. Unconnected pin readings
+do not determine polarity: the app requests pull-ups and uses saved calibration.
+Existing stock wiring migrates while retaining valid calibration/mappings.
 
-The chip is selected by its RP1 label instead of assuming `gpiochip0`. Set `chip`
-in `data/controls.json` only if automatic detection cannot identify one RP1 chip.
-Enabled peripherals can own shared pins: I2C on GPIO2/3, UART on 14/15, SPI and other
-overlays may conflict. The status names busy lines and keeps unaffected controls
-working. It automatically reconnects once a blocked line is released. Disable a
-conflicting peripheral through the OS, or disable that knob in Control Settings.
-v1.8 does not alter boot
-pin multiplexing or silently stop another application.
+## User logs and error reports
 
-## Calibrate, configure, operate
+More > Logs and Settings > Logs open the same journal. It records parameter edits,
+graph actions, settings changes, GPIO status/configuration, locks, confirmations and
+reported device failures. Continuous gestures are coalesced after settling. It does
+not log every ADC sample or touch coordinate. Muting routine notices keeps logging active.
 
-### Calibration
+- Outcomes: Passed, Failed, Requested, Cancelled. Requested means pending approval/action.
+- Severity: default, warning, critical. Informational events use Passed.
+- Local timestamps include milliseconds; storage/export also includes timezone.
+- Up to **10,000** newest entries are retained in `data/events.db` (SQLite WAL).
+- Pause freezes the view, not recording. New events preserve the reading position while scrolled back.
+- Export writes **exports/logs.csv** and **exports/logs.md**, replacing these two previous exports. Copy them elsewhere to retain a particular export. Spreadsheet formula text is escaped in CSV.
+- Clear requires confirmation and leaves a clearing audit record. It never clears error files.
 
-1. Release the stick and push button. Choose **Capture released** after readings settle.
-2. Press the **centre alone**, without tilting, then release. Move **Up**, Right, Down and Left as prompted, releasing fully after each movement.
-3. Rotate clockwise at least one click; choose Next. Rotate anticlockwise; Next.
-4. Review the learned contact/GPIO assignments and choose **Save calibration**.
+| File | Contents |
+| --- | --- |
+| logs/errors.txt | Unhandled Python/thread exceptions and Qt warnings/errors; runtime context and available tracebacks |
+| logs/bugs.txt | Handled application/device failures |
+| logs/fatal.txt | Fatal Python stack dumps where the runtime can produce one |
+| logs/controls.log | GPIO connection, pin ownership, calibration and delivery diagnostics |
+| logs/setup.txt | Pi installation and launch output |
+| logs/startup.txt | Windows launch output and startup errors |
 
-A direction may close its own contact and the learned centre contact together.
-Calibration waits for both to release before continuing. Two direction contacts,
-duplicate direction assignments and a second rotation with the same sign are rejected. Nothing is applied until Save. Cancel, Back or leaving Settings
-keeps the previous saved calibration. All shortcut dispatch is paused during
-calibration so test movements cannot edit the instrument.
+Errors/bugs rotate at 2 MB with three backups; controls at 1 MB with two. Fatal
+traces rotate on the next startup after 2 MB. Reports stay local. Retain them with
+reproduction steps when debugging. Power loss, process termination and undetected
+logic bugs cannot be guaranteed to produce reports. The journal is an operational
+record, not a tamper-proof compliance audit.
 
-If one physical click produces two steps, select **4 encoder steps per click**;
-2 is the working demo default. Available values are 1, 2 and 4. Switch debounce is
-8 ms by default and can be adjusted in `controls.json` from 1 to 50 ms.
-
-**Reset calibration** preserves wiring and shortcuts, and requires calibration
-again. **Restore shortcut defaults** preserves calibration and wiring. Both ask
-for confirmation in the UI. Application preference/factory resets do not erase
-knob calibration; use these dedicated controls for that.
-
-### Default assignments
-
-| Operation | Knob 1 · top-left target | Knob 2 · bottom-left target | Knob 4 · bottom-right target |
-|---|---|---|---|
-| Clockwise / anticlockwise | Increase / decrease selected digit | Focus next / previous | Increase / decrease selected digit |
-| Up / down | Focus previous / next | Pan graph up / down | Focus previous / next |
-| Left / right | Select digit left / right | Pan graph left / right | Select digit left / right |
-| Short push | Toggle left graph lock | Open left More | Toggle right graph lock |
-| Hold push ≥700 ms | Enter / leave universal navigation | Same | Same |
-
-Target corners follow the currently displayed laser and selected parameter.
-Rotation in an open numeric editor changes its draft; Apply commits through the
-same validator as touch. Otherwise rotation changes the target corner immediately,
-within that parameter's range. A five-second underline identifies the selected
-digit. Selecting a different precision clamps digit selection to valid places.
-
-Every clockwise, anticlockwise, joystick and short-push action is independently
-assignable. Actions include digit changes, focus/activate/back, value editor,
-graph lock/pan/zoom/reset, emission, stabilisation, channel switch, fullscreen,
-Signals, More, Settings and CSV capture. **Not assigned** disables that operation.
-Hold-push navigation is reserved so a shortcut map cannot remove the escape route.
-
-### Universal navigation
-
-Hold any calibrated knob's centre push alone for 700 ms. A tilt that also closes
-the push contact runs only its direction action; it cannot trigger push or hold-navigation. The hold does not also trigger its
-short-push action. Rotate to move focus, short-push or stick right to activate,
-and stick left to go back. Up/down also move focus. Hold push again to exit.
-
-- Home focus stays within the physical side of the knob. Each side has its own
-  navigation mode. Side-owned modals keep their originating knob ownership, even
-  when their numeric editor is drawn on the opposite half. Shared Settings and
-  global notification confirmations accept either side.
-- Open More uses rotary scrolling and short-push selection directly. Settings and
-  other open panels also accept navigation without first holding push.
-- In Settings, focus the wheel and push; rotation selects categories. Push again
-  returns to ordinary focus navigation.
-- Focus a scroll rail and push to scroll long pages with rotation.
-- Dropdown navigation scrolls offscreen choices into view.
-- Focus a slider and push to adjust. Rotate, then push to finish. Hardware sliders
-  send one command when finished; Back cancels an uncommitted hardware preview.
-- Search keys, results, history Clear, numeric editors and guide controls are
-  reachable without touching the screen.
-
-Normal mapped shortcuts remain available outside navigation mode. Repeating a
-held direction is limited to navigation, digit changes and graph panning; emission,
-lock and other toggles do not auto-repeat. Missed GPIO edges disarm the affected
-knob until it is released, preventing a stuck repeat.
-
-### Screen check
-
-Control Settings → Screen check opens a separate fullscreen diagnostic surface.
-Touch all four targets, follow the rectangular path without lifting, and drag the
-disc to each target. Then cycle white/red/green/blue/black to inspect pixels. Results
-show Passed or Not completed. Next can skip a stage; skipping never passes it.
-The knob can select Next/Close. Results are kept for the session, not written to
-a calibration certificate. The tool does not automatically detect physical cracks.
-
-## Brightness, contrast and display recovery
-
-Windows uses native monitor DDC/CI, with WMI brightness fallback for an internal
-panel. Linux uses `/sys/class/backlight` when exposed and `ddcutil` for monitor
-brightness/contrast. Accepted values come from hardware readback. There is no
-software dimming layer pretending to control brightness.
-
-A failed/partial detection is no longer cached permanently. Choose **Retry display**
-after reconnecting or repairing access. `bash run.sh --repair-setup` reinstalls
-Pi display/GPIO support if needed. The installer loads `i2c-dev` for existing DDC
-buses; it does not enable `i2c_arm`, because GPIO2/3 belong to Knob 1.
-
-Contrast still requires a monitor exposing that hardware control. This development
-PC reported native brightness and unsupported DDC contrast. The attached Pi
-monitor has not been tested in this session. The UI reports the actual failure
-instead of silently substituting opacity. Resolution/refresh changes retain the
-15-second Keep/Revert safeguard.
-
-## Code structure and boundaries
-
-```text
-main.py                    composition, fullscreen launch, dependency injection
-hardware/
-  config.py                validated BCM wiring, defaults, atomic controls storage
-  panel.py                 pure physical-button/lock debounce and default pin map
-  gpio.py                  RP1 discovery, ownership checks, libgpiod worker
-  decoder.py               pure quadrature, switch debounce, loss resynchronisation
-  calibration.py           pure transactional calibration state machine
-  service.py               reconnect backoff, release guard, repeats and semantic commands
-interaction/
-  router.py                command → visible UI/controller; modal focus navigation
-  numeric.py               exact decimal digit arithmetic and cursor placement
-  notifications.py         stable card model, independent timers/consent and disk history
-  notification_art.py      shared cached card/blur renderer for QML and native Settings
-  session_lock.py          global input guard, captured blur and cancellable power timeout
-  icons.py                 shared vector outline registry/provider
-controller/                laser simulation, validated parameters, chart state/paint
-qml/                       home, modules, numpad, charts, Signals, More, alarms, tour
-settings_ui/
-  control_panel.py         knob cards, assignment/calibration UI, native focus routing
-  extended_controls.py     panel contacts, lock configuration, themes and inbox
-  screen_check.py          native touch diagnostic surface
-  integration.py           settings/home lifecycle, same process and state
-  coordinator.py           async host operations, rollback, exports, guided tour
-  refined.py               inherited table, dropdowns, touch tooltips and sliders
-  operational.py/window.py inherited wheel, document, keyboard and settings rendering
-  preferences.py           theme and typography shared with QML
-  help_content.py/tour.py  operator documentation and actual-screen walkthrough
-  model.py                 settings/history persistence and search catalog
-device/                    native Windows/Linux display, clock and power adapters
-data/settings.json         carried-forward appearance/graph preferences and history
-data/controls.json         independent wiring, calibration and mappings
-data/notifications.json    latest 200 notification records
-previews/index.html        offline gallery of six actual UI theme screenshots
-run.sh / setup_pi.sh        Pi bootstrap; only setup runs with elevated privileges
-install_pi_shortcut.py      path-correct desktop and application-menu launchers
-runtime/ + packages/        bundled Windows runtime, not ARM binaries
-```
+## Structure
 
 ```mermaid
 flowchart LR
-  Pins[26 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
-  Capture --> Decode[Independent decoders: debounce and quadrature]
-  Decode --> Service[KnobService: calibration, release guard, hold and mappings]
-  Service -->|knob / command / count| Router[InputRouter]
-  Service -->|physical lock| Lock[SessionLock: input guard and countdown]
+  GPIO[RP1 GPIO edges] --> Capture[hardware capture and decode]
+  Capture --> Service[Calibration and mappings]
+  Service --> Router[Side and window routing]
+  Router --> UI[Qt Quick home / native Settings]
+  Touch[Touch input] --> UI
+  UI --> Controller[Controller / simulated lasers]
+  Controller --> Plot[Plot renderer]
+  UI --> Settings[Settings coordinator]
+  Settings --> Device[OS display / clock / power]
+  Settings --> Store[Preferences]
+  UI --> Journal[SQLite journal]
+  Service --> Lock[Session lock]
   Lock --> Device
-  Service -->|dedicated button| Router
-  Router --> Home[QML home and dialogs]
-  Router --> Settings[Native Settings widgets]
-  Router --> Model[Validated controller and chart state]
-  Home --> Model
-  Settings --> Coordinator[SettingsCoordinator]
-  Coordinator --> Device[Windows / Linux device adapter]
-  Model --> Paint[Live graph renderer]
 ```
 
-`hardware` imports no laser controller, QML or settings widgets. Electrical decoding
-and calibration are pure Python. GPIO ownership lives on one worker thread;
-GUI objects and the command router stay on the GUI thread. A 60 Hz snapshot feed
-updates the live knob drawing. Native display commands use a separate worker pool.
-No hardware backend calls a shell to evaluate user-entered commands.
+| Path | Responsibility |
+| --- | --- |
+| main.py | Qt composition, service connections, lifecycle |
+| controller/ | Laser state, simulated signals, alarms, bounds, gestures, plotting |
+| qml/ | Home, graph panels, More fan, numpad, sliders, home notifications |
+| settings_ui/ | Settings wheel/table, keyboard/history, tooltips and guide |
+| settings_ui/console.py | Logs, lock/startup pages, notification sizing |
+| hardware/ | Chip discovery, GPIO edges, debounce, encoder decoding, calibration and mappings |
+| interaction/ | Routing, session lock, notifications, icons, journal and fault capture |
+| device/ | Windows/Linux display and OS capability/write/readback interfaces |
+| start.sh / setup.sh | Normal-user launcher and administrator-only provisioning |
+| install.py / boot.py / startup.py | Data-preserving staging, idempotent boot changes, session startup registration |
+| start.cmd / launch.py | Included Windows runtime and visible launch errors |
+| data/ | Persistent settings, calibration/history and journal; retain during upgrades |
 
-Configuration saves validate unique pins, allowed operations, distinct contacts,
-ranges and schema before atomically replacing the file. Invalid controls files
-load safe uncalibrated defaults with an explanatory status. Save errors leave the
-in-memory accepted configuration unchanged. GPIO import/detection failures leave
-the touch application operational. New control hardware should implement the
-worker's `frames`, `status`, `start` and `stop` interface; it should not call widgets.
-The GPIO worker additionally publishes `panelFrames` and per-control `availability`
-issues. A single reconnect timer is cancelled on shutdown; signals from replaced
-workers are ignored.
+Launch files use short alphabetic names. Inherited imports and third-party names
+are preserved for compatibility. Qt/Python licenses remain in their packages;
+Roboto's license is in assets. Earlier implementation history is in the preserved
+[v1.8 README](../Versions/mock1.8-pyside6/README.md).
 
-## Diagnostics and tests
+## Validation
 
-- Windows startup: `logs/startup.log`.
-- Pi setup/startup: `logs/pi-startup.log`.
-- GPIO connection status: `logs/controls.log`, rotated at 1 MB, two backups.
-- `NEXATOM_GPIO_DEBUG=1 bash run.sh` also logs semantic knob operations.
-- `.venv/bin/python main.py --list-gpio` reports chip labels and line owners without
-  requesting/changing GPIO lines. Do not run a second GPIO reader against owned pins.
-- Storage → Export settings includes both settings/history and the controls configuration.
+The actual Windows launcher was verified fullscreen, visible and acquiring after
+boot. The 1600 x 720 design scales to the connected screen. Local checks cover 48
+unit tests, real Qt touch/knob flows, every guide route, pan/pinch/drag, independent
+style persistence, logs/clear/export, manual hold-unlock, physical-lock priority,
+cancelled/expired shutdown, notifications and Linux adapter contracts. Power tests
+use a recording adapter; no real shutdown was triggered.
+[Screenshots and results](tests/console) are included.
 
-Validated on Windows with real Qt scenes and native touch events, using temporary
-data and injected host/GPIO contracts. No physical Pi was accessed:
+```powershell
+.\runtime\python.exe -m unittest discover -s tests -p "test_*.py"
+.\runtime\python.exe tests\console.py
+.\runtime\python.exe tests\regress.py
+.\runtime\python.exe tests\verify_refinements.py
+.\runtime\python.exe tests\verify_charts.py
+.\runtime\python.exe tests\verify_control_update.py
+.\runtime\python.exe tests\verify_interaction_update.py
+.\runtime\python.exe tests\verify_zoom_paths.py
+.\runtime\python.exe tests\verify_linux_device.py
+.\runtime\python.exe tests\verify_desktop.py
+```
 
-| Verification | Result |
-|---|---|
-| Decoder/calibration/config/service/decimal tests | 16 tests passed |
-| GPIO request and busy-owner contracts | 2 tests passed |
-| v1.8 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
-| Existing charts, swaps, signals, bounds and emission | 54 checks passed |
-| Existing reference controls, dropdowns, alarms and complete tour | 31 checks passed |
-| Existing settings/system/data behavior | 46 checks passed |
-| Existing native keyboard/settings touch behavior | 16 checks passed |
-| Linux sysfs/DDC/mode adapter contracts | 12 checks passed |
-| Shared direction/push calibration and event-order regressions | 4 tests passed, including 16 edge-order/batching combinations |
-| Knob 3 to 4 stored-wiring migration | 2 tests passed |
-| Native pinch across plots, held-finger takeover, both lasers, reverse zoom, lock, swapped/combined/fullscreen plots | 9 cases passed |
-| Direct pan, pinch and recovered-display repro | Passed |
-| Both actual Windows launchers | Fullscreen boot and live acquisition passed |
-| Python compilation and Bash syntax | Passed |
+Run GUI checks serially. Installer tests use temporary files, never the host boot
+configuration; Bash syntax checks pass. **Physical Pi installation, cold boot, GPIO
+edges and display/power behavior still require acceptance on your hardware.** They
+were not physically tested from this PC. After setup/restart, verify autostart,
+saved calibration and GPIO20 lock/release; select Never while checking the lock
+if you do not want shutdown during the check.
 
-Run the new focused checks with `runtime\python.exe` on Windows or `.venv/bin/python`
-on Pi, followed by `tests/test_knobs.py`, `tests/test_shared_contact.py`,
-`tests/test_wiring_migration.py`, `tests/test_gpio_adapter.py`,
-`tests/verify_zoom_paths.py`, `tests/verify_v18.py` or `tests/diagnose_v18.py`. Retained `verify_v17.py` checks the
-inherited settings contract against v1.8; it is not another application. Validation
-JSON and useful screenshots are in `tests/`. `inspect_v18.py` regenerates the new
-screens with isolated data. Qt's offscreen plugin can report unsupported `raise()`;
-these messages are unrelated to runtime exceptions.
-
-Remaining device acceptance: calibrate each physical knob, verify one step per
-detent in both directions, hold/release push, use navigation with only knobs,
-check GPIO permissions after reboot, and verify brightness/contrast readback on the
-actual display. Pi-specific kernel/monitor capability cannot be certified by desktop tests.
+Startup follows [Raspberry Pi's labwc guidance](https://www.raspberrypi.com/tutorials/how-to-use-a-raspberry-pi-in-kiosk-mode/)
+and the [labwc configuration rules](https://labwc.github.io/labwc-config.5.html).
