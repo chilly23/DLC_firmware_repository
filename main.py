@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parent
 def create_application(*, skip_boot=False, animate=True, data_dir=None):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.6")
-    app.setApplicationVersion("1.6.0")
+    app.setApplicationName("NEXATOM v1.4")
+    app.setApplicationVersion("1.4.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
