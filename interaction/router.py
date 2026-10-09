@@ -169,8 +169,8 @@ class InputRouter(QObject):
         if owner is not None and int(owner)!=self.side:return True
         if name=='radialMenu':
             if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)
-            elif operation in ('push','right'):scope.chooseCurrent()
-            elif operation=='left':scope.dismiss('')
+            elif operation=='push':scope.dismiss('')
+            elif operation in ('left','right'):scope.chooseCurrent()
             else:scope.rotateSteps(-amount if operation=='up' else amount)
         elif name=='emissionConfirm':
             if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)

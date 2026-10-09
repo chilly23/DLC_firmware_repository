@@ -55,6 +55,7 @@ class Notifications(QObject):
         except OSError:pass
     def post(self,text,level='normal',key='',decision=None):
         if not text:return
+        if getattr(self,'journal',None):self.journal.record(text,'Requested' if decision else 'Failed' if level=='critical' else 'Passed',level,'Notification')
         if level not in ('normal','warning','critical'):level='normal'
         text=str(text);key=key or text;now=time.time();self.serial+=1
         record=dict(id=self.serial,text=text,level=level,time=now,key=key,decision=decision is not None)
@@ -87,6 +88,7 @@ class Notifications(QObject):
     def dismissId(self,identifier):
         i=next((i for i,e in enumerate(self.cards) if e['id']==identifier),None)
         if i is None:return
+        if identifier in self.pending and getattr(self,'journal',None):self.journal.record('Cancelled: '+self.cards[i]['text'],'Cancelled','default','Consent')
         self.remove(i);self.drain();self.changed.emit()
     @Slot()
     def dismiss(self):self.dismissId(self.toast['id'])
@@ -95,7 +97,15 @@ class Notifications(QObject):
         entry=self.find(identifier)
         if not entry or not entry['decision']:return
         callback=self.pending.pop(identifier,None);self.dismissId(identifier)
-        if callback:callback()
+        if callback:
+            try:
+                callback()
+                if getattr(self,'journal',None):self.journal.record('Confirmed: '+entry['text'],source='Consent')
+            except Exception:
+                import logging
+                logging.getLogger('nexatom').exception('Confirmed action failed: %s',entry['text'])
+                if getattr(self,'journal',None):self.journal.record('Confirmed action failed: '+entry['text'],'Failed','critical','Consent')
+                self.post('Action failed. See Logs for details.','critical')
     @Slot()
     def accept(self):self.acceptId(self.toast['id'])
     @Slot()

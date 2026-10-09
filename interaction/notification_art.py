@@ -10,8 +10,11 @@ from PySide6.QtQuick import QQuickImageProvider
 
 def buttons(width,height,decision):
     result=[(QRectF(width-66,10,56,height-20),'close')]
-    if decision:result.insert(0,(QRectF(width-219,15,130,height-30),'accept'))
+    if decision:result.insert(0,(QRectF(width-219,10,130,height-20),'accept'))
     return result
+
+def metrics(size,native=False):
+    return {'Small':(720 if native else 600,64,18),'Medium':(860 if native else 724,78,20),'Large':(880 if native else 740,98,24)}.get(size,(724,78,20))
 
 class NotificationArt:
     def __init__(self,notices,theme):
@@ -31,11 +34,12 @@ class NotificationArt:
         severity={'normal':self.theme.foreground,'warning':'#FFD60A','critical':'#FF453A'}[entry['level']]
         p.setBrush(QColor(severity));p.drawRoundedRect(QRectF(0,11,4,height-22),2,2)
         p.setBrush(Qt.BrushStyle.NoBrush);p.setPen(QPen(QColor(severity),2))
-        cy=height/2
-        if entry['level']=='warning':p.drawPolygon(QPolygonF([QPointF(30,cy-15),QPointF(44,cy+12),QPointF(16,cy+12)]))
-        else:p.drawEllipse(QRectF(17,cy-13,26,26))
-        p.drawLine(QPointF(30,cy-7),QPointF(30,cy+3));p.drawPoint(QPointF(30,cy+8))
-        font=QFont(self.theme.fontFamily);font.setPixelSize(round(20*self.theme.fontScale));p.setFont(font);p.setPen(QColor(self.theme.foreground))
+        cx,cy=30,height/2
+        if entry['level']=='warning':p.drawPolygon(QPolygonF([QPointF(cx,cy-14),QPointF(cx+14,cy+14),QPointF(cx-14,cy+14)]))
+        else:p.drawEllipse(QRectF(cx-13,cy-13,26,26))
+        if entry['level']=='normal':p.drawPoint(QPointF(cx,cy-7));p.drawLine(QPointF(cx,cy-2),QPointF(cx,cy+7))
+        else:p.drawLine(QPointF(cx,cy-6),QPointF(cx,cy+3));p.drawPoint(QPointF(cx,cy+8))
+        font=QFont(self.theme.fontFamily);font.setPixelSize(round(metrics(self.theme.notificationSize)[2]*self.theme.fontScale));p.setFont(font);p.setPen(QColor(self.theme.foreground))
         right=width-(230 if entry['decision'] else 76)
         p.drawText(QRectF(56,8,right-56,height-16),Qt.AlignmentFlag.AlignVCenter|Qt.TextFlag.TextWordWrap,entry['text'])
         for rect,action in buttons(width,height,entry['decision']):
@@ -57,7 +61,8 @@ class NotificationArt:
 class NotificationImageProvider(QQuickImageProvider):
     def __init__(self,art):super().__init__(QQuickImageProvider.ImageType.Image);self.art=art
     def requestImage(self,identifier,size,requestedSize):
-        entry=self.art.notices.find(int(identifier.split('/')[0]))
-        image=self.art.image(entry) if entry else QImage(724,78,QImage.Format.Format_ARGB32_Premultiplied)
+        parts=identifier.split('/');entry=self.art.notices.find(int(parts[0]))
+        width,height=metrics(self.art.theme.notificationSize)[:2]
+        image=self.art.image(entry,width,height) if entry else QImage(width,height,QImage.Format.Format_ARGB32_Premultiplied)
         if not entry:image.fill(0)
         size.setWidth(image.width());size.setHeight(image.height());return image

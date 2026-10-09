@@ -6,6 +6,8 @@ from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtQuick import QQuickImageProvider
 
 PATHS={
+ 'logs':'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 12h8M8 17h5"/>',
+ 'retry':'<path d="M20 8a8 8 0 1 0 0 8M20 2v6h-6"/>',
  'control':'<path d="M4 3v6m0 4v8m8-18v12m0 4v2m8-18v2m0 4v12"/><circle cx="4" cy="11" r="2"/><circle cx="12" cy="17" r="2"/><circle cx="20" cy="7" r="2"/>',
  'alarm':'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4M12 1v1"/>',
  'knob':'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 4v2M3 12H1m22 0h-2M12 23v-2M12 1v1"/>',
