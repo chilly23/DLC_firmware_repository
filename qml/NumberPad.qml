@@ -16,13 +16,14 @@ Item {
 
     function open(index, key, paneSide, isBottom) {
         channelIndex=index; fieldKey=key; side=paneSide; lower=isBottom
-        acceptedValue=ctl.channel(index).values[key]
+        acceptedValue=ctl.value(index,key)
         draft=Number(acceptedValue).toFixed(spec.decimals)
         cursor=draft.length; replaceDraft=true; errorMessage=""; visible=true
         editor.forceActiveFocus()
     }
     function key(value) {
         errorMessage=""
+        if(value === "clearAll") {draft="";cursor=0;replaceDraft=false;return}
         if(value === "enter") {
             errorMessage=ctl.setValue(channelIndex, fieldKey, draft)
             if(errorMessage === "") pad.closed()
@@ -85,10 +86,10 @@ Item {
                 onClicked: pad.key(modelData)
             }
         }
-        TouchButton { objectName: "keyBackspace"; x: 482; y: 84; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "backspace"; onClicked: pad.key("backspace") }
+        TouchButton { objectName: "keyBackspace"; x: 482; y: 84; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "backspace";holdEnabled:true;onHeld:pad.key("clearAll");onClicked: pad.key("backspace") }
         TouchButton { objectName: "keyEnter"; x: 482; y: 169; width: 148; height: 246; radius: 4; normalColor: "#3D403D"; iconName: "enter"; onClicked: pad.key("enter") }
         TouchButton { objectName: "key0"; x: 5; y: 339; width: 306; height: 76; radius: 4; normalColor: "#000000"; text: "0"; textSize: 32; onClicked: pad.key("0") }
-        TouchButton { objectName: "keyMinus"; x: 321; y: 339; width: 148; height: 76; radius: 4; normalColor: "#000000"; text: "-"; onClicked: pad.key("-") }
+        TouchButton { objectName: "keyMinus"; x: 321; y: 339; width: 148; height: 76; radius: 4; normalColor: "#000000"; iconName: "minus"; iconSize: 64; onClicked: pad.key("-") }
         TouchButton { objectName: "keyLeft"; x: 5; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "left"; onClicked: pad.key("left") }
         TouchButton { objectName: "keyRight"; x: 163; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; iconName: "right"; onClicked: pad.key("right") }
         TouchButton { objectName: "keyDecimal"; x: 321; y: 425; width: 148; height: 76; radius: 4; normalColor: "#3D403D"; text: "."; onClicked: pad.key(".") }

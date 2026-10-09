@@ -18,7 +18,7 @@ Rectangle {
     Item {
         x: tile.mirrored ? 337 : 0; width: 78; height: 80; visible: !tile.editing
         Text { x: 26; y: 10; text: tile.spec.module; color: "white"; font.pixelSize: 20 }
-        Text { x: 30; y: 34; text: tile.mirrored ? "<" : ">"; color: "white"; font.pixelSize: 32 }
+        Icon { x: 25; y: 35; width: 30; height: 30; kind: tile.mirrored ? "chevronLeft" : "chevronRight"; ink: "white" }
         Rectangle { x: tile.mirrored ? 0 : 77; y: 11; width: 1; height: 60; color: "#B6D2B9" }
     }
     Text {

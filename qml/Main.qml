@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: "#0E140F"; title: "NEXATOM · v1.2"
+    visible: true; color: "#0E140F"; title: "NEXATOM · v1.6"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -26,7 +26,7 @@ Window {
         window.fullscreenSide=-1
     }
     function showNotice(message) { notice=message; noticeTimer.restart() }
-    function beginMove(side,x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.begin(side,side===0?ctl.leftChannel:ctl.rightChannel,p.x,p.y)}
+    function beginMove(side,errorSignal,x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.begin(side,side===0?ctl.leftChannel:ctl.rightChannel,errorSignal,p.x,p.y)}
     function updateMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.move(p.x,p.y)}
     function finishMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.finish(p.x,p.y)}
     Connections { target: ctl; function onChanged() { window.revision++ } }
@@ -42,11 +42,13 @@ Window {
             ChannelPane {
                 id: leftPane
                 side: 0; channelIndex: ctl.leftChannel; revision: window.revision
+                onNotice: function(message) {window.showNotice(message)}
                 onEditRequested: function(index,key,side,bottom) {window.openEditor(index,key,side,bottom)}
                 onFullscreenRequested: function(side) {window.openFullscreen(side)}
                 onMoreRequested: function(side) {radial.open(side,ctl.leftChannel)}
                 onSelectorRequested: function(i,k,s,b,m) {selector.open(i,k,s,b,m)}
-                onGraphMoveStarted: function(s,x,y) {window.beginMove(s,x,y)}
+                onSignalsRequested: function(s,i) {signalsPanel.open(s,i)}
+                onGraphMoveStarted: function(s,e,x,y) {window.beginMove(s,e,x,y)}
                 onGraphMoveUpdated: function(x,y) {window.updateMove(x,y)}
                 onGraphMoveFinished: function(x,y) {window.finishMove(x,y)}
                 onGraphMoveCancelled: graphDrag.visible=false
@@ -54,11 +56,13 @@ Window {
             ChannelPane {
                 id: rightPane
                 x: 800; side: 1; channelIndex: ctl.rightChannel; revision: window.revision
+                onNotice: function(message) {window.showNotice(message)}
                 onEditRequested: function(index,key,side,bottom) {window.openEditor(index,key,side,bottom)}
                 onFullscreenRequested: function(side) {window.openFullscreen(side)}
                 onMoreRequested: function(side) {radial.open(side,ctl.rightChannel)}
                 onSelectorRequested: function(i,k,s,b,m) {selector.open(i,k,s,b,m)}
-                onGraphMoveStarted: function(s,x,y) {window.beginMove(s,x,y)}
+                onSignalsRequested: function(s,i) {signalsPanel.open(s,i)}
+                onGraphMoveStarted: function(s,e,x,y) {window.beginMove(s,e,x,y)}
                 onGraphMoveUpdated: function(x,y) {window.updateMove(x,y)}
                 onGraphMoveFinished: function(x,y) {window.finishMove(x,y)}
                 onGraphMoveCancelled: graphDrag.visible=false
@@ -71,19 +75,21 @@ Window {
             channelIndex: window.fullscreenSide===1 ? ctl.rightChannel : ctl.leftChannel
             revision: window.revision
             onClosed: window.closeFullscreen()
+            onSignalsRequested: signalsPanel.open(window.fullscreenSide,channelIndex)
         }
         GraphDrag {id:graphDrag;objectName:"graphDrag";anchors.fill:parent;visible:false;revision:window.revision}
         ModuleSelector {id:selector;objectName:"selector";anchors.fill:parent;visible:false;onClosed:visible=false}
+        SignalsPanel {id:signalsPanel;objectName:"signalsPanel";anchors.fill:parent;visible:false;revision:window.revision;onEditAxis:function(i,k,s){keypad.open(i,k,s===0?1:0,false)}}
         NumberPad { id: keypad; objectName: "keypad"; anchors.fill: parent; visible: false; onClosed: visible=false }
         RadialMenu {
             id: radial; objectName: "radialMenu"; anchors.fill: parent; visible: false
             onClosed: visible=false
             onChosen: function(option,index,side) {
                 visible=false
-                if(option==="Signals") ctl.toggleError(index)
+                if(option==="Signals") signalsPanel.open(side,index)
                 else if(option==="Settings") ctl.openSettings()
                 else if(option==="Display") window.openFullscreen(side)
-                else {let c=ctl.channel(index);window.showNotice("Laser "+c.number+" · Mock stream 20 Hz · "+(c.locked?"Locked":"Scanning")+" · "+(c.stabilised?"Stabilised":"Live"))}
+                else {let c=ctl.channel(index);window.showNotice("Laser "+c.number+" · "+c.status+" · "+(c.stabilised?"Stabilised":"Live"))}
             }
         }
         Rectangle {
@@ -102,7 +108,8 @@ Window {
         }
     }
     Timer { id: noticeTimer; interval: 2800; onTriggered: window.notice="" }
-    NumberAnimation { id: bootAnimation; target: window; property: "bootProgress"; from: 0; to: 1; duration: 3000; onFinished: window.booting=false }
+    NumberAnimation { id: bootAnimation; target: window; property: "bootProgress"; from: 0; to: 1; duration: 3000; onFinished: {window.booting=false;ctl.startAcquisition()} }
+    Component.onCompleted: {if(skipBoot)ctl.startAcquisition()}
     onFrameSwapped: {
         if(window.booting && !window.bootStarted) {
             window.bootStarted=true
