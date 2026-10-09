@@ -73,8 +73,8 @@ class Workspace(QObject):
     @Property('QVariantMap', notify=changed)
     def graphLayout(self):
         return dict(zip(('x','y','width','height','gap'), {
-            'Small':(132,112,644,490,12), 'Medium':(122,100,664,516,9),
-            'Large':(116,96,678,526,6)}[self.graphSize]))
+            'Small':(126,106,668,510,6), 'Medium':(120,98,674,526,4),
+            'Large':(116,94,680,534,4)}[self.graphSize]))
 
     @Slot(str)
     def setGraphSize(self, value):

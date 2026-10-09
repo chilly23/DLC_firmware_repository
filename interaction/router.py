@@ -14,10 +14,19 @@ class InputRouter(QObject):
     def __init__(self,controller,knobs,parent=None):
         super().__init__(parent);self.ctl=controller;self.knobs=knobs;self.window=None;self.host=None
         self.target=None;self.adjusting=False;self._focus={};self._corner=-1;self._power={};self._edit_until=0
+        self._named_items={}
+        self._home_targets={}
+        self._visual_timer=QTimer(self);self._visual_timer.setSingleShot(True);self._visual_timer.setInterval(16)
+        self._visual_timer.timeout.connect(self.changed)
         self.side=0;self.side_targets={};knobs.context_handler=self.operation
         self.timer=QTimer(self);self.timer.setInterval(60);self.timer.timeout.connect(self.refresh_focus);self.timer.start()
         knobs.command.connect(self.handle);knobs.notice.connect(controller.notify)
-    def attach(self,window,host):self.window=window;self.host=host;self.logs=window.findChild(QObject,'logsWindow')
+    def visual_changed(self):
+        if not self._visual_timer.isActive():self._visual_timer.start()
+    def attach(self,window,host):
+        self.window=window;self.host=host;self.logs=window.findChild(QObject,'logsWindow')
+        self.ctl.workspace.changed.connect(self._home_targets.clear)
+        self.ctl.theme.changed.connect(self._home_targets.clear)
     def surface(self):return self.logs if getattr(self,'logs',None) and self.logs.isVisible() else self.window
     @Property('QVariantMap',notify=changed)
     def focus(self):return dict(x=0,y=0,width=0,height=0,label='',active=False,**self._focus) if not self._focus else self._focus
@@ -33,10 +42,17 @@ class InputRouter(QObject):
         return screen if screen and screen.isVisible() else None
     def find(self,name,root=None):
         if not self.window:return None
-        stack=[root or self.surface().contentItem()]
+        origin=root or self.surface().contentItem()
+        key=(origin,name)
+        cached=self._named_items.get(key)
+        if cached is not None and isValid(cached) and cached.objectName()==name:
+            return cached
+        stack=[origin]
         while stack:
             item=stack.pop()
-            if item.objectName()==name:return item
+            if item.objectName()==name:
+                self._named_items[key]=item
+                return item
             stack.extend(item.childItems())
     def scope(self):
         if self.surface()!=self.window:
@@ -58,6 +74,12 @@ class InputRouter(QObject):
         return rect.intersected(QRectF(0,0,self.surface().width(),self.surface().height()))
     def targets(self):
         scope=self.scope();stack=[scope];found=[]
+        home=scope==self.window.contentItem() and self.window.property('fullscreenSide')<0
+        cache_key=(self.side,self.window.width(),self.window.height(),tuple(self.ctl.instrument.views),
+                   tuple(l.emission for l in self.ctl.instrument.lasers))
+        if home and cache_key in self._home_targets:
+            cached=self._home_targets[cache_key]
+            if all(isValid(item) and item.isVisible() and item.isEnabled() for item,rect,label in cached):return cached
         while stack:
             item=stack.pop()
             if not item.isVisible() or not item.isEnabled():continue
@@ -68,15 +90,19 @@ class InputRouter(QObject):
                 within_side=not home or ((r.center().x()<self.window.width()/2)==(self.side==0))
                 if r.width()>=24 and r.height()>=24 and within_side:found.append((item,r,str(label)))
             stack.extend(item.childItems())
-        return sorted(found,key=lambda e:(round(e[1].top()/36),e[1].left()))
-    def clear_focus(self):self.target=None;self.adjusting=False;self._focus={};self.changed.emit()
+        result=sorted(found,key=lambda e:(round(e[1].top()/36),e[1].left()))
+        if home:
+            if len(self._home_targets)>16:self._home_targets.clear()
+            self._home_targets[cache_key]=result
+        return result
+    def clear_focus(self):self.target=None;self.adjusting=False;self._focus={};self.visual_changed()
     def refresh_focus(self):
-        if self._corner>=0 and time.monotonic()>=self._edit_until:self._corner=-1;self.changed.emit()
+        if self._corner>=0 and time.monotonic()>=self._edit_until:self._corner=-1;self.visual_changed()
         if self.target is not None:
             if not isValid(self.target) or not self.target.isVisible() or self.native():self.clear_focus();return
             r=self.rect(self.target)
             self._focus=dict(x=r.x(),y=r.y(),width=r.width(),height=r.height(),label=('Adjust · ' if self.adjusting else '')+str(self.target.property('navLabel')),active=True)
-            self.changed.emit()
+            self.visual_changed()
     def move_focus(self,direction,amount=1):
         if self.diagnostic_screen():self.clear_focus();self.diagnostic_screen().navigate(direction*amount);return
         if self.native():self.clear_focus();self.host.window.navigate_knob(direction,amount);return
@@ -119,7 +145,7 @@ class InputRouter(QObject):
         index,key,spec=self.selection(corner);value=self.ctl.value(index,key)
         whole=len(str(abs(int(value))))-1
         power=self._power.get(corner,-spec['decimals'])+direction
-        self._power[corner]=max(-spec['decimals'],min(whole,power));self._corner=corner;self._edit_until=time.monotonic()+5;self.changed.emit()
+        self._power[corner]=max(-spec['decimals'],min(whole,power));self._corner=corner;self._edit_until=time.monotonic()+5;self.visual_changed()
     @Slot(int,int)
     def adjustCorner(self,corner,delta):
         index,key,spec=self.selection(corner)
@@ -127,9 +153,9 @@ class InputRouter(QObject):
         power=max(-spec['decimals'],min(whole,self._power.get(corner,-spec['decimals'])))
         self._power[corner]=power
         value=step_value(self.ctl.value(index,key),delta,power,spec['minimum'],spec['maximum'],spec['decimals'])
-        error=self.ctl.setValue(index,key,value)
+        error=self.ctl.setKnobValue(index,key,value)
         if error:self.ctl.notify(error)
-        self._corner=corner;self._edit_until=time.monotonic()+5;self.changed.emit()
+        self._corner=corner;self._edit_until=time.monotonic()+5;self.visual_changed()
     @Slot(str,str,int,int,result='QVariantMap')
     def stepDraft(self,key,text,cursor,delta):
         spec=self.ctl.parameter(key)
@@ -159,6 +185,9 @@ class InputRouter(QObject):
         if action=='logs.open':self.ctl.workspace.openLogs();return
         if self.native() and action in ('more.open','signals.open','view.fullscreen','editor.open'):
             self.host.window.close()
+        if action in ('value.increase','value.decrease') and self.window.property('fullscreenSide')<0 and self.scope()==self.window.contentItem():
+            self.adjustCorner(corner,amount if action=='value.increase' else -amount)
+            return
         self.window.performKnob(action,corner,amount)
     def set_side(self,index):
         side=0 if index<2 else 1
@@ -167,6 +196,7 @@ class InputRouter(QObject):
             self.refresh_focus()
     def operation(self,index,operation,amount):
         if not self.window:return False
+        if operation not in ('clockwise','anticlockwise'):self.ctl.flush_input_changes()
         if getattr(self.ctl,'session_lock',None) and self.ctl.session_lock.locked:return True
         self.set_side(index);self.ctl.system_settings.idle_since=time.monotonic()
         delta=amount*(1 if operation=='clockwise' else -1)
@@ -206,4 +236,4 @@ class InputRouter(QObject):
         elif operation=='left':self.back()
         else:self.move_focus(-1 if operation=='up' else 1,amount)
         return True
-    def shutdown(self):self.timer.stop()
+    def shutdown(self):self.timer.stop();self._visual_timer.stop()

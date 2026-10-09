@@ -102,7 +102,7 @@ class Diagnostics(QObject):
         add('Display', 'Passed' if self.workspace.home and self.workspace.home.screen() else 'Warning', self.displayStatus)
         add('GPIO inputs', 'Passed' if self.ctl.knobs.online else 'Warning', self.gpioStatus)
         add('Acquisition', 'Passed' if self.ctl._live else 'Warning', 'Simulated laser acquisition is running' if self.ctl._live else 'Acquisition has not started')
-        add('Runtime', 'Passed', f'Application v1.16 · {os.name}')
+        add('Runtime', 'Passed', f'Application v1.17 · {os.name}')
         self._rows = rows
         issues = sum(row['state'] != 'Passed' for row in rows)
         self._summary = f'{len(rows)} checks completed · {issues} need attention'
