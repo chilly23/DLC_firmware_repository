@@ -4,10 +4,10 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Qt, Signal
 
 from .model import SettingsStore
-from .extended_controls import ExtendedSettingsWindow
+from .control_panel import KnobSettingsWindow
 
 
-class AttachedSettings(ExtendedSettingsWindow):
+class AttachedSettings(KnobSettingsWindow):
     returned = Signal()
     valuesEdited = Signal(str)
 
@@ -34,7 +34,6 @@ class AttachedSettings(ExtendedSettingsWindow):
             self.search.setFocus()
 
     def closeEvent(self, event):
-        self.controls.panel_calibration=None
         if self.controls.calibration:self.controls.cancel_calibration()
         if self.screen_test and self.screen_test.isVisible():self.screen_test.close()
         self.clear_knob_focus()

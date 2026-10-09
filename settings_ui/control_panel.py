@@ -67,10 +67,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
             box(p,rect,self.theme.surface,12)
             self.draw_knob(p,QRectF(x+10,y+25,100,100),index)
             text(p,x+122,y+10,278,38,f'Knob {index+1} · {LOCATIONS[index]}',24,bold=True)
-            blocked=self.controls.issues.get('knob:'+str(index))
-            status=('Unused slot' if not wired else 'Disabled' if not cfg['enabled'] else 'GPIO busy' if blocked
-                    else 'GPIO unavailable' if not self.controls.connected else 'Waiting for GPIO' if index not in self.controls.snapshots
-                    else 'Ready' if cfg['calibrated'] else 'Reading - calibrate to operate')
+            status='Not connected' if not wired else 'Disabled' if not cfg['enabled'] else 'Calibrated' if cfg['calibrated'] else 'Calibration needed'
             text(p,x+122,y+48,275,35,status,18,self.theme.muted)
             if wired:self.action_button(p,QRectF(x+122,y+88,273,48),'Configure',('knob_open',index))
         self.multiline(p,QRectF(680,514,850,54),self.controls.status,18,self.theme.muted)
@@ -91,8 +88,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         for deg in range(0,360,30):
             a=math.radians(deg);line(p,c.x()+math.cos(a)*r*.84,c.y()+math.sin(a)*r*.84,c.x()+math.cos(a)*r*.95,c.y()+math.sin(a)*r*.95,self.theme.muted,1.5)
         center=c+QPointF(pose[0]*r*.22,pose[1]*r*.22)
-        push=pressed(cfg['push_contact']) and not any(pressed(c) for c in mapping.values())
-        p.setBrush(QColor(self.theme.active if push else self.theme.raised));p.setPen(QPen(QColor(self.theme.foreground),2));p.drawEllipse(center,r*.62,r*.62)
+        push=pressed(cfg['push_contact']);p.setBrush(QColor(self.theme.active if push else self.theme.raised));p.setPen(QPen(QColor(self.theme.foreground),2));p.drawEllipse(center,r*.62,r*.62)
         a=math.radians(pose[2]-90);line(p,center.x()+math.cos(a)*r*.25,center.y()+math.sin(a)*r*.25,center.x()+math.cos(a)*r*.53,center.y()+math.sin(a)*r*.53,self.theme.activeInk if push else self.theme.foreground,3)
         if not cfg['pins']:
             p.setPen(QPen(QColor(self.theme.muted),2));p.drawLine(c+QPointF(-r*.8,r*.8),c+QPointF(r*.8,-r*.8))
@@ -207,7 +203,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         if self.content_height>487:hits.append((QRectF(1525,185,35,480),('knob_scroll',)))
         return sorted(hits,key=lambda item:(round(item[0].top()/36),item[0].left()))
     def navigate_knob(self,direction,amount=1):
-        if self.screen_test and self.screen_test.isVisible():self.screen_test.navigate(direction*amount);return
+        if self.screen_test and self.screen_test.isVisible():self.screen_test.navigate(direction);return
         if self.knob_adjust and self.knob_focus:
             action=self.knob_focus[1]
             if action[0]=='knob_menu':
@@ -220,8 +216,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         entries=self.navigation_hits()
         if not entries:return
         old=next((i for i,(r,a) in enumerate(entries) if self.knob_focus and repr(a)==repr(self.knob_focus[1])),-1)
-        origin=old if old>=0 else (-1 if direction>0 else 0)
-        i=(origin+direction*amount)%len(entries)
+        i=(old+direction*amount)%len(entries) if old>=0 else (0 if direction>0 else len(entries)-1)
         r,a=entries[i]
         if self.dropdown and not self.number_drop:
             h=self.drop_rect.height()-12
@@ -235,10 +230,8 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         if action[0] in ('knob_menu','knob_scroll','hardware_slider'):
             if self.knob_adjust and action[0]=='hardware_slider':self.system.set_level(action[1],self.display_preview.get(action[1],self.system.caps[action[1]]))
             self.knob_adjust=not self.knob_adjust;self.update();return
-        self.clear_knob_focus();self.activate(action);self.repaint()
-        matches=[(r,a) for r,a in self.navigation_hits() if a==action]
-        if matches:self.knob_focus=matches[0];self.update()
-        else:self.navigate_knob(1)
+        self.clear_knob_focus();self.activate(action)
+        QTimer.singleShot(60,lambda:self.navigate_knob(1) if self.controls.navigation else None)
     def back_knob(self):
         if self.screen_test and self.screen_test.isVisible():self.screen_test.close();return
         if self.knob_adjust:
@@ -254,7 +247,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         editor=self.editor if self.editor.isVisible() else self.search if self.overlay=='keyboard' else None
         if editor is None:return False
         if action in ('cursor.left','cursor.right'):
-            editor.setCursorPosition(max(0,min(len(editor.text()),editor.cursorPosition()+amount*(1 if action.endswith('right') else -1))));return True
+            editor.setCursorPosition(max(0,min(len(editor.text()),editor.cursorPosition()+(1 if action.endswith('right') else -1))));return True
         if action in ('value.increase','value.decrease') and editor is self.editor and (self.editor_spec or {}).get('key')!='clock':
             from interaction.numeric import digit_power,step_value,cursor_for_power
             try:
@@ -291,16 +284,9 @@ class KnobSettingsWindow(RefinedSettingsWindow):
             if key in action:self.tip=(rect,title,body);break
     def paintEvent(self,event):
         super().paintEvent(event)
-        if self.knob_focus and self.knob_focus[1][0] not in ('notice_accept','notice_close'):
+        if self.knob_focus:
             p=QPainter(self);p.setRenderHint(QPainter.RenderHint.Antialiasing);p.translate(self.offset);p.scale(self.scale,self.scale)
-            r,action=self.knob_focus
-            label=str(action[1]) if len(action)>1 else {'knob_menu':'Rotate to choose category','knob_scroll':'Rotate to scroll','close':'Close settings','search':'Search','history':'Search history'}.get(action[0],action[0].replace('_',' ').title())
-            if action[0]=='hardware_slider':
-                key=action[1];value=self.display_preview.get(key,self.system.caps.get(key,0))
-                label=f'{key.title()} : {value}%'
-            elif action[0]=='choose_setting':label=self.value_label(action[2])
-            box(p,r,self.theme.active,8)
-            text(p,r.x()+8,r.y(),r.width()-16,r.height(),label,20,self.theme.activeInk,align=Qt.AlignmentFlag.AlignCenter,literal_color=True)
+            r,action=self.knob_focus;p.setPen(QPen(QColor(self.theme.foreground),3));p.setBrush(Qt.BrushStyle.NoBrush);p.drawRoundedRect(r.adjusted(-3,-3,3,3),8,8)
             label='Rotate to adjust · press to finish' if self.knob_adjust else 'Press to choose · hold push to exit navigation'
             box(p,QRectF(662,675,875,35),self.theme.active,6)
             text(p,675,675,850,35,label,18,self.theme.activeInk,literal_color=True);p.end()
