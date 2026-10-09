@@ -185,6 +185,7 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
                 focused={'notice_close':'close','notice_accept':'accept'}.get(self.knob_focus[1][0],'')
             image=self.notifications.renderer.image(entry,width,height,focused)
             p.setOpacity(entry['alpha']);p.drawImage(QRectF(left,y,width,height),image)
+            self.notifications.renderer.paint_progress(p,entry,width,height,left,y)
             self.register(QRectF(left,y,width,height),('notice_body',entry['id']))
             for rect,action in buttons(width,height,entry['decision']):
                 self.register(rect.translated(left,y),('notice_'+action if action=='accept' else 'notice_close',entry['id']))

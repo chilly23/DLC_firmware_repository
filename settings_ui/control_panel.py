@@ -38,7 +38,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
         if self.content!='control':
             super().draw_content(p)
             if self.content=='display' and not self.route:
-                self.action_button(p,QRectF(1320,110,218,54),'Detecting…' if self.system.busy else 'Retry display',('retry_display',))
+                self.action_button(p,QRectF(1320,110,218,54),'Diagnostics',('lobby_diagnostics',))
             return
         if self.last_content!='control':
             self.route='';self.scroll=0;self.dropdown=None;self.last_content='control'
@@ -74,8 +74,7 @@ class KnobSettingsWindow(RefinedSettingsWindow):
             text(p,x+122,y+48,275,35,status,18,self.theme.muted)
             if wired:self.action_button(p,QRectF(x+122,y+88,273,48),'Configure',('knob_open',index))
         self.multiline(p,QRectF(680,514,850,54),self.controls.status,18,self.theme.muted)
-        self.action_button(p,QRectF(680,581,230,62),'Retry GPIO',('gpio_retry',))
-        self.action_button(p,QRectF(928,581,265,62),'Screen check',('screen_check',))
+        self.action_button(p,QRectF(680,581,513,62),'Diagnostics · screen, display and GPIO',('lobby_diagnostics',))
         self.action_button(p,QRectF(1211,581,315,62),'Knob guide',('knob_guide',))
     def draw_knob(self,p,rect,index):
         cfg=self.controls.store.config['knobs'][index];frame=self.controls.snapshots.get(index,{})
@@ -162,7 +161,8 @@ class KnobSettingsWindow(RefinedSettingsWindow):
     def activate(self,action):
         try:
             kind=action[0]
-            if kind=='retry_display':self.system.retry_display()
+            if kind=='lobby_diagnostics':self.system.ctl.workspace.openPage('diagnostics')
+            elif kind=='retry_display':self.system.retry_display()
             elif kind=='gpio_retry':self.controls.retry()
             elif kind=='knob_open':self.navigate('knob:'+str(action[1]))
             elif kind=='knob_enable':
