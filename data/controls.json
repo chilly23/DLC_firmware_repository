@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "chip": "auto",
+  "knobs": [
+    {
+      "name": "Knob 1",
+      "location": "Top left",
+      "enabled": true,
+      "pins": {
+        "C": 2,
+        "D": 3,
+        "encoder_a": 4,
+        "A": 17,
+        "push": 27,
+        "encoder_b": 22,
+        "B": 10
+      },
+      "target": 0,
+      "calibrated": false,
+      "directions": {
+        "up": "A",
+        "right": "D",
+        "down": "C",
+        "left": "B"
+      },
+      "push_contact": "push",
+      "released": {
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "push": 1
+      },
+      "reverse_encoder": false,
+      "transitions_per_detent": 2,
+      "switch_debounce_ms": 8,
+      "mapping": {
+        "clockwise": "value.increase",
+        "anticlockwise": "value.decrease",
+        "up": "focus.previous",
+        "down": "focus.next",
+        "left": "cursor.left",
+        "right": "cursor.right",
+        "push": "graph.lock"
+      }
+    },
+    {
+      "name": "Knob 2",
+      "location": "Bottom left",
+      "enabled": true,
+      "pins": {
+        "C": 14,
+        "B": 15,
+        "encoder_b": 18,
+        "push": 23,
+        "A": 24,
+        "encoder_a": 25,
+        "D": 8
+      },
+      "target": 1,
+      "calibrated": false,
+      "directions": {
+        "up": "A",
+        "right": "D",
+        "down": "C",
+        "left": "B"
+      },
+      "push_contact": "push",
+      "released": {
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "push": 1
+      },
+      "reverse_encoder": false,
+      "transitions_per_detent": 2,
+      "switch_debounce_ms": 8,
+      "mapping": {
+        "clockwise": "focus.next",
+        "anticlockwise": "focus.previous",
+        "up": "graph.up",
+        "down": "graph.down",
+        "left": "graph.left",
+        "right": "graph.right",
+        "push": "more.open"
+      }
+    },
+    {
+      "name": "Knob 3",
+      "location": "Top right",
+      "enabled": false,
+      "pins": {},
+      "target": 2,
+      "calibrated": false,
+      "directions": {
+        "up": "A",
+        "right": "D",
+        "down": "C",
+        "left": "B"
+      },
+      "push_contact": "push",
+      "released": {
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "push": 1
+      },
+      "reverse_encoder": false,
+      "transitions_per_detent": 2,
+      "switch_debounce_ms": 8,
+      "mapping": {
+        "clockwise": "value.increase",
+        "anticlockwise": "value.decrease",
+        "up": "focus.previous",
+        "down": "focus.next",
+        "left": "cursor.left",
+        "right": "cursor.right",
+        "push": "graph.lock"
+      }
+    },
+    {
+      "name": "Knob 4",
+      "location": "Bottom right",
+      "enabled": true,
+      "pins": {
+        "B": 26,
+        "encoder_b": 19,
+        "C": 13,
+        "D": 6,
+        "encoder_a": 5,
+        "A": 0,
+        "push": 21
+      },
+      "target": 3,
+      "calibrated": false,
+      "directions": {
+        "up": "A",
+        "right": "D",
+        "down": "C",
+        "left": "B"
+      },
+      "push_contact": "push",
+      "released": {
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "D": 1,
+        "push": 1
+      },
+      "reverse_encoder": false,
+      "transitions_per_detent": 2,
+      "switch_debounce_ms": 8,
+      "mapping": {
+        "clockwise": "value.increase",
+        "anticlockwise": "value.decrease",
+        "up": "focus.previous",
+        "down": "focus.next",
+        "left": "cursor.left",
+        "right": "cursor.right",
+        "push": "graph.lock"
+      }
+    }
+  ],
+  "wiring_revision": 3,
+  "panel": {
+    "lock": {
+      "pin": 20,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 30,
+      "calibrated": true
+    },
+    "right_emission": {
+      "pin": 12,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "left_emission": {
+      "pin": 1,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "right_shortcut": {
+      "pin": 7,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    },
+    "left_shortcut": {
+      "pin": 16,
+      "enabled": true,
+      "active_level": 0,
+      "debounce_ms": 25,
+      "calibrated": true
+    }
+  }
+}
