@@ -17,6 +17,7 @@ from .layout import (
     SEARCH_FILL,
     SEARCH_GROUP,
     SEARCH_RECT,
+    KEYBOARD_INPUT_RECT,
 )
 from .model import LABELS, ORDERS, ROOT, SettingsStore
 from .motion import WheelMotion
@@ -38,6 +39,14 @@ class SettingsWindow(QWidget):
         self.hits = []
         self.menu_hits = []
         self.pending = None
+        self.query_dirty = False
+        self.backspace_hold = QTimer(self)
+        self.backspace_hold.setSingleShot(True)
+        self.backspace_hold.setInterval(650)
+        self.backspace_hold.timeout.connect(self.clear_held_input)
+        self._touch_id = None
+        self._touch_active = False
+        self._last_touch = -float('inf')
         self.gesture = None
         self.dragged = False
         self.samples = deque(maxlen=30)
@@ -84,14 +93,18 @@ class SettingsWindow(QWidget):
             (self.width() - 1600 * self.scale) / 2,
             (self.height() - 720 * self.scale) / 2,
         )
+        self.layout_search()
+
+    def layout_search(self):
+        rect = KEYBOARD_INPUT_RECT if self.overlay == 'keyboard' else INPUT_RECT
         self.search.setGeometry(
-            round(self.offset.x() + INPUT_RECT.x() * self.scale),
-            round(self.offset.y() + INPUT_RECT.y() * self.scale),
-            round(INPUT_RECT.width() * self.scale),
-            round(INPUT_RECT.height() * self.scale),
+            round(self.offset.x() + rect.x() * self.scale),
+            round(self.offset.y() + rect.y() * self.scale),
+            round(rect.width() * self.scale),
+            round(rect.height() * self.scale),
         )
-        f = QFont("Roboto")
-        f.setPixelSize(max(10, round(17 * self.scale)))
+        f = QFont('Roboto')
+        f.setPixelSize(max(10, round((27 if self.overlay=='keyboard' else 17) * self.scale)))
         self.search.setFont(f)
 
     def point(self, local):
@@ -157,19 +170,17 @@ class SettingsWindow(QWidget):
         p.setClipRect(QRectF(0, 0, 1600, 720))
         self.hits = []
         self.menu_hits = []
-        if self.variant != 59:
-            box(p, QRectF(0, 0, 1600, 100), "#0f1410")
-            text(p, 151, 25, 220, 48, "Settings", 26, bold=True)
         self.draw_menu(p)
         self.draw_content(p)
-        close_rect = (
-            QRectF(1501, 12, 86, 82) if self.variant == 59 else QRectF(7, 6, 86, 82)
-        )
+        text(p,1344,25,145,48,'Settings',26,bold=True)
+        close_rect = QRectF(1501,12,86,82)
         box(p, close_rect, "#a92621")
         cross(p, close_rect.center().x(), close_rect.center().y(), 19)
         self.register(close_rect, ("close",))
         self.draw_search(p)
         if self.overlay == "keyboard":
+            box(p,QRectF(0,0,1600,720),'#B8000000')
+            self.hits = []
             self.keyboard.paint(p, self.register, self.search.text())
         elif self.overlay in ("history", "results"):
             self.draw_popup(p)
@@ -198,7 +209,7 @@ class SettingsWindow(QWidget):
                 text(p, 100, y - 25, 492, 50, LABELS[key], 25)
                 self.menu_hits.append((rect, i))
         else:
-            p.setClipRect(QRectF(0, 0 if self.variant == 59 else 100, 600, 720))
+            p.setClipRect(QRectF(0, 0, 600, 720))
             if self.variant == 59:
                 path = QPainterPath()
                 path.addEllipse(QRectF(-558, -206, 1120, 1120))
@@ -210,9 +221,9 @@ class SettingsWindow(QWidget):
                 line(p, 196, 309, 561, 308, "#959797", 0.8)
                 line(p, 195, 420, 561, 420, "#959797", 0.8)
             else:
-                line(p, 1, 364.5, 591, 364.5, "#999b9b", 0.8)
-                line(p, 1, 454.5, 591, 454.5, "#999b9b", 0.8)
-                p.setClipRect(QRectF(0, 151, 600, 546))
+                line(p, 1, 306, 591, 306, "#999b9b", 0.8)
+                line(p, 1, 414, 591, 414, "#999b9b", 0.8)
+                p.setClipRect(QRectF(0, 0, 600, 720))
             low = math.floor(self.motion.position) - 5
             for absolute in range(low, low + 12):
                 d = absolute - self.motion.position
@@ -226,11 +237,11 @@ class SettingsWindow(QWidget):
                     cy = self.interpolate(
                         d,
                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-                        [119, 190, 248, 319, 410, 503, 578, 648, 719],
+                        [-40, 48, 142, 246, 360, 474, 578, 672, 760],
                     )
                     cx = 54 + 33 * max(0, 1 - abs(d))
                     tx = 100 + 43 * max(0, 1 - abs(d))
-                    if cy < 115 or cy > 702:
+                    if cy < -40 or cy > 760:
                         continue
                     rect = QRectF(15, cy - 30, 572, 60 if abs(d) > 0.5 else 82)
                 else:
@@ -349,9 +360,9 @@ class SettingsWindow(QWidget):
             self.toggle(p, "Touch feedback sound", "sound", 341)
             self.choice(p, "Measurement units", "units", ["SI", "Engineering"], 433)
         elif key == "function":
-            self.toggle(p, "Laser 1 display", "laser1", 249)
-            self.toggle(p, "Laser 2 display", "laser2", 331)
-            self.toggle(p, "Graph stabilisation", "stabilisation", 413)
+            self.toggle(p, "Laser 1 emission", "laser1", 249)
+            self.toggle(p, "Laser 2 emission", "laser2", 331)
+            self.toggle(p, "Stabilise both lasers", "stabilisation", 413)
             self.choice(
                 p,
                 "Graph refresh rate",
@@ -376,7 +387,7 @@ class SettingsWindow(QWidget):
                 ("Navigate", "Tap any option to bring it into focus."),
                 ("Scroll", "Swipe up or down. A fast swipe keeps the wheel moving."),
                 ("Search", "Tap Search. Enter a term and press the blue return key."),
-                ("History", "Tap the notepad to reuse a previous search."),
+                ("History", "Tap the notepad to view or clear recent searches."),
             ]
             for i, (a, b) in enumerate(rows):
                 y = 227 + i * 102
@@ -473,13 +484,13 @@ class SettingsWindow(QWidget):
         self.register(rect, action)
 
     def draw_search(self, p):
-        box(p, SEARCH_RECT, SEARCH_FILL, 24, "#383c39")
+        box(p, SEARCH_RECT, SEARCH_FILL, 24)
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.setPen(QPen(QColor(WHITE), 1.8))
         p.drawEllipse(QRectF(814, 50, 12, 12))
         line(p, 824, 60, 829, 65, WHITE, 1.8)
         self.register(SEARCH_RECT, ("search",))
-        box(p, HISTORY_RECT, SEARCH_FILL, 24, "#383c39")
+        box(p, HISTORY_RECT, SEARCH_FILL, 24)
         p.save()
         p.translate(HISTORY_RECT.x() - 1126, 0)
         p.setBrush(Qt.BrushStyle.NoBrush)
@@ -522,7 +533,7 @@ class SettingsWindow(QWidget):
         rect = QRectF(781, 93, 402, height)
         box(p, rect, "#f0a5aaad", 28)
         text(p, 804, 108, 275, 42, title, 21, "#111617", bold=True)
-        if self.overlay == "history" and entries:
+        if self.overlay == "history":
             text(
                 p,
                 1080,
@@ -554,7 +565,8 @@ class SettingsWindow(QWidget):
                 line(p, 804, y - 4, 1160, y - 4, "#858c90", 0.7)
             label = data if action == "history_item" else data[1]
             text(p, 804, y, 350, 43, label, 21, "#111617")
-            self.register_popup(QRectF(795, y - 3, 376, 51), (action, data))
+            if self.overlay != "history":
+                self.register_popup(QRectF(795, y - 3, 376, 51), (action, data))
 
     def popup_rect(self):
         if self.overlay == "keyboard":
@@ -570,30 +582,39 @@ class SettingsWindow(QWidget):
 
     def open_search(self):
         self.overlay = "keyboard"
+        self.layout_search()
         self.search.setFocus()
         self.update()
 
     def close_overlay(self):
+        self.backspace_hold.stop()
+        if self.overlay == 'keyboard':
+            self.remember_query()
         self.overlay = None
+        self.layout_search()
         self.keyboard.pressed = None
         self.search.clearFocus()
         self.setFocus()
         self.update()
 
     def search_changed(self):
+        self.query_dirty = True
         if self.overlay is None:
             self.overlay = "keyboard"
+            self.layout_search()
         self.update()
 
     def submit_search(self):
         query = self.search.text().strip()
         self.store.remember(query)
+        self.query_dirty = False
         matches = self.store.search(query)
         if query and len(matches) == 1:
             self.select(self.order.index(matches[0][0]))
             self.close_overlay()
         else:
             self.overlay = "results"
+            self.layout_search()
             self.search.clearFocus()
             self.update()
 
@@ -604,29 +625,44 @@ class SettingsWindow(QWidget):
         elif kind == "search":
             self.open_search()
         elif kind == "history":
+            if self.overlay == 'keyboard':self.remember_query()
             self.overlay = None if self.overlay == "history" else "history"
+            self.layout_search()
             self.search.clearFocus()
         elif kind == "clear":
             self.search.clear()
             self.open_search()
         elif kind == "clear_history":
             self.store.history = []
-            self.store.save()
+            self.query_dirty = False
+            self.persist()
         elif kind == "history_item":
-            self.search.setText(action[1])
-            self.submit_search()
+            return  # History is a read-only viewer; only Clear changes it.
         elif kind == "result":
             self.store.remember(self.search.text())
             self.select(self.order.index(action[1][0]))
             self.close_overlay()
         elif kind == "suggest":
+            cursor = self.search.cursorPosition()
+            content = self.search.text()
+            start = cursor
+            while start > 0 and content[start-1].isalnum():
+                start -= 1
+            end = cursor
+            while end < len(content) and content[end].isalnum():
+                end += 1
+            self.search.setSelection(start, end-start)
             self.search.insert(action[1] + " ")
         elif kind == "key":
             key = action[1]
             if key == "shift":
                 self.keyboard.shift = not self.keyboard.shift
-            elif key == "mode":
-                self.keyboard.numeric = not self.keyboard.numeric
+            elif key == "close":
+                self.close_overlay()
+            elif key == "left":
+                self.search.setCursorPosition(max(0,self.search.cursorPosition()-1))
+            elif key == "right":
+                self.search.setCursorPosition(min(len(self.search.text()),self.search.cursorPosition()+1))
             elif key == "backspace":
                 self.search.backspace()
             elif key == "space":
@@ -669,6 +705,19 @@ class SettingsWindow(QWidget):
         if not self.store.save():
             self.notify(self.store.error)
 
+    def remember_query(self):
+        if self.query_dirty:
+            self.store.remember(self.search.text())
+            self.query_dirty = False
+            if self.store.error:self.notify(self.store.error)
+
+    def clear_held_input(self):
+        if self.overlay == 'keyboard' and self.pending and self.pending[1] == ('key','backspace'):
+            self.search.clear()
+            self.pending = None  # Release must not delete a second time.
+            self.keyboard.pressed = None
+            self.update()
+
     def eventFilter(self, obj, event):
         if obj is self.search:
             if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.TouchBegin):
@@ -682,13 +731,14 @@ class SettingsWindow(QWidget):
         return super().eventFilter(obj, event)
 
     def pointer_down(self, pt):
+        self.backspace_hold.stop()
         self.pending = None
         self.gesture = None
         self.dragged = False
         if (
             self.overlay
             and not self.popup_rect().contains(pt)
-            and not SEARCH_GROUP.contains(pt)
+            and (self.overlay=='keyboard' or not SEARCH_GROUP.contains(pt))
         ):
             self.close_overlay()
             return
@@ -697,13 +747,16 @@ class SettingsWindow(QWidget):
                 self.pending = (rect, action)
                 if action[0] == "key":
                     self.keyboard.pressed = action[1]
+                    if action[1] == 'backspace':self.backspace_hold.start()
                     self.update()
                 if action[0] == "slider":
                     self.gesture = "slider"
                     self.slider_key = action[1]
                     self.change_slider(pt)
                 return
-        if pt.x() < 633 and (self.variant == 59 or pt.y() >= 100):
+        if self.overlay == 'keyboard':
+            return  # Empty spaces between keys must not scroll the settings wheel.
+        if pt.x() < 633 and (self.variant != 32 or pt.y() >= 100):
             self.gesture = "menu"
             self.start = pt
             self.previous = pt
@@ -724,6 +777,8 @@ class SettingsWindow(QWidget):
         self.update()
 
     def pointer_move(self, pt):
+        if self.pending and self.pending[1] == ('key','backspace') and not self.pending[0].contains(pt):
+            self.backspace_hold.stop()
         if self.gesture == "slider":
             self.change_slider(pt)
             return
@@ -737,13 +792,14 @@ class SettingsWindow(QWidget):
                 b = math.atan2(pt.y() - 354, pt.x() + 50)
                 delta = -math.atan2(math.sin(b - a), math.cos(b - a)) / 0.32
             else:
-                delta = -(pt.y() - self.previous.y()) / 83
+                delta = -(pt.y() - self.previous.y()) / 104
             self.motion.drag(delta)
             self.samples.append((time.monotonic(), self.motion.position))
             self.update()
         self.previous = pt
 
     def pointer_up(self, pt):
+        self.backspace_hold.stop()
         if self.gesture == "slider":
             self.persist()
         elif self.gesture == "menu":
@@ -771,19 +827,34 @@ class SettingsWindow(QWidget):
         self.update()
 
     def mousePressEvent(self, event):
+        if self.ignore_compatibility_mouse(event):
+            event.accept()
+            return
         if event.button() == Qt.MouseButton.LeftButton:
             self.pointer_down(self.point(event.position()))
             event.accept()
 
     def mouseMoveEvent(self, event):
+        if self.ignore_compatibility_mouse(event):
+            event.accept()
+            return
         if event.buttons() & Qt.MouseButton.LeftButton:
             self.pointer_move(self.point(event.position()))
             event.accept()
 
     def mouseReleaseEvent(self, event):
+        if self.ignore_compatibility_mouse(event):
+            event.accept()
+            return
         if event.button() == Qt.MouseButton.LeftButton:
             self.pointer_up(self.point(event.position()))
             event.accept()
+
+    def ignore_compatibility_mouse(self, event):
+        return self._touch_active or (
+            event.source() != Qt.MouseEventSource.MouseEventNotSynthesized
+            and time.monotonic() - self._last_touch < 0.8
+        )
 
     def event(self, event):
         if event.type() in (
@@ -791,20 +862,32 @@ class SettingsWindow(QWidget):
             QEvent.Type.TouchUpdate,
             QEvent.Type.TouchEnd,
         ):
-            if event.points():
-                pt = self.point(event.points()[0].position())
-                if event.type() == QEvent.Type.TouchBegin:
-                    self.pointer_down(pt)
-                elif event.type() == QEvent.Type.TouchUpdate:
-                    self.pointer_move(pt)
-                else:
-                    self.pointer_up(pt)
+            self._last_touch = time.monotonic()
+            if event.type() == QEvent.Type.TouchBegin and event.points():
+                self._touch_id = event.points()[0].id()
+                self._touch_active = True
+                self.pointer_down(self.point(event.points()[0].position()))
+            elif self._touch_active:
+                point = next((p for p in event.points() if p.id() == self._touch_id), None)
+                if point is not None:
+                    pt = self.point(point.position())
+                    if event.type() == QEvent.Type.TouchEnd or point.state() == point.State.Released:
+                        self._touch_active = False
+                        self._touch_id = None
+                        self.pointer_up(pt)
+                    else:
+                        self.pointer_move(pt)
             event.accept()
             return True
         if event.type() == QEvent.Type.TouchCancel:
+            self.backspace_hold.stop()
+            self._touch_active = False
+            self._touch_id = None
+            self._last_touch = time.monotonic()
             self.motion.release(0)
             self.gesture = None
             self.pending = None
+            self.keyboard.pressed = None
             self.update()
             event.accept()
             return True
@@ -814,7 +897,7 @@ class SettingsWindow(QWidget):
         pt = self.point(event.position())
         if pt.x() < 633 and self.variant != 32 and not self.overlay:
             delta = (
-                event.pixelDelta().y() / 83
+                event.pixelDelta().y() / 104
                 if not event.pixelDelta().isNull()
                 else event.angleDelta().y() / 120
             )

@@ -27,8 +27,8 @@ DEFAULTS = {
     "units": "SI",
     "laser1": True,
     "laser2": True,
-    "stabilisation": True,
-    "scan_rate": "10 Hz",
+    "stabilisation": False,
+    "scan_rate": "20 Hz",
     "logging": True,
     "retention": "30 days",
 }
