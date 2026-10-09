@@ -20,9 +20,9 @@ Rectangle {
     }
     Text { x: 75; y: 80; text: "Spectroscopy"; font.pixelSize: 24; color: "#D9D9D9" }
     Text { x: 21; y: 111; text: "V"; font.pixelSize: 24; color: "#D9D9D9" }
-    PlotView { id: absorption; objectName: "fullscreenAbsorption"; x: 19; y: 100; width: 1564; height: 377; large: true; channelIndex: full.channelIndex; onRangeChanged: function(lo,hi) { error.setRange(lo,hi) } }
+    PlotView { id: absorption; objectName: "fullscreenAbsorption"; x: 19; y: 100; width: 1564; height: 377; large: true; canMove: false; channelIndex: full.channelIndex; onRangeChanged: function(lo,hi) { error.setRange(lo,hi) } }
     Text { x: 76; y: 487; text: "Error"; font.pixelSize: 24; color: "#D9D9D9" }
     Text { x: 21; y: 523; text: "V"; font.pixelSize: 24; color: "#D9D9D9" }
-    PlotView { id: error; objectName: "fullscreenError"; x: 19; y: 509; width: 1564; height: 184; large: true; errorPlot: true; channelIndex: full.channelIndex; onRangeChanged: function(lo,hi) { absorption.setRange(lo,hi) } }
+    PlotView { id: error; objectName: "fullscreenError"; x: 19; y: 509; width: 1564; height: 184; large: true; canMove: false; errorPlot: true; channelIndex: full.channelIndex; onRangeChanged: function(lo,hi) { absorption.setRange(lo,hi) } }
     Text { x: 1440; y: 691; text: "Piezo (V)"; font.pixelSize: 22; color: "#D9D9D9" }
 }

@@ -10,6 +10,8 @@ Canvas {
     onActiveChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
+    onAvailableChanged: if(available) requestPaint()
+    onVisibleChanged: if(visible) requestPaint()
     onPaint: {
         let c = getContext("2d"); c.reset();
         c.scale(width/64, height/64); c.strokeStyle=ink; c.fillStyle=ink;
@@ -30,7 +32,11 @@ Canvas {
             let points=[]; for(let i=0;i<32;i++){let a=i*Math.PI/16;let r=(i%4===0||i%4===3)?27:21;points.push([32+Math.cos(a)*r,32+Math.sin(a)*r])}points.push(points[0]);line(points);c.beginPath();c.arc(32,32,10,0,Math.PI*2);c.stroke()
         } else if(kind === "signals" || kind === "stabilise") {
             c.beginPath();c.moveTo(3,32);c.lineTo(10,32);c.bezierCurveTo(22,32,18,8,27,12);c.bezierCurveTo(36,16,31,53,42,49);c.bezierCurveTo(49,46,46,31,61,32);c.stroke();
-            if(kind === "stabilise") {c.fillStyle="#BDC0BB";c.fillRect(37,30,24,28);c.strokeStyle="#151A16";c.strokeRect(38,39,21,21);c.beginPath();c.arc(48.5,39,7,Math.PI,0);c.stroke();line([[49,47],[49,53]])}
+            if(kind === "stabilise") {c.fillStyle=ink.toString()==="#101610"?"#BDC0BB":"#0E140F";c.fillRect(37,30,24,28);c.strokeStyle=ink;c.strokeRect(38,39,21,21);c.beginPath();c.arc(48.5,39,7,Math.PI,0);c.stroke();line([[49,47],[49,53]])}
+        } else if(kind === "drag") {
+            c.strokeRect(6,25,28,30);c.setLineDash([4,4]);c.strokeRect(25,5,28,30);c.setLineDash([]);
+            line([[38,17],[55,17]]);line([[47,8],[47,26]]);
+            line([[32,49],[28,42],[30,39],[36,43],[41,54],[42,45],[46,45],[49,49],[51,48],[56,54],[60,62],[48,64],[39,60],[31,58]])
         } else if(kind === "diagnostics") {line([[3,33],[18,33],[26,8],[37,56],[44,23],[49,33],[61,33]])}
         else if(kind === "backspace") {line([[22,18],[55,18],[55,46],[22,46],[7,32],[22,18]]);line([[31,25],[44,39]]);line([[44,25],[31,39]])}
         else if(kind === "enter") {line([[50,14],[50,37],[13,37]]);line([[26,25],[13,37],[26,48]])}

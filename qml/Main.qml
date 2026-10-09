@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: "#0E140F"; title: "NEXATOM · mock1"
+    visible: true; color: "#0E140F"; title: "NEXATOM · v1.2"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -26,6 +26,9 @@ Window {
         window.fullscreenSide=-1
     }
     function showNotice(message) { notice=message; noticeTimer.restart() }
+    function beginMove(side,x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.begin(side,side===0?ctl.leftChannel:ctl.rightChannel,p.x,p.y)}
+    function updateMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.move(p.x,p.y)}
+    function finishMove(x,y) {let p=screen.mapFromItem(null,x,y);graphDrag.finish(p.x,p.y)}
     Connections { target: ctl; function onChanged() { window.revision++ } }
     Item {
         id: screen; objectName: "screen"
@@ -42,6 +45,11 @@ Window {
                 onEditRequested: function(index,key,side,bottom) {window.openEditor(index,key,side,bottom)}
                 onFullscreenRequested: function(side) {window.openFullscreen(side)}
                 onMoreRequested: function(side) {radial.open(side,ctl.leftChannel)}
+                onSelectorRequested: function(i,k,s,b,m) {selector.open(i,k,s,b,m)}
+                onGraphMoveStarted: function(s,x,y) {window.beginMove(s,x,y)}
+                onGraphMoveUpdated: function(x,y) {window.updateMove(x,y)}
+                onGraphMoveFinished: function(x,y) {window.finishMove(x,y)}
+                onGraphMoveCancelled: graphDrag.visible=false
             }
             ChannelPane {
                 id: rightPane
@@ -49,8 +57,13 @@ Window {
                 onEditRequested: function(index,key,side,bottom) {window.openEditor(index,key,side,bottom)}
                 onFullscreenRequested: function(side) {window.openFullscreen(side)}
                 onMoreRequested: function(side) {radial.open(side,ctl.rightChannel)}
+                onSelectorRequested: function(i,k,s,b,m) {selector.open(i,k,s,b,m)}
+                onGraphMoveStarted: function(s,x,y) {window.beginMove(s,x,y)}
+                onGraphMoveUpdated: function(x,y) {window.updateMove(x,y)}
+                onGraphMoveFinished: function(x,y) {window.finishMove(x,y)}
+                onGraphMoveCancelled: graphDrag.visible=false
             }
-            Rectangle { x: 800; width: 4; height: 720; color: "#4A4D47" }
+            Rectangle { objectName: "divider"; x: 800; width: 4; height: 605; color: "#4A4D47" }
         }
         FullscreenView {
             id: fullscreenView
@@ -59,6 +72,8 @@ Window {
             revision: window.revision
             onClosed: window.closeFullscreen()
         }
+        GraphDrag {id:graphDrag;objectName:"graphDrag";anchors.fill:parent;visible:false;revision:window.revision}
+        ModuleSelector {id:selector;objectName:"selector";anchors.fill:parent;visible:false;onClosed:visible=false}
         NumberPad { id: keypad; objectName: "keypad"; anchors.fill: parent; visible: false; onClosed: visible=false }
         RadialMenu {
             id: radial; objectName: "radialMenu"; anchors.fill: parent; visible: false
@@ -66,7 +81,7 @@ Window {
             onChosen: function(option,index,side) {
                 visible=false
                 if(option==="Signals") ctl.toggleError(index)
-                else if(option==="Settings") window.openEditor(index,ctl.channel(index).top,side,false)
+                else if(option==="Settings") ctl.openSettings()
                 else if(option==="Display") window.openFullscreen(side)
                 else {let c=ctl.channel(index);window.showNotice("Laser "+c.number+" · Mock stream 20 Hz · "+(c.locked?"Locked":"Scanning")+" · "+(c.stabilised?"Stabilised":"Live"))}
             }

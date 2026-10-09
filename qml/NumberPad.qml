@@ -6,8 +6,8 @@ Item {
     property string fieldKey: "current"
     property int side: 0
     property bool lower: false
-    property string draft: ""
-    property int cursor: 0
+    property alias draft: editor.text
+    property alias cursor: editor.cursorPosition
     property bool replaceDraft: true
     property string errorMessage: ""
     property var spec: ctl.parameter(fieldKey)
@@ -19,6 +19,7 @@ Item {
         acceptedValue=ctl.channel(index).values[key]
         draft=Number(acceptedValue).toFixed(spec.decimals)
         cursor=draft.length; replaceDraft=true; errorMessage=""; visible=true
+        editor.forceActiveFocus()
     }
     function key(value) {
         errorMessage=""
@@ -33,18 +34,19 @@ Item {
         }
         if(value === "backspace") {
             if(replaceDraft) { draft="";cursor=0;replaceDraft=false }
-            else if(cursor>0) { draft=draft.slice(0,cursor-1)+draft.slice(cursor);cursor-- }
+            else if(cursor>0) { let p=cursor;draft=draft.slice(0,p-1)+draft.slice(p);cursor=p-1 }
             return
         }
         if(value === "-") {
             replaceDraft=false
-            if(draft.startsWith("-")) {draft=draft.slice(1);cursor=Math.max(0,cursor-1)}
-            else {draft="-"+draft;cursor++}
+            let p=cursor
+            if(draft.startsWith("-")) {draft=draft.slice(1);cursor=Math.max(0,p-1)}
+            else {draft="-"+draft;cursor=p+1}
             return
         }
         if(replaceDraft) {draft="";cursor=0;replaceDraft=false}
         if(draft.length>=14 || (value === "." && draft.indexOf(".")>=0)) return
-        draft=draft.slice(0,cursor)+value+draft.slice(cursor);cursor++
+        let p=cursor;draft=draft.slice(0,p)+value+draft.slice(p);cursor=p+1
     }
 
     Rectangle { anchors.fill: parent; color: "#000000"; opacity: .76 }
@@ -59,7 +61,15 @@ Item {
         MouseArea { anchors.fill: parent } // Modal surface consumes taps between keys.
         Rectangle {
             x: 5; y: 5; width: 625; height: 70; color: "#000000"
-            Text { objectName: "keypadDraft"; x: 12; y: 7; text: pad.draft; color: "#D9D9D9"; font.pixelSize: 34 }
+            TextInput {
+                id: editor; objectName: "keypadDraft"; x: 12; y: 7; width: 530; height: 40
+                color: "#D9D9D9"; font.pixelSize: 34; clip: true; selectByMouse: true
+                cursorVisible: pad.visible; maximumLength: 18; inputMethodHints: Qt.ImhFormattedNumbersOnly
+                onTextEdited: pad.replaceDraft=false
+                Keys.onReturnPressed: pad.key("enter")
+                Keys.onEnterPressed: pad.key("enter")
+                Keys.onEscapePressed: pad.closed()
+            }
             Rectangle { x: 13; y: 46; width: 530; height: 1; color: "#A5AAA3" }
             Text { x: 550; y: 9; text: pad.cursor + "/" + pad.draft.length; font.pixelSize: 32; color: "#D9D9D9" }
             Text { x: 13; y: 49; text: pad.errorMessage; color: "#FF9991"; font.pixelSize: 16 }
