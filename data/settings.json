@@ -1,6 +1,6 @@
 {
   "values": {
-    "brightness": 61,
+    "brightness": 80,
     "animations": true,
     "timeout": "5 minutes",
     "sound": false,
@@ -13,7 +13,5 @@
     "logging": true,
     "retention": "30 days"
   },
-  "history": [
-    "bright"
-  ]
+  "history": []
 }
