@@ -21,9 +21,9 @@ class DecoderTests(unittest.TestCase):
     def test_exact_unique_bcm_pins(self):
         self.assertEqual(PIN_MAPS[0],dict(C=2,D=3,encoder_a=4,A=17,push=27,encoder_b=22,B=10))
         self.assertEqual(PIN_MAPS[1],dict(C=14,B=15,encoder_b=18,push=23,A=24,encoder_a=25,D=8))
-        self.assertEqual(PIN_MAPS[3],dict(B=26,encoder_b=19,C=13,D=6,encoder_a=5,A=0,push=21))
+        self.assertEqual(PIN_MAPS[2],dict(B=26,encoder_b=19,C=13,D=6,encoder_a=5,A=0,push=21))
         pins=[p for k in PIN_MAPS for p in k.values()];self.assertEqual(len(set(pins)),21)
-        self.assertFalse(DEFAULTS['knobs'][2]['enabled']);self.assertEqual(PIN_MAPS[2],{});validate(DEFAULTS)
+        self.assertFalse(DEFAULTS['knobs'][3]['enabled']);validate(DEFAULTS)
     def test_config_rejects_duplicate_lines_and_unknown_commands(self):
         cfg=deepcopy(DEFAULTS);cfg['knobs'][1]['pins']['C']=2
         with self.assertRaises(ValueError):validate(cfg)
@@ -58,7 +58,7 @@ class CalibrationTests(unittest.TestCase):
     def test_remap_push_and_reversed_encoder_transactionally(self):
         original=deepcopy(DEFAULTS['knobs'][0]);cal=Calibration(0,original);levels=idle();clock=1.;count=0
         cal.feed(levels,count,clock);self.assertFalse(cal.next(1.1));self.assertTrue(cal.next(1.4))
-        for contact in ('C','D','B','push','A'):
+        for contact in ('D','B','push','A','C'):
             clock+=1;levels[contact]=0;cal.feed(levels,count,clock);cal.feed(levels,count,clock+.05)
             self.assertEqual(cal.candidate,contact)
             levels[contact]=1;cal.feed(levels,count,clock+.1);cal.feed(levels,count,clock+.16)
@@ -70,8 +70,8 @@ class CalibrationTests(unittest.TestCase):
         cfg=deepcopy(DEFAULTS);cfg['knobs'][0]=result;validate(cfg)
     def test_duplicate_contact_and_same_rotation_rejected(self):
         cal=Calibration(0,DEFAULTS['knobs'][0]);cal.feed(idle(),0,0);cal.next(1)
-        cal.contacts={'push':'C','up':'A'};cal.stage=3;v=idle();v['A']=0;cal.feed(v,0,2);cal.feed(v,0,2.1)
-        self.assertIn('already assigned',cal.error);self.assertEqual(cal.stage,3)
+        cal.contacts={'up':'A'};cal.stage=2;v=idle();v['A']=0;cal.feed(v,0,2);cal.feed(v,0,2.1)
+        self.assertIn('already assigned',cal.error);self.assertEqual(cal.stage,2)
         cal.stage=7;cal.cw_sign=1;cal.rotation=3;self.assertFalse(cal.next(3));self.assertEqual(cal.stage,7)
         with self.assertRaises(ValueError):cal.result()
     def test_persistence_and_cancel_preserve_previous(self):

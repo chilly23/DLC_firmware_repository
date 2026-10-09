@@ -37,9 +37,6 @@ if __name__=='__main__':
         sw.repaint()
         return next((r,a) for r,a in reversed(sw.hits) if a[:len(prefix)]==prefix)
     def tap(prefix):
-        # This suite tests the form controls; stacked-notice hit handling has
-        # its own integration suite. Close prior feedback before targeting them.
-        while ctl.notifications.cards:ctl.notifications.dismissId(ctl.notifications.cards[0]['id'])
         r,a=hit(prefix);QTest.mouseClick(sw,Qt.LeftButton,Qt.NoModifier,pos(r.center()));QTest.qWait(45)
     def item(name):
         stack=[home.contentItem()]
