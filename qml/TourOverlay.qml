@@ -2,6 +2,7 @@ import QtQuick
 
 Item {
     id: guide
+    objectName:"tourOverlay"
     visible:systemSettings.tourIndex>=0 && !info.section
     property var info:systemSettings.tour
     property real fx:info.rect[0]

@@ -50,6 +50,9 @@ Item {
 
         Flickable {
             id: scroller
+            property string navLabel:"Scroll alarms and history"
+            property string navKind:"slider"
+            function stepFromKnob(delta){contentY=Math.max(0,Math.min(contentHeight-height,contentY+delta*60))}
             x: 0; y: 92; width: parent.width; height: 524
             contentWidth: width; contentHeight: column.height + 26
             clip: true; boundsBehavior: Flickable.StopAtBounds
@@ -69,6 +72,7 @@ Item {
                     Text { x: 20; y: 45; text: config.enabled ? "Threshold evaluation is active" : "Disabled · traces continue normally"; color: theme.muted; font.family: theme.fontFamily; font.pixelSize: theme.fontSize(16) }
                     Rectangle {
                         x: 582; y: 18; width: 82; height: 44; radius: 22
+                        property string navLabel:"Alarm monitoring"
                         color: config.enabled ? theme.accent : "#4B554C"
                         Behavior on color { ColorAnimation { duration: 160 } }
                         Rectangle {

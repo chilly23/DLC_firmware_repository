@@ -6,6 +6,7 @@ TouchButton {
     property string label: ""
     property string symbol: ""
     property bool activeChoice: false
+    navLabel:label
     tipInfo:theme.tipFor(symbol)
     normalColor: activeChoice ? theme.accent : theme.raised
     ink: activeChoice ? theme.accentInk : theme.foreground

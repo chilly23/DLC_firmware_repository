@@ -5,6 +5,7 @@ TouchButton {
     property string label: ""
     property string symbol: ""
     property bool activeChoice: false
+    navLabel:label
     tipInfo:theme.tipFor(symbol)
     normalColor:theme.raised;radius:12
     Text {x:20;anchors.verticalCenter:parent.verticalCenter;text:theme.translate(theme.language,control.label);color:theme.foreground;font.family:theme.fontFamily;font.pixelSize:theme.fontSize(24)}

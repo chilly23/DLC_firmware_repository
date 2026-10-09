@@ -2,6 +2,9 @@ import QtQuick
 
 Rectangle {
     id: control
+    property string navLabel:"Chart height ratio"
+    property string navKind:"slider"
+    function stepFromKnob(delta){moved(Math.max(minimum,Math.min(maximum,value+delta)))}
     property real value: 50
     property real minimum: 0
     property real maximum: 100

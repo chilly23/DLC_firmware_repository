@@ -13,11 +13,12 @@ Rectangle {
     signal signalsRequested()
     function viewRange() { return charts.viewRange() }
     function setViewRange(lo,hi) { charts.setViewRange(lo,hi) }
+    function nudge(action,amount) { charts.nudge(action,amount) }
     Text { font.family:theme.fontFamily; opacity:full.idleOpacity;x: 27; y: 21; text: "Laser " + full.channel.number; font.pixelSize: theme.fontSize(30); color: theme.foreground }
     Rectangle { x: 178; y: 16; width: 2; height: 47; color: theme.foreground }
     Text { font.family:theme.fontFamily; x: 214; y: 24; text: full.channel.status.replace(";", " ·"); font.pixelSize: theme.fontSize(26); color: full.channel.emission?theme.foreground:"#7E877F" }
     TouchButton {
-        objectName: "exitFullscreen"; x: 1330; y: 10; width: 246; height: 57; radius: 6; border.width: 1; border.color: theme.foreground
+        objectName: "exitFullscreen"; navLabel:"Exit fullscreen"; x: 1330; y: 10; width: 246; height: 57; radius: 6; border.width: 1; border.color: theme.foreground
         Icon { x: 13; y: 13; width: 32; height: 32; kind: "fullscreen" }
         Text { font.family:theme.fontFamily; x: 60; y: 13; text:theme.translate(theme.language,"Exit fullscreen"); color: theme.foreground; font.pixelSize: theme.fontSize(24) }
         onClicked: full.closed()

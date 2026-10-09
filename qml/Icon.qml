@@ -5,6 +5,7 @@ Canvas {
     property string kind: "lock"
     property color ink: theme.foreground
     property bool active: false
+    property bool shared: ["control","alarm","knob","calibrate","screencheck","diagnostics","notifications"].indexOf(kind)>=0
     property real strokeWidth: 2.2
     onKindChanged: requestPaint()
     onInkChanged: requestPaint()
@@ -14,9 +15,10 @@ Canvas {
     onAvailableChanged: if(available) requestPaint()
     onVisibleChanged: if(visible) requestPaint()
     Image {anchors.fill:parent;visible:icon.kind==="drag";source:visible?"../assets/dragndrop-white.png":"";fillMode:Image.PreserveAspectFit;smooth:true}
+    Image {anchors.fill:parent;visible:icon.shared;source:visible?"image://outline/"+icon.kind+"/"+icon.ink.toString().replace("#",""):"";sourceSize.width:Math.ceil(width*2);sourceSize.height:Math.ceil(height*2);smooth:true}
     onPaint: {
         let c = getContext("2d"); c.reset();
-        if(kind === "drag") return
+        if(kind === "drag" || shared) return
         c.scale(width/64, height/64); c.strokeStyle=ink; c.fillStyle=ink;
         c.lineWidth=strokeWidth*64/Math.max(1,Math.min(width,height)); c.lineCap="round"; c.lineJoin="round";
         function line(points) {c.beginPath(); c.moveTo(points[0][0],points[0][1]); for(let i=1;i<points.length;i++) c.lineTo(points[i][0],points[i][1]); c.stroke()}

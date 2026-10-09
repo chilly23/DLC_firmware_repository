@@ -13,6 +13,8 @@ Rectangle {
     signal clicked()
     signal held()
     property bool holdEnabled: false
+    property bool navEnabled:true
+    property string navLabel:caption||text||iconName
     property var tipInfo:theme.tipFor(iconName)
     property string tipTitle:tipInfo.title
     property string tipBody:tipInfo.body

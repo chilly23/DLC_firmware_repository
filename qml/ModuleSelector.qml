@@ -54,7 +54,7 @@ Item {
                 c.lineTo(width, height);
                 c.lineTo(0, height);
                 c.closePath();
-                c.fillStyle = theme.surface;
+                c.fillStyle = theme.light ? theme.surface : "#040504";
                 c.fill();
                 c.strokeStyle = "#999C98";
                 c.lineWidth = 2;
@@ -82,7 +82,7 @@ Item {
                     required property int index
                     width: 117
                     height: 122
-                    color: menu.selectedModule === modelData ? theme.raised : theme.surface
+                    color: menu.selectedModule === modelData ? (theme.light ? theme.raised : "#404040") : (theme.light ? theme.surface : "#151515")
                     Text { font.family:theme.fontFamily;
                         x: 18
                         y: 43
@@ -99,6 +99,7 @@ Item {
                     }
                     MouseArea {
                         objectName: "module" + modelData
+                        property string navLabel: "Select " + modelData
                         anchors.fill: parent
                         onClicked: {
                             menu.selectedModule = modelData;
@@ -119,7 +120,7 @@ Item {
                     required property var modelData
                     width: 382
                     height: 68
-                    color: menu.selectedField === modelData.key ? theme.raised : theme.surface
+                    color: menu.selectedField === modelData.key ? (theme.light ? theme.raised : "#404040") : (theme.light ? theme.surface : "#151515")
                     Text { font.family:theme.fontFamily;
                         x: 26
                         y: 16
@@ -141,6 +142,7 @@ Item {
                     }
                     MouseArea {
                         objectName: "field" + modelData.key
+                        property string navLabel: modelData.label
                         anchors.fill: parent
                         onClicked: {
                             ctl.selectField(menu.channelIndex, menu.lower, modelData.key);
