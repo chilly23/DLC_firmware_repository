@@ -40,25 +40,36 @@ def default_knob(index):
                 released=dict.fromkeys(CONTACTS,1),reverse_encoder=False,transitions_per_detent=2,
                 switch_debounce_ms=8,mapping=mapping)
 
-DEFAULTS=dict(schema=1,wiring_revision=2,chip='auto',knobs=[default_knob(i) for i in range(4)],panel=deepcopy(PANEL_DEFAULTS))
+DEFAULTS=dict(schema=1,wiring_revision=3,chip='auto',knobs=[default_knob(i) for i in range(4)],panel=deepcopy(PANEL_DEFAULTS))
 
 def migrate_wiring(config):
-    """Move only the original stock Knob 3 wiring to the replacement Knob 4.
+    """Upgrade stock wiring without discarding calibration or custom assignments.
 
     Custom pin layouts are left intact. Knobs 1/2 keep their calibration and
     shortcuts. The replacement knob must be calibrated as a new physical unit.
+    Revision 3 moves the disabled stock left shortcut from GPIO8 to GPIO16.
     """
     cfg=deepcopy(config)
+    revision=cfg.get('wiring_revision',1)
+    if revision<2:
+        old,new=cfg['knobs'][2:4]
+        if old['pins']==PIN_MAPS[3] and not new['pins']:
+            replacement=default_knob(3)
+            for key in ('mapping','transitions_per_detent','switch_debounce_ms'):
+                replacement[key]=deepcopy(old[key])
+            replacement['target']=3 if old['target']==2 else old['target']
+            cfg['knobs'][2]=default_knob(2);cfg['knobs'][3]=replacement
+    new_panel='panel' not in cfg
     cfg.setdefault('panel',deepcopy(PANEL_DEFAULTS))
-    if cfg.get('wiring_revision',1)>=2:return validate(cfg)
-    old,new=cfg['knobs'][2:4]
-    if old['pins']==PIN_MAPS[3] and not new['pins']:
-        replacement=default_knob(3)
-        for key in ('mapping','transitions_per_detent','switch_debounce_ms'):
-            replacement[key]=deepcopy(old[key])
-        replacement['target']=3 if old['target']==2 else old['target']
-        cfg['knobs'][2]=default_knob(2);cfg['knobs'][3]=replacement
-    cfg['wiring_revision']=2
+    if revision<3:
+        left=cfg['panel'].get('left_shortcut')
+        used={p for knob in cfg['knobs'] for p in knob['pins'].values()}
+        used.update(c['pin'] for key,c in cfg['panel'].items() if key!='left_shortcut' and c['enabled'])
+        if left and left['pin']==8 and not left['enabled'] and not left.get('calibrated') and 16 not in used:
+            left.update(pin=16,enabled=True,active_level=0,calibrated=True)
+        elif new_panel and left and 16 in used:
+            left['enabled']=False
+    cfg['wiring_revision']=max(revision,3)
     return validate(cfg)
 
 def validate(config):

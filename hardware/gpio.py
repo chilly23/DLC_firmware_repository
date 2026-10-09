@@ -9,7 +9,7 @@ from .panel import PanelDecoder
 
 def gpio_module():
     import gpiod
-    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.10 Pi launcher setup.')
+    if not hasattr(gpiod,'request_lines'):raise RuntimeError('libgpiod Python v2 is required. Run the v1.11 Pi launcher setup.')
     return gpiod
 
 def discover(gpiod):
