@@ -48,7 +48,7 @@ try:
     check('Sector selection wraps and preserves every knob step',radial.property('targetPosition')==12 and radial.property('selectedIndex')==0)
     shot('more-left');knobs.dispatch(3,'clockwise',2)
     check('Opposite-side knob cannot move left wheel',radial.property('targetPosition')==12)
-    knobs.dispatch(1,'push');QTest.qWait(820);check('Wheel highlight opens Alarms',item('alarmPanel').isVisible())
+    knobs.dispatch(1,'right');QTest.qWait(820);check('Joystick right opens the highlighted Alarms',item('alarmPanel').isVisible())
     knobs.dispatch(1,'clockwise');check('Same knob navigates opened panel',nav.target is not None)
     knobs.dispatch(1,'left');nav.clear_focus()
     signals=item('signalsPanel');signals.open(0,0);tap('tabYAxis');QTest.qWait(280);tap('scaleInput')

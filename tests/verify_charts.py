@@ -35,6 +35,7 @@ def tap(name):
 def shot(name):
     QTest.qWait(100);check('Capture '+name,w.grabWindow().save(str(shots/(name+'.png'))))
 def drag_signal(name,end):
+    while ctl.notifications.cards:ctl.notifications.dismissId(ctl.notifications.cards[0]['id'])
     start=center(name)
     QTest.mousePress(w,Qt.MouseButton.LeftButton,Qt.KeyboardModifier.NoModifier,start);QTest.qWait(650)
     check('Long press opens drag overlay',item('graphDrag').isVisible())
