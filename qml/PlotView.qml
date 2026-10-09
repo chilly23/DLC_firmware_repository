@@ -7,8 +7,6 @@ Item {
     property bool errorPlot: false
     property bool large: false
     property bool canMove: true
-    property bool combined: false
-    property bool bottomAxis: errorPlot
     property alias interactionLocked: plot.interactionLocked
     property alias xMinimum: plot.xMinimum
     property alias xMaximum: plot.xMaximum
@@ -22,7 +20,6 @@ Item {
     SpectrumPlot {
         id: plot; anchors.fill: parent; objectName: view.objectName + "Renderer"
         channelIndex: view.channelIndex; errorPlot: view.errorPlot; large: view.large
-        combined: view.combined; bottomAxis: view.bottomAxis
         onChanged: view.rangeChanged(xMinimum, xMaximum)
     }
     PinchArea {
