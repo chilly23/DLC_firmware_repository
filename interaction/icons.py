@@ -1,5 +1,4 @@
 """Shared 24-unit outline icons, used by Qt Quick and QWidget Settings."""
-from pathlib import Path
 from PySide6.QtCore import QByteArray,QSize,QRectF
 from PySide6.QtGui import QImage,QPainter,QColor
 from PySide6.QtSvg import QSvgRenderer
@@ -12,7 +11,6 @@ PATHS={
  'calibrate':'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5"/>',
  'screencheck':'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="m7 10 3 3 7-7M12 17v4m-4 0h8"/>',
  'diagnostics':'<path d="M2 12h5l3-9 4 18 3-9h5"/>',
- 'notifications':'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8h10M7 12h10M7 16h6"/>',
 }
 
 def svg(name,color):
@@ -28,13 +26,6 @@ class IconProvider(QQuickImageProvider):
         name,_,color=identifier.partition('/')
         side=max(32,min(256,requestedSize.width() if requestedSize.width()>0 else 96))
         image=QImage(side,side,QImage.Format.Format_ARGB32_Premultiplied);image.fill(0)
-        ink='#'+color if color else '#D9D9D9'
-        p=QPainter(image)
-        if name=='drag':
-            original=QImage(str(Path(__file__).resolve().parents[1]/'assets/dragndrop-white.png'))
-            p.drawImage(image.rect(),original)
-            p.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn);p.fillRect(image.rect(),QColor(ink))
-        else:paint_icon(p,name,QRectF(0,0,side,side),ink)
-        p.end()
+        p=QPainter(image);paint_icon(p,name,QRectF(0,0,side,side),'#'+color if color else '#D9D9D9');p.end()
         size.setWidth(side);size.setHeight(side)
         return image

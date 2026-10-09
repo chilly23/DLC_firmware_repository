@@ -14,7 +14,6 @@ class InputRouter(QObject):
     def __init__(self,controller,knobs,parent=None):
         super().__init__(parent);self.ctl=controller;self.knobs=knobs;self.window=None;self.host=None
         self.target=None;self.adjusting=False;self._focus={};self._corner=-1;self._power={};self._edit_until=0
-        self.side=0;self.side_targets={};knobs.context_handler=self.operation
         self.timer=QTimer(self);self.timer.setInterval(60);self.timer.timeout.connect(self.refresh_focus);self.timer.start()
         knobs.command.connect(self.handle);knobs.notice.connect(controller.notify)
     def attach(self,window,host):self.window=window;self.host=host
@@ -35,10 +34,7 @@ class InputRouter(QObject):
             if item.objectName()==name:return item
             stack.extend(item.childItems())
     def scope(self):
-        if self.ctl.notifications.toast['decision']:
-            notice=self.find('notificationToast')
-            if notice and notice.isVisible():return notice
-        for name in ('powerCountdown','tourOverlay','tooltipOverlay','emissionConfirm','keypad','alarmPanel','signalsPanel','radialMenu','selector'):
+        for name in ('powerCountdown','tourOverlay','tooltipOverlay','keypad','alarmPanel','signalsPanel','radialMenu','selector'):
             item=self.find(name)
             if item and item.isVisible():return item
         return self.window.contentItem()
@@ -57,9 +53,7 @@ class InputRouter(QObject):
             label=item.property('navLabel')
             if label and item.property('navEnabled') is not False:
                 r=self.rect(item)
-                home=scope==self.window.contentItem() and self.window.property('fullscreenSide')<0
-                within_side=not home or ((r.center().x()<self.window.width()/2)==(self.side==0))
-                if r.width()>=24 and r.height()>=24 and within_side:found.append((item,r,str(label)))
+                if r.width()>=24 and r.height()>=24:found.append((item,r,str(label)))
             stack.extend(item.childItems())
         return sorted(found,key=lambda e:(round(e[1].top()/36),e[1].left()))
     def clear_focus(self):self.target=None;self.adjusting=False;self._focus={};self.changed.emit()
@@ -77,24 +71,20 @@ class InputRouter(QObject):
         entries=self.targets()
         if not entries:return
         current=next((i for i,e in enumerate(entries) if e[0]==self.target),-1)
-        origin=current if current>=0 else (-1 if direction>0 else 0)
-        index=(origin+direction*amount)%len(entries)
+        index=(current+direction*amount)%len(entries) if current>=0 else (0 if direction>0 else len(entries)-1)
         self.target=entries[index][0];self.refresh_focus()
     def activate(self):
         if self.native():self.host.window.activate_knob();return
         if not self.target or not isValid(self.target):self.move_focus(1);return
         if self.target.property('navKind')=='slider':self.adjusting=not self.adjusting;self.refresh_focus();return
-        previous=self.target;r=self.rect(previous);p=r.center();self.clear_focus()
+        r=self.rect(self.target);p=r.center();self.clear_focus()
         for typ,buttons in ((QEvent.Type.MouseButtonPress,Qt.MouseButton.LeftButton),(QEvent.Type.MouseButtonRelease,Qt.MouseButton.NoButton)):
             event=QMouseEvent(typ,p,self.window.mapToGlobal(p.toPoint()),Qt.MouseButton.LeftButton,buttons,Qt.KeyboardModifier.NoModifier)
             QCoreApplication.sendEvent(self.window,event)
-        entries=self.targets()
-        if any(obj==previous for obj,rect,label in entries):self.target=previous;self.refresh_focus()
-        elif self.scope().objectName() not in ('radialMenu','emissionConfirm'):self.move_focus(1)
+        QTimer.singleShot(80,lambda:self.move_focus(1) if self.knobs.navigation else None)
     def back(self):
         if self.adjusting:self.adjusting=False;self.refresh_focus();return
         if self.native():self.host.window.back_knob();return
-        if self.ctl.notifications.toast['decision']:self.ctl.notifications.dismiss();self.clear_focus();return
         self.clear_focus();self.window.dismissKnobPanel()
     def selection(self,corner):
         side=0 if corner<2 else 1;index=self.ctl.instrument.views[side];laser=self.ctl.instrument.lasers[index]
@@ -126,8 +116,6 @@ class InputRouter(QObject):
     @Slot(int,str,int)
     def handle(self,index,action,amount):
         if not self.window:return
-        if getattr(self.ctl,'session_lock',None) and self.ctl.session_lock.locked:return
-        self.set_side(index)
         self.ctl.system_settings.idle_since=time.monotonic()
         if action=='navigation.enter':self.move_focus(1);return
         if action=='navigation.exit':
@@ -143,50 +131,4 @@ class InputRouter(QObject):
         if self.native() and action in ('more.open','signals.open','view.fullscreen','editor.open'):
             self.host.window.close()
         self.window.performKnob(action,corner,amount)
-    def set_side(self,index):
-        side=0 if index<2 else 1
-        if side!=self.side:
-            self.side_targets[self.side]=self.target;self.target=self.side_targets.get(side);self.side=side;self.adjusting=False
-            self.refresh_focus()
-    def operation(self,index,operation,amount):
-        if not self.window:return False
-        if getattr(self.ctl,'session_lock',None) and self.ctl.session_lock.locked:return True
-        self.set_side(index);self.ctl.system_settings.idle_since=time.monotonic()
-        delta=amount*(1 if operation=='clockwise' else -1)
-        if self.native():
-            native=self.host.window
-            if operation in ('clockwise','anticlockwise'):
-                if not native.input_knob('value.increase' if delta>0 else 'value.decrease',abs(delta)):native.navigate_knob(1 if delta>0 else -1,abs(delta))
-            elif operation=='push':native.activate_knob()
-            elif operation=='left':native.back_knob()
-            elif operation=='right':native.activate_knob()
-            else:native.navigate_knob(-1 if operation=='up' else 1,amount)
-            return True
-        scope=self.scope();name=scope.objectName()
-        if scope==self.window.contentItem():return False
-        owner=scope.property('ownerSide')
-        if owner is None:owner=scope.property('side')
-        if owner is not None and int(owner)!=self.side:return True
-        if name=='radialMenu':
-            if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)
-            elif operation in ('push','right'):scope.chooseCurrent()
-            elif operation=='left':scope.dismiss('')
-            else:scope.rotateSteps(-amount if operation=='up' else amount)
-        elif name=='emissionConfirm':
-            if operation in ('clockwise','anticlockwise'):scope.rotateSteps(delta)
-            elif operation=='push':scope.knobConfirm()
-            elif operation=='left':scope.cancel()
-            else:scope.rotateSteps(-amount if operation=='down' else amount)
-        elif name=='keypad' and self.side not in self.knobs.navigation_sides:
-            if operation in ('clockwise','anticlockwise','left','right'):
-                action={'clockwise':'value.increase','anticlockwise':'value.decrease','left':'cursor.left','right':'cursor.right'}[operation]
-                self.window.performKnob(action,self.knobs.store.config['knobs'][index]['target'],amount)
-            elif operation=='push':scope.key('enter')
-            elif operation=='down':scope.key('close')
-            elif operation=='up':scope.key('-')
-        elif operation in ('clockwise','anticlockwise'):self.move_focus(1 if delta>0 else -1,abs(delta))
-        elif operation in ('push','right'):self.activate()
-        elif operation=='left':self.back()
-        else:self.move_focus(-1 if operation=='up' else 1,amount)
-        return True
     def shutdown(self):self.timer.stop()
