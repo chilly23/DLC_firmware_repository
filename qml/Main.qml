@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: theme.background; title: "NEXATOM · v1.16"
+    visible: true; color: theme.background; title: "NEXATOM · v1.17"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
