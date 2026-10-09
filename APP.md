@@ -1,10 +1,10 @@
-> **Recovered release v1.13** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
+> **Recovered release v1.14** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
 > Run **start.cmd** on Windows or **bash start.sh** on Raspberry Pi OS.
 
 # Nexatom interface
 
-Recovered release: **v1.13**, based on the checkpoint now named `../v1.12`.
-Updated 3 October 2026. Application version remains 1.13.0; About still reports
+Recovered release: **v1.14**, based on the checkpoint now named `../v1.13`.
+Updated 5 October 2026. Application version remains 1.14.0; About still reports
 firmware V1.6.0. Earlier application folders are untouched.
 
 ## Run
@@ -41,17 +41,51 @@ startup commands are preserved; a process lock prevents duplicate app launches.
 Close the standalone RKJXT demo before using this app. Other owners of GPIO pins
 are reported; setup does not kill unrelated applications or remove custom overlays.
 
-## Changes
+## Repairs in this copy
+
+- Home uses one mirrored geometry rule for both sides: 88 px side buttons with
+  equal 9 px gaps, equal sidebar clearance, header positions, parameter selectors
+  and chart-label offsets. Chart frames are 656 px wide, at x=122 and x=822.
+  The center divider is centered at x=800. Drag skeletons use those same bounds.
+- Both right-side plots put their Y readings on the right; left plots retain
+  their left Y readings. The shared X axis remains ascending left-to-right and
+  is drawn only below the lower trace. Combined-mode secondary axes also mirror.
+- More uses the actual v1.6 fixed-sector implementation: 800 ms expansion and
+  reverse closing, cached sector artwork, and a cancel button centered on More.
+  The restored origin is y=556. Alarms, Settings, Logs and Diagnostics are retained.
+- Lock and Stabilise are disabled immediately when emission is off. Controller
+  guards also reject knob/shortcut attempts. Re-enabling emission restores access;
+  saved lock/stabilise states are retained. Off plots reject pan/zoom gestures.
+- Signals uses neutral grey surfaces and active #D9D9D9 choices/toggles. The
+  selected accent is no longer used as a fill for every selected chart control.
+- Notifications never exceed two visible cards. Overflow does not become a long
+  parade of stale routine messages. Automatic expiry still blurs/fades; Close is
+  immediate. Clearing the history and per-notice confirmation still work.
+- Settings remains a persistent fullscreen surface over Home. Home is not hidden
+  and recreated on every visit. A requested section is prepared before showing;
+  stale subpage/wheel transitions are stopped at entry. Touch scrolling inside
+  Settings remains animated. Returning preserves the current home/chart state.
+- GPIO acquisition separates encoder interrupts from contact reads and isolates
+  request failures. See the acquisition notes below. Operator errors are short;
+  detailed exceptions remain in the diagnostic files.
+- Pi startup checks current GPIO read/write permissions even when the dependency
+  marker exists, repairing access through the existing setup flow. A second app
+  launch reports that the existing instance must be closed rather than silently
+  returning a blank terminal.
+
+The original **app** and all earlier versions remain unchanged. No ZIP is needed.
+
+## Retained features
 
 | Area | Implemented behavior |
 | --- | --- |
 | Lock screen | Lock now, shutdown timeout including Never, and digital-lock calibration. Hold Unlock for one second to resume a manual lock. An active physical lock cannot be bypassed by touch. |
 | Trace settings | Independent Main/Error colors, widths and Solid/Dashed/Dotted strokes for both lasers. Existing limits and axes remain live. |
-| More | Alarms, Settings, Logs, Diagnostics. Display stays inside Settings. Restored 800 ms expand/retract fan, moved slightly down. Options rotate smoothly; icons remain upright. |
+| More | Alarms, Settings, Logs, Diagnostics. Display stays inside Settings. Restored 800 ms expand/retract fan, moved slightly down. Fixed v1.6 sectors expand/retract; knob navigation changes the highlighted sector without rotating the layout. |
 | Knob menu operation | Push opens/closes; rotation and up/down navigate; left/right opens the highlighted option. Touch selects a sector directly. Side ownership is preserved. |
 | Logs | Persistent live/paused monitor, severity filter, scrolling, consent before clear, CSV/Markdown export. Timestamp, description, outcome and level. |
 | Chart labels | Right label button at the outer right; background opacity 55%. X labels stay out of the Y-label gutter. |
-| Notifications | Small/Medium/Large sizes, centered glyphs, newest above older, independent timers, blur/fade expiry and immediate close. |
+| Notifications | Maximum two visible cards, including fading cards. Newest above older, independent timers, 650 ms blur/fade expiry and immediate manual close. Routine bursts retain only the two latest waiting previews; all actions remain in History/Logs. Consent/critical notices are preserved. Small/Medium/Large sizes remain. |
 | Sliders | Active-white thumbs with three vertical grip lines, independent of accent color. |
 | Keyboard | Earlier orange press feedback restored; suggestions, real history, caret/selection and hold-to-clear retained. |
 | Guide | Combined mode is a preview, not a chart-state write. Prior fullscreen, ranges, settings page, scroll and search are restored. Theme and operational chart state are preserved. |
@@ -118,6 +152,39 @@ plus push contact is supported. Check the encoder and save. Unconnected pin read
 do not determine polarity: the app requests pull-ups and uses saved calibration.
 Existing stock wiring migrates while retaining valid calibration/mappings.
 
+## GPIO acquisition and recovery
+
+`hardware/gpio.py` owns the input request in a worker thread. It selects the unique
+RP1 chip; when its label changes, it can verify the BCM GPIO line names instead
+of assuming gpiochip0. An explicit chip in `data/controls.json` still takes priority.
+All lines are inputs with pull-ups and raw electrical polarity. It never drives
+an output or takes a line away from a kernel driver/another application.
+
+Encoder A/B use BOTH-edge capture with a 4096-event request buffer. The worker
+polls joystick/push/panel contact levels on a 4 ms wait cycle; existing software
+debounce and shared direction+push decoding apply. UI snapshots are published at
+up to 60 Hz. A busy control is excluded, with working controls remaining live.
+If the combined request fails, requests are isolated per knob/contact. A readable
+button without interrupt support therefore does not disable all encoders. A knob
+is decoded only when its complete configured group can be acquired.
+
+The worker watches busy owners and reconnects after release. Full connection
+failures use bounded automatic retry. Non-busy per-control request rejections can
+be retried with **Retry GPIO** after their cause is corrected. Missing lock samples
+do not unlock a session that is already locked. Retrying does not erase calibration.
+
+This repair addresses reproduced software failure paths, not a confirmed diagnosis
+of this particular Pi: SSH reached 192.168.1.157, but authentication prevented
+reading its exact GPIO error. Tests inject readable contacts, unsupported requests,
+busy pins, changing owners and queued encoder edges. The physical wiring/pulses,
+boot setup and real GPIO ownership still need acceptance on the Pi.
+
+Why the request boundary matters: a Linux GPIO line request owns its requested
+lines exclusively and can fail on a busy line or unsupported interrupt setup.
+[Linux GPIO v2 request documentation](https://www.kernel.org/doc/html/latest/userspace-api/gpio/gpio-v2-get-line-ioctl.html).
+The Python API supports different settings for groups of lines within a request.
+[libgpiod Python request API](https://libgpiod.readthedocs.io/en/v2.3/python_misc.html).
+
 ## User logs and error reports
 
 More > Logs and Settings > Logs open the same journal. It records parameter edits,
@@ -152,7 +219,7 @@ record, not a tamper-proof compliance audit.
 
 ```mermaid
 flowchart LR
-  GPIO[RP1 GPIO edges] --> Capture[hardware capture and decode]
+  GPIO[RP1 encoder edges and contact levels] --> Capture[hardware capture and decode]
   Capture --> Service[Calibration and mappings]
   Service --> Router[Side and window routing]
   Router --> UI[Qt Quick home / native Settings]
@@ -174,7 +241,7 @@ flowchart LR
 | qml/ | Home, graph panels, More fan, numpad, sliders, home notifications |
 | settings_ui/ | Settings wheel/table, keyboard/history, tooltips and guide |
 | settings_ui/console.py | Logs, lock/startup pages, notification sizing |
-| hardware/ | Chip discovery, GPIO edges, debounce, encoder decoding, calibration and mappings |
+| hardware/ | Chip discovery, buffered encoder edges, polled contacts, partial request recovery, debounce, calibration and mappings |
 | interaction/ | Routing, session lock, notifications, icons, journal and fault capture |
 | device/ | Windows/Linux display and OS capability/write/readback interfaces |
 | start.sh / setup.sh | Normal-user launcher and administrator-only provisioning |
@@ -190,15 +257,22 @@ Roboto's license is in assets. Earlier implementation history is in the preserve
 ## Validation
 
 The actual Windows launcher was verified fullscreen, visible and acquiring after
-boot. The 1600 x 720 design scales to the connected screen. Local checks cover 48
-unit tests, real Qt touch/knob flows, every guide route, pan/pinch/drag, independent
-style persistence, logs/clear/export, manual hold-unlock, physical-lock priority,
-cancelled/expired shutdown, notifications and Linux adapter contracts. Power tests
-use a recording adapter; no real shutdown was triggered.
-[Screenshots and results](tests/console) are included.
+boot. A native Windows handoff check opened four Settings sections and confirmed
+that their first paint had the correct page, geometry remained fullscreen, and
+Home was never unmapped. The 1600 x 720 design scales to the connected screen.
+
+Current automated checks include 54 unit tests; mirrored geometry and emission-off
+touch/knob guards; GPIO failure isolation/contact/encoder contracts; two-card
+notification lifetimes/consent; the restored fan in both directions; native touch
+pan/pinch/drag; chart controls; and the existing guide/settings flows. Power tests
+use a recording adapter, never actual host shutdown. Generated screenshots are
+in [chart-screenshots](tests/chart-screenshots),
+[interaction-update-screenshots](tests/interaction-update-screenshots) and
+[handoff](tests/handoff). Older test scripts remain for future development.
 
 ```powershell
 .\runtime\python.exe -m unittest discover -s tests -p "test_*.py"
+.\runtime\python.exe tests\fixes.py
 .\runtime\python.exe tests\console.py
 .\runtime\python.exe tests\regress.py
 .\runtime\python.exe tests\verify_refinements.py
@@ -207,6 +281,7 @@ use a recording adapter; no real shutdown was triggered.
 .\runtime\python.exe tests\verify_interaction_update.py
 .\runtime\python.exe tests\verify_zoom_paths.py
 .\runtime\python.exe tests\verify_linux_device.py
+.\runtime\python.exe tests\handoff.py
 .\runtime\python.exe tests\verify_desktop.py
 ```
 

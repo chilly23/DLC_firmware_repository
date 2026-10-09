@@ -1,11 +1,11 @@
 {
-  "version": "1.13",
-  "unit_tests_passed": 48,
-  "ui_checks_passed": 37,
+  "version": "1.14",
+  "unit_tests_passed": 54,
+  "ui_checks_passed": 75,
   "windows_startup": "passed",
-  "python_files": 79,
+  "python_files": 82,
   "shell_syntax": "passed",
-  "source_text_files_verified": 110,
+  "source_text_files_verified": 113,
   "binary_asset_dependency_files_verified": 2617,
   "physical_pi_tested": false,
   "tests": [
@@ -14,11 +14,15 @@
       "exit_code": 0
     },
     {
-      "name": "regress",
+      "name": "fixes",
       "exit_code": 0
     },
     {
       "name": "console",
+      "exit_code": 0
+    },
+    {
+      "name": "verify_interaction_update",
       "exit_code": 0
     }
   ]

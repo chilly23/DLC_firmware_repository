@@ -1,8 +1,8 @@
-# Nexatom v1.13
+# Nexatom v1.14
 
-Logs, trace styles, lock controls, startup installer and error reports.
+Mirrored layout, two notifications, GPIO recovery and emission-off guards.
 
-Originally delivered **03 October 2026, 14:36 IST** as an in-place v1.8 build.
+Originally delivered **05 October 2026, 13:45 IST** as an in-place v1.8 build.
 Recovered and renumbered on 5 October 2026.
 
 ## Run
@@ -13,14 +13,14 @@ Recovered and renumbered on 5 October 2026.
 
 ## Changes in this release
 
-- Added manual lock settings and hold-to-unlock while keeping GPIO20 authoritative.
-- Added independent main/error trace colours, widths and stroke styles for each laser.
-- Replaced Display in More with persistent user Logs: timestamp, description, outcome, level, pause, scroll, export and confirmed clear.
-- Changed knob More routing: repeated push closes it; rotation/joystick navigate, with left/right opening the highlighted option.
-- Preserved live chart/theme/fullscreen state through the guide; adjusted axis corner spacing.
-- Added Small/Medium/Large notifications, neutral grip sliders, keyboard press feedback and retry icons.
-- Added short launchers, one-click Pi dependency/setup installer, desktop autostart controls and local error reports.
-- Originally delivered as Nexatom/app rather than another versioned folder.
+- Mirrored side-button spacing, header controls, corner selectors, chart labels and graph-drop placeholders.
+- Moved right-side Y-axis readings to the outer right edge.
+- Restored the actual v1.6 sector geometry/animation, aligned with the More button.
+- Limited visible notifications to two, including fading cards; kept full action history.
+- Made Settings open directly without hiding/recreating Home and gave Signals neutral controls.
+- Blocked Lock and Stabilise while emission is off, including controller and knob commands.
+- Separated encoder edge capture from polled switch contacts; isolated GPIO request failures and shortened operator-facing errors.
+- Originally delivered as Nexatom/fixed; its source now matches the surviving Nexatom/app.
 
 ## Historical scope
 
@@ -30,25 +30,21 @@ About firmware remains V1.6.0 as originally requested. GPIO and host controls ar
 laser traces remain simulated. Physical Pi hardware was not retested during recovery.
 
 The source change inventory and original file hashes are in [RELEASE.json](RELEASE.json).
-A local Git tag, **recovered-v1.13**, preserves this completed recovery.
+A local Git tag, **recovered-v1.14**, preserves this completed recovery.
 
 ## Files changed from the preceding release
 
 **Added**
 
-`boot.py`, `install.py`, `interaction/faults.py`, `interaction/journal.py`, `launch.py`, `settings_ui/console.py`, `setup.sh`, `start.cmd`, `start.desktop`, `start.sh`, `startup.py`, `tests/console.py`, `tests/regress.py`, `tests/test_console.py`.
+`tests/fixes.py`, `tests/handoff.py`, `tests/test_inputs.py`.
 
 **Modified**
 
-`README.md`, `controller/bridge.py`, `controller/plot.py`, `hardware/gpio.py`, `interaction/icons.py`, `interaction/notification_art.py`, `interaction/notifications.py`, `interaction/router.py`, `interaction/session_lock.py`, `main.py`, `qml/ChartPair.qml`, `qml/Icon.qml`, `qml/Main.qml`, `qml/NotificationToast.qml`, `qml/RadialMenu.qml`, `qml/ReferenceSlider.qml`, `qml/SignalsPanel.qml`, `settings_ui/controls.py`, `settings_ui/coordinator.py`, `settings_ui/drawing.py`, `settings_ui/extended_controls.py`, `settings_ui/help_content.py`, `settings_ui/integration.py`, `settings_ui/keyboard.py`, `settings_ui/model.py`, `settings_ui/operational.py`, `settings_ui/preferences.py`, `settings_ui/refined.py`, `settings_ui/tooltips.py`, `settings_ui/tour.py`, `tests/verify_charts.py`, `tests/verify_control_update.py`, `tests/verify_desktop.py`.
-
-**Removed**
-
-`Start Fullscreen v1.8.cmd`, `Start Nexatom v1.8.cmd`, `desktop_launcher.py`, `install_pi_shortcut.py`, `previews/README.md`, `previews/index.html`, `run.sh`, `setup_pi.sh`.
+`README.md`, `controller/bridge.py`, `controller/plot.py`, `hardware/gpio.py`, `interaction/notifications.py`, `qml/ChannelPane.qml`, `qml/ChartPair.qml`, `qml/ChoiceButton.qml`, `qml/GraphDrag.qml`, `qml/Main.qml`, `qml/ParameterTile.qml`, `qml/PlotView.qml`, `qml/RadialMenu.qml`, `qml/SignalsPanel.qml`, `qml/ToggleChoice.qml`, `qml/TouchButton.qml`, `settings_ui/control_panel.py`, `settings_ui/integration.py`, `start.sh`, `tests/console.py`, `tests/test_gpio_adapter.py`, `tests/test_gpio_recovery.py`, `tests/test_notifications.py`, `tests/verify_control_update.py`, `tests/verify_interaction_update.py`.
 
 ## Recovery verification
 
-48 unit tests and 37 UI checks passed. The actual Windows `start.cmd`
+54 unit tests and 75 UI checks passed. The actual Windows `start.cmd`
 completed fullscreen boot and live acquisition. Python compilation and Bash syntax
 passed. All retained dependencies/assets and recovered source text were verified.
 

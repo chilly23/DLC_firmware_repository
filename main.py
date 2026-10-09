@@ -40,8 +40,8 @@ def configure_logging(data_dir=None):
 def create_application(*, skip_boot=False, animate=True, data_dir=None, device=None, gpio_factory=None, gpio_autostart=True):
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.13")
-    app.setApplicationVersion("1.13.0")
+    app.setApplicationName("NEXATOM v1.14")
+    app.setApplicationVersion("1.14.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))

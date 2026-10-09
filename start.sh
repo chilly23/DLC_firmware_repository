@@ -26,10 +26,23 @@ if [[ "${1:-}" == --autostart ]]; then automatic=true;shift; fi
 repair=false
 if [[ "${1:-}" == --repair || "${1:-}" == --repair-setup ]]; then repair=true;shift; fi
 # No two app/setup launches may own the same pins. Repair may run beside the UI.
-if ! $repair; then exec 9>"${XDG_RUNTIME_DIR:-/tmp}/nexatom-$UID.lock";flock -n 9 || exit 0; fi
+if ! $repair; then
+  exec 9>"${XDG_RUNTIME_DIR:-/tmp}/nexatom-$UID.lock"
+  if ! flock -n 9; then
+    echo 'Nexatom is already running. Close it before starting this update.'
+    if ! $automatic && command -v zenity >/dev/null; then
+      zenity --info --title=Nexatom --text='Nexatom is already running. Close the running app before starting this update.' || true
+    fi
+    exit 0
+  fi
+fi
 healthy=false
 if [[ -x .venv/bin/python ]] && .venv/bin/python -c 'from PySide6.QtQuick import QQuickWindow; import gpiod; assert hasattr(gpiod,"request_lines")' >/dev/null 2>&1; then healthy=true; fi
-if [[ ! -f .ready ]] || ! $healthy || $repair; then
+gpio_access=true
+for node in /dev/gpiochip*; do
+  if [[ -e "$node" && ( ! -r "$node" || ! -w "$node" ) ]]; then gpio_access=false; fi
+done
+if [[ ! -f .ready ]] || ! $healthy || ! $gpio_access || $repair; then
   echo 'Installing operating-system packages and configuring GPIO access...'
   if command -v sudo >/dev/null && sudo -n true 2>/dev/null; then sudo -n /bin/bash "$APP_DIR/setup.sh" "$(id -un)";
   elif command -v pkexec >/dev/null; then pkexec /bin/bash "$APP_DIR/setup.sh" "$(id -un)";
