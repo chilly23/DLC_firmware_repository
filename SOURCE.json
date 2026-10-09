@@ -1,0 +1,39 @@
+{
+  "tag": "v1",
+  "original_folder": "v1",
+  "original_version": null,
+  "imported_source_files": 25,
+  "snapshot_sha256": "49cc2819518fd349cd4df7535f5376833a7e701165e3e64ce0fe34c83d53be03",
+  "excluded": [
+    "Installed runtimes/packages",
+    "Generated logs/captures/cache",
+    "Nested Git metadata"
+  ],
+  "source_files": {
+    "APP.md": "af848f22549a8304b322a2d136a0f896c250810088c5db430a57674857c41560",
+    "assets/LICENSE-Roboto.txt": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "assets/Roboto-Regular.ttf": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95",
+    "assets/logo.png": "eae45f93b4e36f872ae19037a0846f7e38349ed567f21e6bcce43a11568eeec4",
+    "controller/__init__.py": "01d0f5a1ba35e0905f3d175dff46fd1fe80447c3165ffdedca520ba439cc7ef4",
+    "controller/bridge.py": "8e9cceeb922bae9c7ae3bab82073e17461c37550e71d4908931e88315a22f4d3",
+    "controller/model.py": "8f90984786dbe6cbe141eef3d07b4db87e7525da6740ccaee6d5389ade936b18",
+    "controller/plot.py": "e73dbef62635b57e30c666cb0a64843310a849982c163802273d41e8612b0f61",
+    "main.py": "c3b0860b6fadd6d59a02f764b223771e393e76ed8765459252f2de3e00fcc13c",
+    "qml/ChannelPane.qml": "824b3a0dba93459d678e34b3b37aeb8c72fe7993682a8106652e2d5fc8c7ddfc",
+    "qml/FullscreenView.qml": "4b13f7b283584a7d99b3389b403545c7bf2c1e3791ad3a41a9e9adbeacf9e541",
+    "qml/Icon.qml": "bbbe63a9c9f628f4dbe462403751145dcfb51d763990945007a432eaf4be354f",
+    "qml/Main.qml": "3fe47c6957c19972f78c6191dfdaf3784df3ec4c7a301befa51d1e0ca088e619",
+    "qml/NumberPad.qml": "0599fc189246b651581c995387d9f3af39c9f889755075afdf3f082787f2ccff",
+    "qml/ParameterTile.qml": "473f79f7b2cffdda2a83f22a70bcb9ed8d0a853822c32d105d783287a0e9a590",
+    "qml/PlotView.qml": "405e9640e3315c9b9fba95582b542b142b6cc39334785f9cbb6c9a312a657a8c",
+    "qml/RadialMenu.qml": "f71dc978bd6c8b938d9c4086dbb3b2d965d9cccc39812cf6558d9a724edbf619",
+    "qml/TouchButton.qml": "38e1672ce74ad146917c7a74d1d1478ca6cc3c614c11a89663675a1456cbec5f",
+    "requirements.txt": "cf2dae8d6fba947aa0ef6b3c002ffea64c597337f8329d6274e266dded279ce8",
+    "run.sh": "7e212cd4131580a539bfaa32e2d5915bff4ab67583cd23c6f2e3e74ee155355b",
+    "setup_pi.sh": "d1c93605aa224a1db1b939d3acd5bce82123bb2d7cb71aeffb6c486abd32adcf",
+    "tests/package.py": "e607a2d0f34722dd0170c2f235809878131244fde941274c6171fff9f94d9ae1",
+    "tests/test_model.py": "fd5033571a92003359d778ebcdd4e282608e808a24064858201f4b2a0fa68f16",
+    "tests/ui-results.json": "9107a97aa3e51f9e976fdd6a7abc8d173108516bc53c3fd7f732cfc46c91ab5b",
+    "tests/verify_ui.py": "be7fc4a041110fd059472823d989a3a679b556967fcc1b13350bbb531d26ef2c"
+  }
+}
