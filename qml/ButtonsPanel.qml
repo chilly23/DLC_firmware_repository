@@ -27,6 +27,7 @@ Item {
                     onActivated:workspace.setShortcut(panel.index,currentValue)
                     font.family:theme.fontFamily;font.pixelSize:18
                     palette.button: "#363636";palette.buttonText:"#F0F1EE";palette.text:"#F0F1EE";palette.base:"#303030";palette.highlight:"#555555"
+                    palette.window:theme.light?"#E2E4E2":"#303030";palette.windowText:theme.foreground
                     Accessible.name:(panel.index===0?"Left":"Right")+" shortcut action"
                 }
                 Item {

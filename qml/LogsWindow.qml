@@ -32,15 +32,16 @@ Window {
                 onActivated:workspace.setLogLevel(currentText.toLowerCase())
                 font.family:theme.fontFamily;font.pixelSize:21
                 palette.button:"#303030";palette.buttonText:"#F0F1EE";palette.text:"#F0F1EE";palette.base:"#303030"
+                palette.window:theme.light?"#E2E4E2":"#303030";palette.windowText:theme.foreground
                 property string navLabel:"Log level"
                 property string navKind:"choice"
                 function stepFromKnob(amount){workspace.setLogLevel(["all","default","warning","critical"][(currentIndex+amount%4+4)%4])}
             }
             LobbyButton {objectName:"logsClose";text:"Close";width:140;onClicked:logs.dismiss()}
         }
-        Rectangle {x:40;y:115;width:1520;height:1;color:theme.raised}
+        Rectangle {x:40;y:128;width:1520;height:1;color:theme.raised}
         ListView {
-            id:list;objectName:"logList";x:40;y:135;width:1520;height:527;clip:true;spacing:10
+            id:list;objectName:"logList";x:40;y:148;width:1520;height:514;clip:true;spacing:10
             model:workspace.logRows
             property int anchorId:0
             property real anchorOffset:0
@@ -62,8 +63,10 @@ Window {
             delegate:Rectangle {
                 required property var modelData
                 width:1500;height:96;radius:8;color:theme.surface
-                property color levelInk:modelData.level==="critical"?"#FF453A":modelData.level==="warning"?"#FFD60A":theme.foreground
-                Text {x:18;y:9;width:520;text:modelData.timestamp.replace("T"," ").slice(0,23);font.family:theme.fontFamily;font.pixelSize:18;color:theme.muted}
+                property color levelInk:theme.light?({"#FF453A":"#AD251C","#FF9F0A":"#8D4900","#32D74B":"#176534","#D9D9D9":theme.foreground}[modelData.color]):modelData.color
+                Rectangle {x:0;y:14;width:5;height:68;radius:2;color:modelData.color}
+                Rectangle {x:18;y:15;width:12;height:12;radius:6;color:modelData.color;border.width:theme.light?1:0;border.color:theme.muted}
+                Text {x:42;y:9;width:520;text:modelData.timestamp.replace("T"," ").slice(0,23);font.family:theme.fontFamily;font.pixelSize:18;color:theme.muted}
                 Text {x:1110;y:9;width:170;text:modelData.status;font.family:theme.fontFamily;font.pixelSize:18;color:parent.levelInk}
                 Text {x:1310;y:9;width:170;text:modelData.level.charAt(0).toUpperCase()+modelData.level.slice(1);font.family:theme.fontFamily;font.pixelSize:18;color:parent.levelInk}
                 Text {x:18;y:38;width:1458;height:49;text:modelData.description;wrapMode:Text.WordWrap;elide:Text.ElideRight;font.family:theme.fontFamily;font.pixelSize:21;color:theme.foreground}
@@ -71,6 +74,14 @@ Window {
             Text {anchors.centerIn:parent;visible:workspace.logRows.length===0;text:"No records for this level";color:theme.muted;font.family:theme.fontFamily;font.pixelSize:24}
         }
         Text {x:40;y:682;width:1520;text:workspace.message;font.family:theme.fontFamily;font.pixelSize:16;color:theme.muted;elide:Text.ElideMiddle}
+        Row {x:40;y:104;spacing:22
+            Repeater {model:[{color:"#FF453A",name:"Failed / critical"},{color:"#FF9F0A",name:"Warning"},{color:"#32D74B",name:"Completed"},{color:"#D9D9D9",name:"Information"}]
+                Row {required property var modelData;spacing:8
+                    Rectangle {y:3;width:10;height:10;radius:5;color:modelData.color}
+                    Text {text:modelData.name;color:theme.muted;font.family:theme.fontFamily;font.pixelSize:15}
+                }
+            }
+        }
         Rectangle {
             objectName:"logsClearConfirmation";anchors.fill:parent;color:"#AA000000";visible:logs.confirmClear
             MouseArea {anchors.fill:parent}

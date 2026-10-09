@@ -19,6 +19,8 @@ Item {
             required property real alpha
             required property int blurStep
             required property int revision
+            required property real remaining
+            required property bool timed
             objectName:"noticeCard"+noticeId
             width:stack.width;height:stack.cardHeight
             y:708-height-(cards.count-1-index)*(height+10)
@@ -31,6 +33,13 @@ Item {
             MouseArea {
                 anchors.fill:parent
                 onWheel:function(wheel){wheel.accepted=true}
+            }
+            Canvas {
+                id:progressRing;objectName:"noticeProgress"+card.noticeId
+                x:card.width-62;y:card.height/2-24;width:48;height:48;visible:card.timed
+                onPaint:{let ctx=getContext("2d");ctx.reset();ctx.lineWidth=2.5;ctx.strokeStyle=theme.muted;ctx.globalAlpha=.25;ctx.beginPath();ctx.arc(24,24,21,0,2*Math.PI);ctx.stroke();ctx.globalAlpha=1;ctx.strokeStyle=theme.foreground;ctx.lineCap="round";ctx.beginPath();ctx.arc(24,24,21,-Math.PI/2,-Math.PI/2+2*Math.PI*card.remaining);ctx.stroke()}
+                Connections {target:card;function onRemainingChanged(){progressRing.requestPaint()}}
+                Connections {target:theme;function onChanged(){progressRing.requestPaint()}}
             }
             MouseArea {
                 x:card.width-219;y:10;width:130;height:card.height-20;visible:card.decision;enabled:card.blurStep===0

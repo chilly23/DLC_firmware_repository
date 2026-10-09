@@ -8,6 +8,7 @@ Button {
     property bool emphasized: false
     implicitWidth: 180; implicitHeight: 56
     font.family: theme.fontFamily
+    opacity:enabled?1:.42
     Accessible.name: text
     background: Rectangle {
         radius: 0

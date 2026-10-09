@@ -5,7 +5,7 @@ Window {
     id: window
     objectName: "mainWindow"
     width: 1600; height: 720; minimumWidth: 800; minimumHeight: 360
-    visible: true; color: theme.background; title: "NEXATOM · v1.15"
+    visible: true; color: theme.background; title: "NEXATOM · v1.16"
     property bool booting: !skipBoot
     property real bootProgress: 0
     property bool bootStarted: false
@@ -185,6 +185,7 @@ Window {
             onClosed:visible=false
             onLogsRequested:logsWindow.open()
             onEditParameter:function(index,key){keypad.open(index,key,index,false)}
+            onEmissionRequested:function(index){emissionConfirm.open(index,index)}
             onChooseHomeField:function(side,bottom){let index=side===0?ctl.leftChannel:ctl.rightChannel;let ch=ctl.channel(index);selector.open(index,bottom?ch.bottom:ch.top,side,bottom,true)}
         }
         AlarmPanel {
