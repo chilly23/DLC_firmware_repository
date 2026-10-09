@@ -37,7 +37,7 @@ if ! $repair; then
   fi
 fi
 healthy=false
-if [[ -x .venv/bin/python ]] && .venv/bin/python -c 'from PySide6.QtQuick import QQuickWindow; import gpiod; assert hasattr(gpiod,"request_lines")' >/dev/null 2>&1; then healthy=true; fi
+if [[ -x .venv/bin/python ]] && .venv/bin/python -c 'from PySide6.QtQuick import QQuickWindow; import numpy; import gpiod; assert hasattr(gpiod,"request_lines")' >/dev/null 2>&1; then healthy=true; fi
 gpio_access=true
 for node in /dev/gpiochip*; do
   if [[ -e "$node" && ( ! -r "$node" || ! -w "$node" ) ]]; then gpio_access=false; fi
@@ -52,7 +52,7 @@ if [[ ! -f .ready ]] || ! $healthy || ! $gpio_access || ! $capture_ready || $rep
   if [[ ! -x .venv/bin/python ]]; then python3 -m venv .venv; fi
   .venv/bin/python -m pip install --upgrade pip
   .venv/bin/python -m pip install -r requirements.txt
-  .venv/bin/python -c 'from PySide6.QtQuick import QQuickWindow; import gpiod; assert hasattr(gpiod,"request_lines")'
+  .venv/bin/python -c 'from PySide6.QtQuick import QQuickWindow; import numpy; import gpiod; assert hasattr(gpiod,"request_lines")'
   python3 startup.py
   touch .ready
   if $repair; then zenity --info --title=Nexatom --text='Setup complete. Restart the app to use repaired dependencies. Reboot the Pi if GPIO boot configuration changed.' || true;exit 0;fi

@@ -44,8 +44,8 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     os.environ.setdefault('QT_QPA_FONTDIR', str(ROOT / 'assets'))
     os.environ.setdefault('QT_QUICK_CONTROLS_STYLE', 'Basic')
     app = QApplication.instance() or QApplication(sys.argv[:1])
-    app.setApplicationName("NEXATOM v1.16")
-    app.setApplicationVersion("1.16.0")
+    app.setApplicationName("NEXATOM v1.17")
+    app.setApplicationVersion("1.17.0")
     app.setCursorFlashTime(1000)
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Regular.ttf"))
     QFontDatabase.addApplicationFont(str(ROOT / "assets" / "Roboto-Medium.ttf"))
@@ -58,6 +58,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     journal.record('Application started',source='System')
     notifications=Notifications(Path(data_dir or ROOT/'data')/'notifications.json',app);controller.notifications=notifications
     notifications.journal=journal
+    journal.storageFailed.connect(lambda message:notifications.post('Log storage failed. In-memory logs remain available for export.','critical','journal-storage'))
     notifications.renderer=NotificationArt(notifications,theme)
     controller.notice.connect(lambda text:notifications.post(text))
     system=SettingsCoordinator(app,controller,theme,device or make_device())
@@ -117,6 +118,7 @@ def create_application(*, skip_boot=False, animate=True, data_dir=None, device=N
     app.aboutToQuit.connect(workspace.shutdown)
     app.aboutToQuit.connect(parameters.shutdown)
     app.aboutToQuit.connect(diagnostics.shutdown)
+    app.aboutToQuit.connect(journal.close)
     return app, engine, controller, engine.rootObjects()[0]
 
 
@@ -128,6 +130,8 @@ def main():
     parser.add_argument("--software", action="store_true", help="Use Qt Quick's software renderer for display-driver troubleshooting")
     parser.add_argument("--verify-startup", type=Path)
     parser.add_argument("--data-dir", type=Path)
+    parser.add_argument('--benchmark',action='store_true',help='Isolated benchmark profile with synthetic inputs')
+    parser.add_argument('--benchmark-hardware',action='store_true',help='Benchmark the connected GPIO instead of synthetic input')
     parser.add_argument('--list-gpio',action='store_true',help='List GPIO chips and ownership of configured pins, without requesting them')
     args = parser.parse_args()
     if args.list_gpio:
@@ -147,13 +151,26 @@ def main():
         except (ImportError,OSError,RuntimeError) as exc:print(str(exc),file=sys.stderr);return 1
     if args.software:
         os.environ["QT_QUICK_BACKEND"] = "software"
+    benchmark_mode=args.benchmark or args.benchmark_hardware
+    gpio_factory=None
+    if benchmark_mode:
+        from benchmark import prepare
+        args.data_dir=prepare(ROOT,args.benchmark_hardware)
+        if not args.benchmark_hardware:
+            from hardware.gpio import GPIOWorker
+            from hardware.replay import replay_process
+            gpio_factory=lambda config:GPIOWorker(config,process_target=replay_process)
     configure_logging(args.data_dir)
     from interaction.faults import install
     install(Path(args.data_dir)/'logs' if args.data_dir else ROOT/'logs')
-    app, engine, controller, window = create_application(skip_boot=args.skip_boot, data_dir=args.data_dir)
+    app, engine, controller, window = create_application(skip_boot=args.skip_boot, data_dir=args.data_dir,gpio_factory=gpio_factory)
     if not args.windowed:
         app.setOverrideCursor(Qt.CursorShape.BlankCursor)
         window.showFullScreen()
+    if benchmark_mode:
+        from benchmark import Benchmark
+        controller.benchmark=Benchmark(controller,window,physical=args.benchmark_hardware)
+        app.aboutToQuit.connect(controller.benchmark.shutdown)
     if args.verify_startup:
         def report_startup():
             import json

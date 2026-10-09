@@ -1,16 +1,74 @@
 {
-  "version": "1.16.0",
-  "base": "1.15.0",
+  "version": "1.17.0",
+  "base": "1.16.0",
   "date": "2026-10-08",
   "platform": "Windows",
   "unit_tests": {
-    "passed": 66,
-    "evidence": "tests/v116/unit.log"
+    "passed": 93,
+    "evidence": "tests/v117/unit.log"
   },
-  "native_lobby_ui": {
+  "native_ui": {
     "passed": 56,
-    "evidence": "tests/v116/validation.json",
-    "qml_warnings": 0
+    "checks": [
+      "v1.17 starts at 1600 \u00d7 720",
+      "Lobby and More wheel are unchanged from v1.16",
+      "Device/display and installation logic are unchanged",
+      "20 Bento cards fill 48 cells without overlap",
+      "Control Parameters opens its own page",
+      "Live readback refresh does not interrupt a parameter press",
+      "Control edit updates the shared Home value",
+      "Conflicting current limit is rejected in the numeric editor",
+      "Independent Laser 2 TC integral parameter is editable",
+      "Temperature enable toggle updates the model",
+      "CC uses the existing emission confirmation",
+      "Cancelling emission leaves the accepted state unchanged",
+      "Module dropdown opens all three visible rows",
+      "Control module dropdown opens the PC fields",
+      "Laser Config edits use the same validated values",
+      "Parameter tree opens laser and module levels",
+      "Hierarchy leaf edits are synchronized",
+      "Sub Parameters moves back one level",
+      "Home corner assignment updates immediately",
+      "Knob selection preserves later external dropdown updates",
+      "Corner Edit opens the assigned parameter",
+      "Corner choices and control values persist",
+      "Screenshot is an available shortcut action",
+      "Button order updates Home",
+      "Touch dragging reorders the side panel",
+      "Diagnostics performs seven checks",
+      "Diagnostic reports are saved",
+      "Screen Check opens independently of Settings",
+      "Screen Check returns to Diagnostics",
+      "Monitoring exposes 12 live host/runtime values",
+      "Monitoring polling stops when leaving its page",
+      "dlc opens an honest placeholder",
+      "legal opens an honest placeholder",
+      "manual opens an honest placeholder",
+      "Small graph size is applied",
+      "Medium graph size is applied",
+      "Large graph size is applied",
+      "Full-display PNG capture completes",
+      "Screenshot contains the full display dimensions",
+      "Assigned shortcut uses the same capture workflow",
+      "File Manager lists screenshots",
+      "Image opens inside the File Manager",
+      "Recordings has a browsable folder",
+      "Logs remains a separate fullscreen window",
+      "Logs uses all four status colours",
+      "Exported logs are readable in File Manager",
+      "Dismiss control displays an advancing countdown ring",
+      "Duplicate notice does not restart its timer",
+      "Notification stack remains bounded to two cards",
+      "Lobby route display opens and returns",
+      "Lobby route notifications opens and returns",
+      "Lobby route system opens and returns",
+      "Lobby route function opens and returns",
+      "Lobby route help opens and returns",
+      "Lobby route about opens and returns",
+      "No runtime QML warnings"
+    ],
+    "native": true,
+    "qml_messages": []
   },
   "charts": {
     "passed": 54,
@@ -20,118 +78,129 @@
     "passed": 9,
     "evidence": "tests/zoom-validation.json"
   },
-  "symmetry_and_idle_guards": {
+  "symmetry_idle": {
     "passed": 21,
-    "command": "runtime/python.exe tests/fixes.py"
+    "evidence": "tests/v117/fixes.py.log"
   },
-  "total_automated_checks": 206,
-  "windows_launcher": {
-    "passed": true,
-    "evidence": "tests/v116/startup.json",
-    "details": {
-      "visible": true,
-      "fullscreen": true,
-      "exposed": true,
-      "booting": false,
-      "platform": "windows",
-      "width": 1536,
-      "height": 864,
-      "acquiring": true,
-      "timer_active": true,
-      "signal_levels": [
-        0.6094901126972984,
-        0.6094901126972984
-      ],
-      "elapsed": 0.8602850000024773
-    }
+  "benchmark_ui": {
+    "passed": 8,
+    "checks": [
+      "Separate benchmark window is visible",
+      "Slider configures 100 points on both lasers",
+      "Slider configures 1000 points on both lasers",
+      "Slider configures 10000 points on both lasers",
+      "Optional all-point raster is enabled",
+      "Peak-preserving default is restored",
+      "Benchmark point overrides do not change normal preferences",
+      "Report includes CPU, RSS, frames, UI and graph timings"
+    ]
+  },
+  "total_automated_checks": 241,
+  "normal_launcher": {
+    "visible": true,
+    "fullscreen": true,
+    "exposed": true,
+    "booting": false,
+    "platform": "windows",
+    "width": 1920,
+    "height": 1200,
+    "acquiring": true,
+    "timer_active": true,
+    "signal_levels": [
+      0.6134929461425336,
+      0.6134929461425336
+    ],
+    "elapsed": 0.8643796999822371
+  },
+  "benchmark_launcher": {
+    "visible": true,
+    "fullscreen": true,
+    "exposed": true,
+    "booting": false,
+    "platform": "windows",
+    "width": 1920,
+    "height": 1200,
+    "acquiring": true,
+    "timer_active": true,
+    "signal_levels": [
+      1.0,
+      1.0
+    ],
+    "elapsed": 4.51423839997733
+  },
+  "final_stress": {
+    "exact_delivery": {
+      "expected_rotation_steps": 18060,
+      "delivered_rotation_steps": 18060,
+      "decoded_button_presses": 1506,
+      "delivered_button_presses": 1506
+    },
+    "evidence": "tests/v117/stress.json",
+    "seconds_per_load": 20
+  },
+  "earlier_soak": {
+    "evidence": "tests/v117/soak.json",
+    "seconds_per_load": 60,
+    "scheduler": "before final pressure budget adjustment"
   },
   "protected_sources": [
     {
-      "path": "hardware/calibration.py",
-      "sha256": "c794294fe516227469c6919a3403718a35cac663576c574133674e08d95e7e0f",
-      "matches_v115": true
+      "path": "qml/Lobby.qml",
+      "sha256": "0c30abc1597cdc50ef024b65e37132c2418b2024dd191440308b76469f41ed05",
+      "matches_v116": true
     },
     {
-      "path": "hardware/config.py",
-      "sha256": "b6b49e9582b2680712f29c78a5db2e40eabc85791eedbf222e8c2736ed7fd283",
-      "matches_v115": true
-    },
-    {
-      "path": "hardware/decoder.py",
-      "sha256": "d0cf9a9c334c9ee4c763441a6ef3aaa110d9e7e22af7d756a8975456592fed9c",
-      "matches_v115": true
-    },
-    {
-      "path": "hardware/gpio.py",
-      "sha256": "7273b20c2a1277c48df37823464cb349f01b5beeb0c60a96e0c941c905b59cb6",
-      "matches_v115": true
-    },
-    {
-      "path": "hardware/panel.py",
-      "sha256": "3bcfc21d6ad61aac624f1e2bda973967c3c3b4f4af247ab81ca3fa692edac0d7",
-      "matches_v115": true
-    },
-    {
-      "path": "hardware/service.py",
-      "sha256": "9647f0ed13e37e38726021771b1f8a15745f4ef3d8723f498f0381bfca0a180f",
-      "matches_v115": true
-    },
-    {
-      "path": "hardware/__init__.py",
-      "sha256": "5fc4126e22fc93016dffa53cf63357f4f2588f77bd1d12f38710633af421b0fb",
-      "matches_v115": true
-    },
-    {
-      "path": "device/platform.py",
-      "sha256": "c8be02d6c90ea995b5a9050f4ba65c7096843f8856bd34a3d78649957e5eeb7f",
-      "matches_v115": true
-    },
-    {
-      "path": "device/windows.py",
-      "sha256": "9997b077f69939a735367c2effc236da8e25c4123e61e534626a5636c4117b08",
-      "matches_v115": true
-    },
-    {
-      "path": "device/__init__.py",
-      "sha256": "29c20c3b4939e676e866256f2600a44d39ca36b1b9663dda1c55e16766d23571",
-      "matches_v115": true
+      "path": "qml/RadialMenu.qml",
+      "sha256": "1db49cb424a89979004d07e44ce231b0faaa4d78ac99cecd57f4a58fbdfa03bf",
+      "matches_v116": true
     },
     {
       "path": "boot.py",
       "sha256": "dfe56f3332e7825249a371c6bd98db0c2f375d2e2e896ed9a71e3fe657f1def3",
-      "matches_v115": true
+      "matches_v116": true
     },
     {
       "path": "install.py",
       "sha256": "fcb528555bc0c0fb9ea92b09da693878e4e96312b311f14381f4bdca9a3f98c8",
-      "matches_v115": true
+      "matches_v116": true
     },
     {
       "path": "setup.sh",
       "sha256": "5555a0b13cfda84a2a20313e7a79b4f61934ceb1c014f3c32e2b47cae167e97f",
-      "matches_v115": true
+      "matches_v116": true
     },
     {
       "path": "startup.py",
       "sha256": "c4e36f0abf1daa9cd6b1a46d61812345a9b7a46bab9ce61307b0a5534e004099",
-      "matches_v115": true
-    },
-    {
-      "path": "start.sh",
-      "sha256": "cf3fb43cf34fd327ae0efae1df342cda5186ef6e7e830e338a45b77b6c96f2a7",
-      "matches_v115": true
+      "matches_v116": true
     },
     {
       "path": "data/controls.json",
       "sha256": "28ac9400eb403dbf1d8d826f93f765a614438799e4da75f994a3cc4d33dcdc50",
-      "matches_v115": true
+      "matches_v116": true
+    },
+    {
+      "path": "device/platform.py",
+      "sha256": "c8be02d6c90ea995b5a9050f4ba65c7096843f8856bd34a3d78649957e5eeb7f",
+      "matches_v116": true
+    },
+    {
+      "path": "device/windows.py",
+      "sha256": "9997b077f69939a735367c2effc236da8e25c4123e61e534626a5636c4117b08",
+      "matches_v116": true
+    },
+    {
+      "path": "device/__init__.py",
+      "sha256": "29c20c3b4939e676e866256f2600a44d39ca36b1b9663dda1c55e16766d23571",
+      "matches_v116": true
     }
   ],
   "physical_raspberry_pi_tested": false,
   "limitations": [
-    "Laser readbacks and acquisition remain simulated, as in the base.",
-    "Wayland grim capture and physical GPIO/display acceptance require the target Pi.",
-    "DLC View, Legal Information and Digital Manual are intentional placeholders.",
-    "TC I/D are persisted configuration values; no hardware PID implementation is added."
+    "Actual Pi electrical and interrupt timing remains unmeasured.",
+    "Input-only GPIO; no physical laser/MCU acknowledgement or new output driver.",
+    "Laser traces remain simulated.",
+    "Degraded contact polling cannot guarantee pulses between reads.",
+    "No hard-realtime, infinite-rate or overnight endurance claim."
   ]
 }
