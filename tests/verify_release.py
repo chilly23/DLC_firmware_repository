@@ -60,11 +60,20 @@ def shot(name,surface=None):
     assert not image.isNull()
     image.save(str(output/(name+'.png')))
 
+def matches_baseline(relative):
+    """Standalone source downloads use the recorded v1.16 content hashes."""
+    relative=Path(relative)
+    sibling=ROOT.parent/'v1.16'/relative
+    if sibling.exists():return (ROOT/relative).read_bytes()==sibling.read_bytes()
+    proof=json.loads((ROOT/'VALIDATION.json').read_text(encoding='utf8'))['protected_sources']
+    expected=next(p['sha256'] for p in proof if p['path']==relative.as_posix())
+    return hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()==expected
+
 try:
     window.resize(1600,720);QTest.qWait(400)
     check('v1.17 starts at 1600 × 720',window.isVisible() and app.applicationVersion()=='1.17.0')
-    check('Lobby and More wheel are unchanged from v1.16',all((ROOT/relative).read_bytes()==(ROOT.parent/'v1.16'/relative).read_bytes() for relative in ('qml/Lobby.qml','qml/RadialMenu.qml')))
-    check('Device/display and installation logic are unchanged',all((ROOT/relative).read_bytes()==(ROOT.parent/'v1.16'/relative).read_bytes() for relative in [p.relative_to(ROOT.parent/'v1.16') for p in (ROOT.parent/'v1.16/device').rglob('*.py')]+[Path(n) for n in ('boot.py','install.py','setup.sh','startup.py','data/controls.json')]))
+    check('Lobby and More wheel are unchanged from v1.16',all(matches_baseline(relative) for relative in ('qml/Lobby.qml','qml/RadialMenu.qml')))
+    check('Device/display and installation logic are unchanged',all(matches_baseline(relative) for relative in [p.relative_to(ROOT) for p in (ROOT/'device').rglob('*.py')]+[Path(n) for n in ('boot.py','install.py','setup.sh','startup.py','data/controls.json')]))
     page('lobby');shot('01-lobby')
     tiles=json.loads(js('JSON.stringify(lobby.tiles)'))
     cells=[]
