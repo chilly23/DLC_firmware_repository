@@ -34,7 +34,7 @@ try:
     knobs=ctl.knobs;knobs.dispatch(1,'push');QTest.qWait(900);radial=nav.find('radialMenu')
     check('More contains Logs and no Display',radial.property('options').toVariant()[2]['name']=='Logs')
     knobs.dispatch(1,'clockwise',2);QTest.qWait(140)
-    check('Wheel options animate between detents',0<radial.property('wheelPosition')<2)
+    check('Knob selects the fixed v1.6 Logs sector',radial.property('selectedIndex')==2 and radial.property('keyboardSelection'))
     QTest.qWait(240);shot('wheel',False);knobs.dispatch(1,'left');QTest.qWait(950)
     check('Joystick left opens Logs',sw.isVisible() and sw.content=='logs')
     for i in range(32):journal.record(f'Laser action {i}: changed set point','Failed' if i%3==0 else 'Passed','warning' if i%3==0 else 'default')

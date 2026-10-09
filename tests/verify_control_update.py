@@ -43,7 +43,7 @@ try:
     entries=nav.targets();nav.move_focus(1,7);check('First focus batch preserves seven steps',nav.target==entries[6%len(entries)][0]);nav.clear_focus()
     # Knob 2 default push opens More; rotary operations override its normal focus mapping.
     knobs.dispatch(1,'push');QTest.qWait(880);radial=item('radialMenu')
-    check('Push opens restored sector wheel',radial.isVisible() and radial.property('expansion')>.99)
+    check(f'Push opens restored sector wheel (visible={radial.isVisible()}, expansion={radial.property("expansion"):.3f})',radial.isVisible() and radial.property('expansion')>.99)
     knobs.dispatch(1,'clockwise',12);QTest.qWait(270)
     check('Sector selection wraps and preserves every knob step',radial.property('targetPosition')==12 and radial.property('selectedIndex')==0)
     shot('more-left');knobs.dispatch(3,'clockwise',2)
@@ -98,7 +98,7 @@ try:
     confirm.cancel();QTest.qWait(300)
     ctl.openSection('notifications');QTest.qWait(250);sw.repaint()
     check('Notification inbox shows real action history',len(ctl.notifications.history)>3 and sw.content=='notifications')
-    sw.activate(('notice_clear',));check('Clear-history permission request is compact',ctl.notifications.toast['decision'])
+    sw.activate(('notice_clear',));QTest.qWait(750);check('Clear-history permission request is compact',ctl.notifications.toast['decision'])
     knobs.dispatch(0,'clockwise');sw.repaint()
     sw.grab().save(str(out/'notifications.png'))
     ctl.notifications.accept();check('Confirm clears actual persisted notification history',not ctl.notifications.history and json.loads(ctl.notifications.path.read_text(encoding='utf8'))==[])

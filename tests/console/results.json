@@ -1,7 +1,7 @@
 {
   "checks": [
     "More contains Logs and no Display",
-    "Wheel options animate between detents",
+    "Knob selects the fixed v1.6 Logs sector",
     "Joystick left opens Logs",
     "Log view shows latest record first",
     "New logs preserve the scrolling reading position",

@@ -16,7 +16,7 @@ class RecoveryTests(unittest.TestCase):
         fixture=gpio_fixture.AdapterTests();frames,states=fixture.run_fixture(1)
         self.assertTrue(frames,'A busy button currently disconnects all three knobs')
         self.assertEqual(set(frames[0]),{0,1,3})
-        self.assertIn('GPIO1',states[0][1])
+        self.assertIn('1 unavailable',states[0][1])
     def test_busy_pin_release_requests_reconnect_without_stopping_good_inputs_first(self):
         fixture=gpio_fixture.AdapterTests();module,line=fixture.fixture();pin_checks=[]
         class Chip:
@@ -32,7 +32,7 @@ class RecoveryTests(unittest.TestCase):
         worker.frames.connect(frames.append);worker.status.connect(lambda *a:states.append(a))
         with patch('hardware.gpio.gpio_module',return_value=module),patch.dict(sys.modules,{'gpiod.line':line}),patch('hardware.gpio.time.monotonic',side_effect=[0,3,3]):worker.run()
         self.assertEqual(set(frames[0]),{0,1,3});self.assertTrue(states[0][0])
-        self.assertEqual(states[-1],(False,'Previously busy GPIO released; reconnecting inputs'))
+        self.assertEqual(states[-1],(False,'GPIO released; reconnecting inputs.'))
         self.assertTrue(fixture.closed)
     def test_missing_lock_sample_does_not_unlock_on_partial_gpio_failure(self):
         with tempfile.TemporaryDirectory() as temp:
