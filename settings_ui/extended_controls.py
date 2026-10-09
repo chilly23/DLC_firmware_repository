@@ -1,7 +1,7 @@
 """Panel input configuration, theme combinations and the notification inbox."""
 from datetime import datetime
 from PySide6.QtCore import QRectF,Qt
-from PySide6.QtGui import QPainter,QColor,QPen
+from PySide6.QtGui import QPainter,QColor,QPen,QRegion
 from .control_panel import KnobSettingsWindow
 from .operational import CONTENT
 from .drawing import text,box
@@ -83,6 +83,8 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
             key=self.route.split(':')[1];cfg=self.controls.store.config['panel'][key]
             level=self.controls.panel_snapshot.get('levels',{}).get(key)
             status=f'GPIO {cfg["pin"]} | '+('HIGH' if level==1 else 'LOW' if level==0 else 'Not reading')
+            reason=self.controls.issues.get('panel:'+key)
+            if reason:status+=' | '+reason
             if key=='left_shortcut' and cfg['pin']==8:status+=' | GPIO8 is assigned to Knob 2 D; choose a free pin.'
             if self.controls.panel_calibration:status+=' | Operate, then release to save.'
             text(p,680,185,854,48,status,18,self.theme.muted);top=240
@@ -113,8 +115,9 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
     def activate(self,action):
         kind=action[0]
         if kind=='panel_open':self.navigate('panel')
-        elif kind=='notice_close':self.notifications.dismiss()
-        elif kind=='notice_accept':self.notifications.accept()
+        elif kind=='notice_body':return
+        elif kind=='notice_close':self.notifications.dismissId(action[1]) if len(action)>1 else self.notifications.dismiss()
+        elif kind=='notice_accept':self.notifications.acceptId(action[1]) if len(action)>1 else self.notifications.accept()
         elif kind=='notice_toggle':self.theme.apply('notification_actions',not self.store.values['notification_actions'])
         elif kind=='notice_clear':self.notifications.post('Clear notification history?','warning',decision=self.notifications.clear)
         elif kind=='settings_action' and action[1].startswith('panel_calibrate:'):
@@ -135,29 +138,53 @@ class ExtendedSettingsWindow(KnobSettingsWindow):
         super().back_knob()
     def navigation_hits(self):
         if self.notifications.toast['decision']:return [(r,a) for r,a in self.hits if a[0] in ('notice_accept','notice_close')]
-        return super().navigation_hits()
+        return [(r,a) for r,a in super().navigation_hits() if a[0]!='notice_body']
+    def notice_under_editor(self,pt):
+        return not self.notifications.toast['decision'] and (
+            (self.dropdown and self.drop_rect.contains(pt)) or
+            (self.overlay and self.popup_rect().contains(pt)))
+    def pointer_down(self,pt):
+        notice=None if self.notice_under_editor(pt) else next(((r,a) for r,a in reversed(self.hits) if a[0] in ('notice_body','notice_close','notice_accept') and r.contains(pt)),None)
+        self._notice_press=notice is not None
+        if notice:
+            self.tip_timer.stop();self.backspace_hold.stop();self.tip=None;self.tip_consumed=False
+            self.pending=notice;self.gesture=None;self.dragged=False;self.content_pressed=False;self.content_moved=False;self.velocity=0
+            return
+        super().pointer_down(pt)
+    def pointer_move(self,pt):
+        if getattr(self,'_notice_press',False):return
+        super().pointer_move(pt)
+    def pointer_up(self,pt):
+        if getattr(self,'_notice_press',False):
+            self._notice_press=False;pending=self.pending;self.pending=None
+            if pending and pending[0].contains(pt):self.activate(pending[1])
+            return
+        super().pointer_up(pt)
+    def wheelEvent(self,event):
+        if self.notice_under_editor(self.point(event.position())):super().wheelEvent(event);return
+        if any(a[0]=='notice_body' and r.contains(self.point(event.position())) for r,a in self.hits):event.accept();return
+        super().wheelEvent(event)
     def paintEvent(self,event):
         super().paintEvent(event)
-        entry=self.notifications.toast
-        if not entry['text'] or self.overlay=='keyboard' or self.system.tourIndex>=0:return
+        entries=self.notifications.cards
+        if not entries or self.overlay=='keyboard' or self.system.tourIndex>=0:return
+        from interaction.notification_art import buttons
         p=QPainter(self);p.setRenderHint(QPainter.RenderHint.Antialiasing);p.translate(self.offset);p.scale(self.scale,self.scale)
-        rect=QRectF(680,624,860,84);box(p,rect,self.theme.surface,12)
-        color={'normal':self.theme.foreground,'warning':'#FFD60A','critical':'#FF453A'}[entry['level']]
-        box(p,QRectF(680,637,4,58),color,2)
-        # Vector warning symbol avoids platform-dependent emoji rendering.
-        p.setPen(QPen(QColor(color),2))
-        p.setBrush(Qt.BrushStyle.NoBrush)
-        from PySide6.QtCore import QPointF
-        from PySide6.QtGui import QPolygonF
-        if entry['level']=='warning':p.drawPolygon(QPolygonF([QPointF(710,641),QPointF(725,669),QPointF(695,669)]))
-        else:p.drawEllipse(QRectF(696,642,28,28))
-        text(p,700,641,20,30,'!',19,color,align=Qt.AlignmentFlag.AlignCenter)
-        self.multiline(p,QRectF(743,634,555 if entry['decision'] else 730,60),entry['text'],20)
-        buttons=[(QRectF(1480,641,50,50),'×',('notice_close',))]
-        if entry['decision']:buttons.insert(0,(QRectF(1310,642,137,48),'Confirm',('notice_accept',)))
-        for rect,label,action in buttons:
-            focused=self.knob_focus and self.knob_focus[1]==action
-            box(p,rect,self.theme.active if focused else self.theme.raised,8)
-            text(p,rect.x()+4,rect.y(),rect.width()-8,rect.height(),label,21,self.theme.activeInk if focused else self.theme.foreground,align=Qt.AlignmentFlag.AlignCenter,literal_color=True)
-            self.register(rect,action)
-        p.end()
+        if not self.notifications.toast['decision']:
+            editor=self.drop_rect if self.dropdown else self.popup_rect() if self.overlay else None
+            if editor is not None:p.setClipRegion(QRegion(0,0,1600,720).subtracted(QRegion(editor.toAlignedRect())))
+        positions=getattr(self,'_notice_positions',{});new_positions={}
+        for index,entry in enumerate(entries):
+            target=624-(len(entries)-1-index)*94
+            y=positions.get(entry['id'],target);y+=min(1,.24)*(target-y)
+            if abs(target-y)<.3:y=target
+            new_positions[entry['id']]=y
+            focused=''
+            if self.knob_focus and len(self.knob_focus[1])>1 and self.knob_focus[1][1]==entry['id']:
+                focused={'notice_close':'close','notice_accept':'accept'}.get(self.knob_focus[1][0],'')
+            image=self.notifications.renderer.image(entry,860,84,focused)
+            p.setOpacity(entry['alpha']);p.drawImage(QRectF(680,y,860,84),image)
+            self.register(QRectF(680,y,860,84),('notice_body',entry['id']))
+            for rect,action in buttons(860,84,entry['decision']):
+                self.register(rect.translated(680,y),('notice_'+action if action=='accept' else 'notice_close',entry['id']))
+        self._notice_positions=new_positions;p.end()

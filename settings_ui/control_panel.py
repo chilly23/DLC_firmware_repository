@@ -67,7 +67,10 @@ class KnobSettingsWindow(RefinedSettingsWindow):
             box(p,rect,self.theme.surface,12)
             self.draw_knob(p,QRectF(x+10,y+25,100,100),index)
             text(p,x+122,y+10,278,38,f'Knob {index+1} · {LOCATIONS[index]}',24,bold=True)
-            status='Not connected' if not wired else 'Disabled' if not cfg['enabled'] else 'Calibrated' if cfg['calibrated'] else 'Calibration needed'
+            blocked=self.controls.issues.get('knob:'+str(index))
+            status=('Unused slot' if not wired else 'Disabled' if not cfg['enabled'] else 'GPIO busy' if blocked
+                    else 'GPIO unavailable' if not self.controls.connected else 'Waiting for GPIO' if index not in self.controls.snapshots
+                    else 'Ready' if cfg['calibrated'] else 'Reading - calibrate to operate')
             text(p,x+122,y+48,275,35,status,18,self.theme.muted)
             if wired:self.action_button(p,QRectF(x+122,y+88,273,48),'Configure',('knob_open',index))
         self.multiline(p,QRectF(680,514,850,54),self.controls.status,18,self.theme.muted)

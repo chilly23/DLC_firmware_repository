@@ -10,7 +10,7 @@ step('Emission and stabilisation','Emission raises traces from zero. Stabilise r
 step('Inspect and arrange','Pan or pinch to inspect. Hold a plot for 550 ms: move vertically to swap signals, or across the divider to swap laser panels.',[122,100,680,511])
 step('Signals and axes','The signal labels open this panel. All changes belong to the laser, even when it appears on both sides.',[830,60,740,600],action='signals')
 step('Fullscreen charts','Expand one laser. Signal labels still open chart controls; Exit returns to the shared workspace.',[19,90,1564,603],action='fullscreen')
-step('More controls','The quarter-ring contains Settings, Display, Alarms, Diagnostics and Notifications. Rotate to move upright icons into the fixed white sector, then push to open. The red X closes it.',[0,330,600,390],action='more')
+step('More controls','The restored fan contains Alarms, Settings, Display and Diagnostics. Tap a sector directly, or rotate the knob to move the filled white highlight and push to open. Opening and closing each take 800 ms. The red X closes it.',[0,200,420,520],action='more')
 step('Display preferences','Hardware controls report the connected screen capabilities. Unsupported controls explain why they are unavailable.',section='display')
 for side in (0,1):
     side_name='Left' if side==0 else 'Right'
@@ -75,7 +75,7 @@ for i,(title,body) in enumerate([('Export settings','Save preferences as a JSON 
 for topic in ('Graphs','Analysis','Parameters','System','Storage'):
     step(topic+' help','Swipe this document to read the full topic. Back returns to the Help list.',section='help',route='help:'+topic)
 step('Three physical knobs','The cards match the panel: Knob 1 top left, Knob 2 bottom left, Knob 4 bottom right. Knob 3 is not connected. Calibration is required before GPIO shortcuts run.',section='control',knob_intro=True)
-step('Live input feedback','The stick on each card follows the physical directions, centre press and encoder rotation. Retry GPIO reconnects after a wiring or permission correction.',[680,190,846,308],section='control')
+step('Live input feedback','The stick on each card follows the physical directions, centre press and encoder rotation. A busy pin names its owner and leaves unaffected controls live. Failed connections retry automatically. Reading - calibrate to operate requires calibration before shortcuts run. Retry GPIO also reconnects immediately.',[680,190,846,308],section='control')
 step('Choose a target corner','Each knob has a target corner. Parameter actions follow the module and laser currently displayed there, even after a channel swap.',section='control',route='knob:0',control_row=0)
 step('Calibrate physical directions','Choose Calibrate. Release the knob and capture its idle state. Press the centre alone first, then move Up, Right, Down and Left; release completely after each. Direction plus centre contact is accepted. Then check both rotation directions and Save.',section='control',route='knob:0',control_row=1)
 step('Encoder click sensitivity','If one physical click produces two steps, select four transitions per click. Two is the supplied demo default. This changes decoding without changing your shortcuts.',section='control',route='knob:0',control_row=2)
@@ -97,4 +97,4 @@ step('Emission confirmation','Tap Emission, then drag the slider fully across. W
 step('Buttons and physical lock','Open Buttons & lock to view each GPIO input, select its pin and active level, calibrate its released/pressed states, and configure both side shortcuts.',section='control',route='panel')
 step('One pin per control','The right shortcut uses GPIO7 and the left shortcut uses GPIO16. Both are enabled and active when grounded through a button. GPIO8 stays on Knob 2 direction D. Software rejects duplicate assignments.',section='control',route='contact:left_shortcut')
 step('Locked screen and shutdown','GPIO20 defaults to locked when connected to ground. The blurred lock screen blocks touch and knobs. Unlock before the 60-second countdown ends to resume. The countdown is configurable; expiry requests actual OS shutdown.',section='control',route='panel')
-step('Notification history','Normal actions fade away. Warnings use a yellow triangle; critical errors remain until dismissed. History keeps the latest 200 entries. Clear asks for confirmation; Action updates can mute routine action notices.',section='notifications')
+step('Notification history','New notices stack above older ones. Timed notices blur and fade; Close removes only that card immediately. Warnings use a yellow triangle; critical errors remain until dismissed. History keeps 200 entries. Clear asks for confirmation in its own card; Action updates can mute routine notices.',section='notifications')

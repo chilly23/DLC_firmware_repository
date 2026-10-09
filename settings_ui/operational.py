@@ -297,7 +297,7 @@ class OperationalSettingsWindow(SettingsWindow):
 
     def draw_info(self,p):
         import PySide6
-        rows=[('Application version','1.11.0'),('Firmware','V1.6.0'),('Operating system',platform.platform()),('Architecture',platform.machine()),('Python',platform.python_version()),('Qt / PySide6',PySide6.__version__),('Data location',str(self.store.path.parent)),('Display',self.system.caps.get('target','Detecting…'))]
+        rows=[('Application version','1.12.0'),('Firmware','V1.6.0'),('Operating system',platform.platform()),('Architecture',platform.machine()),('Python',platform.python_version()),('Qt / PySide6',PySide6.__version__),('Data location',str(self.store.path.parent)),('Display',self.system.caps.get('target','Detecting…'))]
         self.draw_document(p,rows)
 
     def draw_clock(self,p):
