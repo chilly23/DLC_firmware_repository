@@ -1,11 +1,11 @@
 {
-  "version": "1.9",
-  "unit_tests_passed": 24,
-  "ui_checks_passed": 55,
+  "version": "1.10",
+  "unit_tests_passed": 31,
+  "ui_checks_passed": 33,
   "windows_startup": "passed",
-  "python_files": 60,
+  "python_files": 67,
   "shell_syntax": "passed",
-  "source_text_files_verified": 89,
+  "source_text_files_verified": 100,
   "binary_asset_dependency_files_verified": 2617,
   "physical_pi_tested": false,
   "tests": [
@@ -14,12 +14,9 @@
       "exit_code": 0
     },
     {
-      "name": "verify_v18",
-      "exit_code": 0
-    },
-    {
-      "name": "verify_zoom_paths",
+      "name": "verify_control_update_serial",
       "exit_code": 0
     }
-  ]
+  ],
+  "timing_note": "Historical animation test failed under parallel load, then passed unchanged in a serial rerun; initial evidence is retained in ../recovery/validation.json."
 }

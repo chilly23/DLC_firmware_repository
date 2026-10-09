@@ -1,8 +1,8 @@
-# Nexatom v1.9
+# Nexatom v1.10
 
-Corner colours, original green, zoom, shared-contact calibration and Knob 4.
+Full knob-step delivery, quarter wheel, themes, physical controls, lock and notifications.
 
-Originally delivered **30 September 2026, 17:07 IST** as an in-place v1.8 build.
+Originally delivered **01 October 2026, 14:46 IST** as an in-place v1.8 build.
 Recovered and renumbered on 5 October 2026.
 
 ## Run
@@ -13,11 +13,14 @@ Recovered and renumbered on 5 October 2026.
 
 ## Changes in this release
 
-- Made all four corner foregrounds consistent: values, labels, units, dividers and icons.
-- Restored Green to #008622 and retained contrast adaptation for pale accents.
-- Added one pinch handler across both plots; second-finger pinch can take over a held graph drag.
-- Calibration learns centre push first, accepts direction plus shared push, and suppresses accidental push actions during a tilt.
-- Disabled Knob 3 and migrated its stock wiring/mappings to Knob 4 at the bottom right; replacement calibration resets.
+- Removed the 24-step rotation cap and retained complete decoded batches; added diagnostic counters.
+- Added side-specific navigation and fixed the right-edge button clipping.
+- Introduced a rotating quarter-ring More menu, fixed filled highlight, upright icons and caption card.
+- Added six theme presets and a screenshot gallery, independent corner number/detail colours, and noisier independent signals.
+- Added slide-to-confirm emission and physical-button confirmation.
+- Added GPIO20 interface lock, blurred screen and configurable real shutdown countdown.
+- Added physical button/lock calibration, compact notifications, consent and persistent notification history.
+- Button 4 was disabled because GPIO8 conflicted with Knob 2; the next release resolves this.
 
 ## Historical scope
 
@@ -27,22 +30,25 @@ About firmware remains V1.6.0 as originally requested. GPIO and host controls ar
 laser traces remain simulated. Physical Pi hardware was not retested during recovery.
 
 The source change inventory and original file hashes are in [RELEASE.json](RELEASE.json).
-A local Git tag, **recovered-v1.9**, preserves this completed recovery.
+A local Git tag, **recovered-v1.10**, preserves this completed recovery.
 
 ## Files changed from the preceding release
 
 **Added**
 
-`tests/test_shared_contact.py`, `tests/test_wiring_migration.py`, `tests/verify_zoom_paths.py`.
+`hardware/panel.py`, `interaction/notifications.py`, `interaction/session_lock.py`, `previews/README.md`, `previews/index.html`, `qml/EmissionConfirm.qml`, `qml/NotificationToast.qml`, `settings_ui/extended_controls.py`, `tests/test_panel_inputs.py`, `tests/test_step_delivery.py`, `tests/verify_control_update.py`.
 
 **Modified**
 
-`README.md`, `data/controls.json`, `hardware/calibration.py`, `hardware/config.py`, `hardware/service.py`, `qml/ChartPair.qml`, `qml/ParameterTile.qml`, `qml/PlotView.qml`, `settings_ui/control_panel.py`, `settings_ui/help_content.py`, `settings_ui/preferences.py`, `settings_ui/tour.py`, `tests/test_gpio_adapter.py`, `tests/test_knobs.py`, `tests/verify_v18.py`.
+`README.md`, `controller/bridge.py`, `controller/plot.py`, `controller/simulation.py`, `data/controls.json`, `hardware/config.py`, `hardware/gpio.py`, `hardware/service.py`, `interaction/icons.py`, `interaction/router.py`, `main.py`, `qml/ChannelPane.qml`, `qml/GraphDrag.qml`, `qml/Icon.qml`, `qml/Main.qml`, `qml/NumberPad.qml`, `qml/ParameterTile.qml`, `qml/RadialMenu.qml`, `qml/SignalsPanel.qml`, `settings_ui/control_panel.py`, `settings_ui/coordinator.py`, `settings_ui/drawing.py`, `settings_ui/help_content.py`, `settings_ui/integration.py`, `settings_ui/model.py`, `settings_ui/preferences.py`, `settings_ui/tooltips.py`, `settings_ui/tour.py`, `tests/test_gpio_adapter.py`, `tests/verify_v18.py`.
 
 ## Recovery verification
 
-24 unit tests and 55 UI checks passed. The actual Windows `start.cmd`
+31 unit tests and 33 UI checks passed. The actual Windows `start.cmd`
 completed fullscreen boot and live acquisition. Python compilation and Bash syntax
 passed. All retained dependencies/assets and recovered source text were verified.
+
+The original animation test passed unchanged when run serially; its first
+parallel run missed its fixed animation deadline. Run GUI checks serially.
 
 [Verification summary](VALIDATION.json). Physical Raspberry Pi hardware was not tested.

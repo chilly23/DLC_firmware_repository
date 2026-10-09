@@ -1,18 +1,18 @@
-> **Recovered release v1.9** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
+> **Recovered release v1.10** · [Changes and historical scope](RELEASE.md) · [Release index](../README.md)
 > Run **start.cmd** on Windows or **bash start.sh** on Raspberry Pi OS.
 
-# Nexatom v1.9 — RKJXT control integration
+# Nexatom v1.10 — RKJXT control integration
 
-Application **1.9.0**, based on `mock1.7-pyside6`. Updated 30 September 2026.
+Application **1.10.0**, based on `mock1.7-pyside6`. Updated 1 October 2026.
 The original 1600 × 720 home layout, two lasers, chart tools, settings wheel and
 saved appearance preferences are retained. Earlier version folders were not edited.
 About still reports firmware **V1.6.0**, as requested.
 
 ## Start the application
 
-**Windows:** double-click [Start Nexatom v1.9.cmd](Start%20Nexatom%20v1.9.cmd).
+**Windows:** double-click [Start Nexatom v1.10.cmd](Start%20Nexatom%20v1.10.cmd).
 Python and Qt are included. The application opens fullscreen after its three-second
-boot screen. `Start Fullscreen v1.9.cmd` is an equivalent launcher.
+boot screen. `Start Fullscreen v1.10.cmd` is an equivalent launcher.
 Keep the source, `assets`, `runtime` and `packages` folders together.
 
 **Raspberry Pi OS Desktop, 64-bit:** copy this folder to a writable local folder,
@@ -23,7 +23,7 @@ bash run.sh
 ```
 
 The first run downloads and installs the Qt/GPIO/display dependencies, creates a
-local Python environment, grants GPIO and display access, and adds **Nexatom v1.9**
+local Python environment, grants GPIO and display access, and adds **Nexatom v1.10**
 to the desktop and application menu. It requests OS authentication through `pkexec`
 where available. Later launches reuse the installation and need no pip commands.
 Run as the normal desktop user; the application does not run as root. First setup
@@ -33,7 +33,7 @@ If the desktop asks whether to trust the generated shortcut, choose Allow Launch
 **Close the standalone RKJXT demo before starting GPIO control here.** It requests
 the same pins. Its old launcher also installed an autostart entry; disable that
 entry in your desktop session's startup applications if it keeps returning after
-reboot. v1.9 reports the owning process/driver instead of taking pins from it.
+reboot. v1.10 reports the owning process/driver instead of taking pins from it.
 
 **First use on the Pi:** More → Settings → Control Settings → Configure →
 Calibrate directions and push. Calibrate Knobs 1, 2 and 4 separately. Touch is
@@ -64,20 +64,20 @@ Use the active graphical session's `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR`.
 
 ## What changed
 
-| Area | v1.9 implementation |
+| Area | v1.10 implementation |
 |---|---|
 | Home readouts | White values, labels, units, icons and dividers; pale Yellow/Mint/Teal/Cyan/White accents adapt all foreground elements together |
 | CC / TC / PC | v1.4/v1.5 module chooser geometry and dark selected/unselected surfaces restored; light appearance still adapts |
 | Graph gestures | One pinch handler per laser spans both plots; pinch takes over a long-press drag; linked X ranges, lock guard and wheel/knob zoom retained |
 | Graph bounds | Existing overscroll and vertical trace-retention limits retained; knob pan/zoom use the same limits |
-| Physical inputs | One input-only libgpiod request for all 21 configured signals; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
+| Physical inputs | One input-only libgpiod request for 21 knob signals and 4 enabled panel inputs; three independent decoders for Knobs 1, 2 and 4; Knob 3 stays disabled |
 | Calibration | Released-state capture, centre-only contact first, four directions with optional shared push, clockwise/anticlockwise verification and atomic save |
 | Assignment | Per-knob target corner plus seven operation dropdowns; live parameter preview; separate shortcut/calibration resets |
 | Navigation | Hold push for universal navigation; visible focus, modal-aware targets, dropdown scrolling, numeric digit stepping, Settings wheel/slider/keyboard control |
 | Touch diagnostics | Corner taps, continuous trace, drag targets, solid-color inspection and honest pass/not-completed results |
 | Display recovery | Failed capability detection can be retried; Retry display button; Pi installer includes DDC/I2C and permissions |
 | Icons | Shared outline Control, Alarm, Knob, Calibration, Screen Check and Diagnostics glyphs; Alarms has its own bell |
-| Help | 88-step guide, dedicated paused Knob guide, in-app Knob controls document, more explanatory tooltips |
+| Help | 97-step guide, dedicated paused Knob guide, in-app Knob controls document, more explanatory tooltips |
 | Data and diagnostics | Separate validated `controls.json`, rotating GPIO log, read-only `--list-gpio`, controls included in settings exports |
 
 Existing emission/stabilisation, chart split/combined mode, independent Y scales,
@@ -87,9 +87,9 @@ where a translation is not available. Upgrade remains the previously requested
 preview. Laser signals and laser parameter effects remain a visual simulation;
 the GPIO inputs and supported host display controls are real.
 
-## v1.9 corrections - 30 September 2026
+## v1.10 corrections - 30 September 2026
 
-- All corner tile foreground elements now share one ink color. The original green
+- Automatic corner foregrounds use one adaptive ink; the October update adds independent number and detail overrides. The original green
   is restored to **`#008622`**; other accent choices are unchanged.
 - Pinch zoom now works with one finger on spectroscopy and the other on error,
   including when the first finger has already started the graph-move gesture.
@@ -106,7 +106,7 @@ the GPIO inputs and supported host display controls are real.
   Knob 4, but its calibration resets because this is a replacement physical unit.
   A custom non-stock pin layout is preserved for explicit configuration.
 
-For an existing Pi installation, copy the updated code into its v1.9 folder while
+For an existing Pi installation, copy the updated code into its v1.10 folder while
 keeping its existing `data` directory, then run `bash run.sh`. The saved wiring
 migrates automatically. Open **Control Settings > Knob 4 > Configure > Calibrate**.
 Recalibrate Knobs 1/2 if their previous calibration was incomplete or incorrect.
@@ -118,6 +118,118 @@ combined contacts; tilt fired hold-navigation) and `tests/verify_zoom_paths.py`
 the actual state machine and Qt touch paths. The fix uses Qt's documented
 [targetless PinchHandler](https://doc.qt.io/qt-6/qml-qtquick-pinchhandler.html)
 to change the data range without scaling the plot widget itself.
+
+## Control update - 1 October 2026
+
+This update remains **v1.10.0** in the same development folder. Keep the Pi's existing
+`data` directory when replacing the application code: configuration migration adds
+the new panel inputs without discarding saved knob calibration or shortcuts.
+
+| Change | Implemented behavior |
+|---|---|
+| Lost rotation steps | Removed the 24-step dispatch limit; consecutive same-direction edges are batched without dropping steps or merging reversals. Cold focus navigation also consumes the complete batch. A replay of 320 valid encoder edges delivers all 160 decoded steps to the current readout. |
+| Side ownership | Knobs 1/2 stay on the left home half; Knob 4 stays on the right. Rotation, push and Back continue to operate the active panel. Knob 3 remains blank and disabled. |
+| Right edge | All five right-side buttons fit inside the 1600-pixel frame, with a seven-pixel outer margin. |
+| More menu | Bottom-corner quarter-ring; 720 ms expansion and reverse closing; upright icons; infinite scrolling through five options; fixed filled `#D9D9D9` sector and caption card behind the ring. Touch dragging, neighbor-sector taps and knob rotation all work. |
+| Emission confirmation | Touch uses slide-to-confirm. Knob rotation fills the track and push commits. A dedicated emission button opens the request; a second deliberate press after 500 ms confirms. The laser state changes only after confirmation. |
+| Noise | Independent seeded broadband noise and correlated pickup on each laser, while retaining smooth emission fade, stabilisation and optional bandwidth filtering. These are simulated samples. |
+| Themes | Six coordinated presets, with real application screenshots in [the offline gallery](previews/index.html). Separate corner-number and label/icon foreground settings. |
+| Feedback | Compact normal, yellow-warning and red-critical notices, explicit consent callbacks, close buttons and a persistent 200-entry inbox. Continuous graph changes are announced once they settle. |
+| Physical lock | GPIO20 captures and blurs the current screen, blocks touch/keyboard/knob commands and starts a real OS-shutdown countdown. Unlock cancels a pending request. |
+| Calibration | Buttons & lock page supports pin, enable, polarity, debounce and release/press calibration. Duplicate GPIO ownership is rejected. |
+
+### Additional wiring and the GPIO8 conflict
+
+All numbers below are **BCM GPIO**, with the contact common connected to GND.
+The application requests pull-ups. Defaults are active LOW (grounded).
+
+| Input | GPIO | Shipped state | Operation |
+|---|---:|---|---|
+| System lock | 20 | Enabled, active LOW | Lock while grounded; unlock when released |
+| Button 1 | 12 | Enabled | Right displayed panel emission confirmation |
+| Button 2 | 1 | Enabled | Left displayed panel emission confirmation |
+| Button 3 | 7 | Enabled | Right side's configured shortcut |
+| Button 4 | 8 requested | **Disabled: pin conflict** | Left side's configured shortcut after reassignment |
+
+**GPIO8 already belongs to Knob 2 D. Two independent contacts cannot be decoded
+separately on that same line.** The app keeps Knob 2 working and leaves Button 4
+disabled. GPIO16 is unused by this supplied map: if you choose it, physically move
+the button wire to GPIO16, then choose Control Settings > Buttons & lock > Left
+shortcut > GPIO pin > GPIO16, enable the input, and calibrate it. No wire is assumed
+to have moved automatically. You can instead choose another free pin.
+
+For contact calibration: release it, select **Calibrate**, operate it once, then
+release completely. The measured active level is saved only after release. The
+lock's own calibration temporarily captures its contact without locking the UI;
+calibrating any other contact does not suppress the lock. Locking cancels unfinished
+calibration and input gestures. Inputs held at startup do not trigger button actions
+until released; an already-active physical lock does lock immediately.
+
+Choose each side's shortcut on the Buttons & lock page. **Not assigned** leaves its
+home shortcut dim. The touch shortcut and the dedicated button share the same
+assignment. Knob mappings remain independent of those two side shortcuts.
+
+### Locked state and shutdown
+
+The supplied assumption is **grounded GPIO20 = locked, 60 seconds to shutdown**.
+Both polarity and the 30/60/120/300-second countdown are configurable. The locked
+screen shows the remaining time. Unlocking restores the current screen and data;
+knobs re-arm only after release. A queued request rechecks the current lock cycle
+immediately before sending the host command, so unlocking cancels stale work.
+
+On expiry Linux calls `systemctl poweroff`; Windows calls `shutdown.exe /s /t 0`.
+OS permissions still apply. Failure is shown and recorded; the interface stays
+locked. Once the OS has accepted shutdown, unlocking cannot undo that OS operation.
+This interface lock is an application control, not a hardware laser interlock.
+Desktop tests used a recording power backend and did not power off this computer.
+
+### Themes and corner text
+
+Use **Settings > Display settings > Recommended theme**:
+
+| Preset | Intended appearance |
+|---|---|
+| Lab Light | Recommended light workspace: blue controls, cool pale surfaces, dark traces |
+| Ion Cyber | Cyan controls and deep blue surfaces |
+| Classic | Original green `#008622` on `#111111` |
+| Porcelain | Sage/teal, quiet light surfaces |
+| Orchid | Violet and lavender |
+| Clay | Orange and warm neutral surfaces |
+
+A preset applies accent, appearance, trace color and Laser 1 identity contrast.
+**Corner number color** and **Corner label / icon color** are separate. Automatic
+adapts to the accent; a manual choice stays in place when switching presets. This
+allows different numeric and supporting-text colors without changing the layout.
+
+### Notifications and consent
+
+More > Notifications opens the inbox. Normal notices last 3.2 seconds, warnings
+six seconds, and critical errors remain until closed. Lock, stabilise, emission,
+channel switches, graph swaps, visibility, layout and completed pan/zoom gestures
+create feedback. Identical rapid messages coalesce; records are capped at 200.
+Use **Action updates** to mute routine controller notices. Warnings/errors remain.
+Clear history and application resets request explicit confirmation in the compact
+bar; Close or knob Back cancels. Routine notices do not cover a pending decision.
+A stored history entry cannot repeat its earlier action.
+
+### Verification of this update
+
+- **31 unit/contract tests** passed: edge decoding, combined contacts, calibration,
+  migration, GPIO ownership, full batch delivery, auxiliary debounce/polarity and
+  independent navigation repeat guards.
+- **33 new Qt integration checks** passed: right margin, 160-step replay, side
+  focus, infinite wheel, emission touch/knob confirmation, axis-editor ownership,
+  color updates, global input lock, stale shutdown cancellation, one shutdown
+  request on expiry, physical button routing and notification persistence.
+- Existing **54 chart checks**, **9 native pinch cases**, **46 v1.10 checks** and
+  **31 reference-control/tour checks** passed. The guide now visits 97 steps.
+- Both actual Windows `.cmd` launchers reached fullscreen, completed boot and
+  produced live simulated traces. No physical Pi was connected for these checks.
+
+Use the live Decoded steps / Dispatched actions / Lost edge batches readout on a
+knob's configuration page for the remaining physical acceptance check. Electrical
+edge loss, a different detent resolution or a contact fault needs device evidence;
+this update specifically removes software truncation after successful decoding.
 
 ## Wiring — BCM GPIO numbers
 
@@ -142,7 +254,7 @@ Inputs use pull-ups; a grounded contact normally reads LOW. The app never config
 these lines as outputs. Do not connect signal contacts to 5 V.
 
 The reported unconnected GPIO0–8 HIGH / GPIO9–27 LOW readings are boot/bias states,
-not a direction map. v1.9 requests pull-ups and records each contact's released
+not a direction map. v1.10 requests pull-ups and records each contact's released
 state during calibration. It never interprets the original boot pattern as a
 pressed joystick. After startup/reconnection, a calibrated knob must remain
 released for 250 ms before shortcuts can run.
@@ -151,7 +263,7 @@ The chip is selected by its RP1 label instead of assuming `gpiochip0`. Set `chip
 in `data/controls.json` only if automatic detection cannot identify one RP1 chip.
 Enabled peripherals can own shared pins: I2C on GPIO2/3, UART on 14/15, SPI and other
 overlays may conflict. The status names busy lines. Disable a conflicting peripheral
-through the OS, or disable that knob in Control Settings. v1.9 does not alter boot
+through the OS, or disable that knob in Control Settings. v1.10 does not alter boot
 pin multiplexing or silently stop another application.
 
 ## Calibrate, configure, operate
@@ -207,7 +319,12 @@ the push contact runs only its direction action; it cannot trigger push or hold-
 short-push action. Rotate to move focus, short-push or stick right to activate,
 and stick left to go back. Up/down also move focus. Hold push again to exit.
 
-- Focus stays inside the visible modal panel, including the numpad and More sectors.
+- Home focus stays within the physical side of the knob. Each side has its own
+  navigation mode. Side-owned modals keep their originating knob ownership, even
+  when their numeric editor is drawn on the opposite half. Shared Settings and
+  global notification confirmations accept either side.
+- Open More uses rotary scrolling and short-push selection directly. Settings and
+  other open panels also accept navigation without first holding push.
 - In Settings, focus the wheel and push; rotation selects categories. Push again
   returns to ordinary focus navigation.
 - Focus a scroll rail and push to scroll long pages with rotation.
@@ -255,6 +372,7 @@ instead of silently substituting opacity. Resolution/refresh changes retain the
 main.py                    composition, fullscreen launch, dependency injection
 hardware/
   config.py                validated BCM wiring, defaults, atomic controls storage
+  panel.py                 pure physical-button/lock debounce and default pin map
   gpio.py                  RP1 discovery, ownership checks, libgpiod worker
   decoder.py               pure quadrature, switch debounce, loss resynchronisation
   calibration.py           pure transactional calibration state machine
@@ -262,11 +380,14 @@ hardware/
 interaction/
   router.py                command → visible UI/controller; modal focus navigation
   numeric.py               exact decimal digit arithmetic and cursor placement
+  notifications.py         compact action/consent notifications, bounded disk history
+  session_lock.py          global input guard, captured blur and cancellable power timeout
   icons.py                 shared vector outline registry/provider
 controller/                laser simulation, validated parameters, chart state/paint
 qml/                       home, modules, numpad, charts, Signals, More, alarms, tour
 settings_ui/
   control_panel.py         knob cards, assignment/calibration UI, native focus routing
+  extended_controls.py     panel contacts, lock configuration, themes and inbox
   screen_check.py          native touch diagnostic surface
   integration.py           settings/home lifecycle, same process and state
   coordinator.py           async host operations, rollback, exports, guided tour
@@ -278,6 +399,8 @@ settings_ui/
 device/                    native Windows/Linux display, clock and power adapters
 data/settings.json         carried-forward appearance/graph preferences and history
 data/controls.json         independent wiring, calibration and mappings
+data/notifications.json    latest 200 notification records
+previews/index.html        offline gallery of six actual UI theme screenshots
 run.sh / setup_pi.sh        Pi bootstrap; only setup runs with elevated privileges
 install_pi_shortcut.py      path-correct desktop and application-menu launchers
 runtime/ + packages/        bundled Windows runtime, not ARM binaries
@@ -285,10 +408,13 @@ runtime/ + packages/        bundled Windows runtime, not ARM binaries
 
 ```mermaid
 flowchart LR
-  Pins[21 GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
+  Pins[25 enabled GPIO inputs] --> Capture[GPIOWorker: edges and raw levels]
   Capture --> Decode[Independent decoders: debounce and quadrature]
   Decode --> Service[KnobService: calibration, release guard, hold and mappings]
   Service -->|knob / command / count| Router[InputRouter]
+  Service -->|physical lock| Lock[SessionLock: input guard and countdown]
+  Lock --> Device
+  Service -->|dedicated button| Router
   Router --> Home[QML home and dialogs]
   Router --> Settings[Native Settings widgets]
   Router --> Model[Validated controller and chart state]
@@ -328,7 +454,7 @@ data and injected host/GPIO contracts. No physical Pi was accessed:
 |---|---|
 | Decoder/calibration/config/service/decimal tests | 16 tests passed |
 | GPIO request and busy-owner contracts | 2 tests passed |
-| v1.9 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
+| v1.10 commands, corner colors, knob wiring UI, settings and touchscreen diagnostics | 46 checks passed |
 | Existing charts, swaps, signals, bounds and emission | 54 checks passed |
 | Existing reference controls, dropdowns, alarms and complete tour | 31 checks passed |
 | Existing settings/system/data behavior | 46 checks passed |
@@ -345,7 +471,7 @@ Run the new focused checks with `runtime\python.exe` on Windows or `.venv/bin/py
 on Pi, followed by `tests/test_knobs.py`, `tests/test_shared_contact.py`,
 `tests/test_wiring_migration.py`, `tests/test_gpio_adapter.py`,
 `tests/verify_zoom_paths.py`, `tests/verify_v18.py` or `tests/diagnose_v18.py`. Retained `verify_v17.py` checks the
-inherited settings contract against v1.9; it is not another application. Validation
+inherited settings contract against v1.10; it is not another application. Validation
 JSON and useful screenshots are in `tests/`. `inspect_v18.py` regenerates the new
 screens with isolated data. Qt's offscreen plugin can report unsupported `raise()`;
 these messages are unrelated to runtime exceptions.
