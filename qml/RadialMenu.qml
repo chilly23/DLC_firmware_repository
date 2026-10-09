@@ -1,74 +1,78 @@
 import QtQuick
+
 Item {
-    id: menu
-    z:20
+    id:menu;z:20
     property int side:0
     property int channelIndex:0
     property real expansion:0
-    property real position:0
-    property real targetPosition:0
+    property real centerX:side===0?63:1537
+    property real centerY:555
     property bool closing:false
+    property bool animating:expand.running
     property string pendingOption:""
-    property real centerX:side===0?0:1600
-    property real centerY:720
-    property var options:[{name:"Settings",label:"System settings",icon:"settings"},{name:"Display",label:"Display settings",icon:"display"},{name:"Alarms",label:"Alarms",icon:"alarm"},{name:"Diagnostics",label:"Control diagnostics",icon:"diagnostics"},{name:"Notifications",label:"Notifications",icon:"notifications"}]
-    property int selectedIndex:((Math.round(position)%options.length)+options.length)%options.length
+    property int targetPosition:0
+    property int selectedIndex:((targetPosition%4)+4)%4
+    property var options:[{name:"Alarms",icon:"alarm"},{name:"Settings",icon:"settings"},{name:"Display",icon:"display"},{name:"Diagnostics",icon:"diagnostics"}]
     signal closed()
     signal chosen(string option,int channelIndex,int side)
-    function open(paneSide,index){side=paneSide;channelIndex=index;closing=false;pendingOption="";position=0;targetPosition=0;visible=true;reveal.to=1;reveal.restart()}
-    function dismiss(option){if(closing)return;closing=true;pendingOption=option||"";reveal.to=0;reveal.restart()}
-    function rotateSteps(delta){if(closing)return;targetPosition+=delta;spin.duration=210;spin.to=targetPosition;spin.restart()}
-    function chooseCurrent(){if(!closing)dismiss(options[((Math.round(targetPosition)%options.length)+options.length)%options.length].name)}
-    NumberAnimation {id:reveal;target:menu;property:"expansion";duration:720;easing.type:Easing.InOutCubic
-        onFinished:if(menu.closing){menu.visible=false;if(menu.pendingOption)menu.chosen(menu.pendingOption,menu.channelIndex,menu.side);else menu.closed()}}
-    NumberAnimation {id:spin;target:menu;property:"position";duration:210;easing.type:Easing.OutCubic}
-    Rectangle {anchors.fill:parent;color:"#000000";opacity:.55*menu.expansion}
+    function animateTo(value){expand.stop();expand.from=expansion;expand.to=value;expand.duration=Math.max(120,800*Math.abs(value-expansion));expand.start()}
+    function open(paneSide,index){
+        expand.stop();side=paneSide;channelIndex=index;targetPosition=0;closing=false;pendingOption="";expansion=0;visible=true
+        ctl.setPresentationBusy(true);arcCanvas.requestPaint()
+        Qt.callLater(function(){if(menu.visible&&!menu.closing)menu.animateTo(1)})
+    }
+    function dismiss(option){if(closing||!visible)return;closing=true;pendingOption=option||"";animateTo(0)}
+    function rotateSteps(amount){if(!closing){targetPosition+=amount;arcCanvas.requestPaint()}}
+    function chooseCurrent(){if(!closing)dismiss(options[selectedIndex].name)}
+    NumberAnimation {
+        id:expand;target:menu;property:"expansion";duration:800;easing.type:Easing.InOutCubic
+        onRunningChanged:ctl.setPresentationBusy(running)
+        onFinished:if(menu.closing){let option=menu.pendingOption;menu.visible=false;if(option)menu.chosen(option,menu.channelIndex,menu.side);else menu.closed()}
+    }
+    onVisibleChanged:if(!visible){expand.stop();ctl.setPresentationBusy(false)}
+    Rectangle {anchors.fill:parent;color:"#000000";opacity:.77*menu.expansion}
     MouseArea {anchors.fill:parent;onClicked:menu.dismiss("")}
     Item {
-        id:fan;x:menu.centerX;y:menu.centerY;scale:menu.expansion;transformOrigin:Item.TopLeft
-        Rectangle {
-            x:menu.side===0?260:-596;y:-249;width:336;height:62;radius:10;color:theme.active
-            Text {anchors.centerIn:parent;anchors.horizontalCenterOffset:menu.side===0?25:-25;width:265;elide:Text.ElideRight;horizontalAlignment:Text.AlignHCenter;text:theme.translate(theme.language,menu.options[menu.selectedIndex].label);font.family:theme.fontFamily;font.pixelSize:22;color:theme.activeInk}
-        }
+        id:fan;objectName:"radialFan"
+        x:menu.centerX-360;y:menu.centerY-360;width:720;height:720
+        scale:.14+.86*menu.expansion;transformOrigin:Item.Center
+        layer.enabled:true;layer.smooth:true
         Canvas {
-            id:arcs;x:menu.side===0?0:-390;y:-390;width:390;height:390
+            id:arcCanvas;width:720;height:720
             onPaint:{
-                let c=getContext("2d");c.reset();c.translate(menu.side===0?0:390,390);if(menu.side===1)c.scale(-1,1)
-                function sector(a,b,color){c.beginPath();c.arc(0,0,388,a,b);c.arc(0,0,188,b,a,true);c.closePath();c.fillStyle=color;c.fill()}
-                sector(-Math.PI/2,0,theme.surface);sector(-Math.PI/3,-Math.PI/6,theme.active)
-                c.lineWidth=1.5;c.strokeStyle=theme.muted
-                for(let a of [-Math.PI/2,-Math.PI/3,-Math.PI/6,0]){c.beginPath();c.moveTo(Math.cos(a)*188,Math.sin(a)*188);c.lineTo(Math.cos(a)*388,Math.sin(a)*388);c.stroke()}
+                let c=getContext("2d");c.reset();c.translate(360,360);if(menu.side===1)c.scale(-1,1)
+                c.lineWidth=2;c.strokeStyle="#D9D9D9"
+                for(let i=0;i<4;i++){
+                    let a=(-100+i*36.25)*Math.PI/180,b=(-100+(i+1)*36.25)*Math.PI/180
+                    c.beginPath();c.arc(0,0,350,a,b);c.arc(0,0,185,b,a,true);c.closePath()
+                    c.fillStyle=i===menu.selectedIndex?"#D9D9D9":"#000000";c.fill();c.stroke()
+                }
             }
-            Connections {target:menu;function onSideChanged(){arcs.requestPaint()}}
-            Connections {target:theme;function onChanged(){arcs.requestPaint()}}
+            Connections {target:menu;function onSideChanged(){arcCanvas.requestPaint()} function onSelectedIndexChanged(){arcCanvas.requestPaint()}}
         }
         Repeater {
-            model:9
+            model:menu.options
             Item {
                 required property int index
-                property real offset:index-4-(menu.position-Math.floor(menu.position))
-                property int optionIndex:((Math.floor(menu.position)+index-4)%menu.options.length+menu.options.length)%menu.options.length
-                property real angle:(-45+offset*30)*Math.PI/180
-                x:(menu.side===0?1:-1)*Math.cos(angle)*285-34;y:Math.sin(angle)*285-34;width:68;height:68
-                visible:Math.abs(offset)<1.49;opacity:Math.min(1,(1.49-Math.abs(offset))*3)
-                Icon {anchors.fill:parent;kind:menu.options[parent.optionIndex].icon;ink:Math.abs(parent.offset)<.5?theme.activeInk:theme.foreground}
+                required property var modelData
+                property real angle:(-100+(index+.5)*36.25)*Math.PI/180
+                property color ink:index===menu.selectedIndex?"#111111":"#FFFFFF"
+                x:360+(menu.side===0?1:-1)*Math.cos(angle)*270-65
+                y:360+Math.sin(angle)*270-48;width:130;height:92
+                Icon {x:38;y:0;width:54;height:54;kind:parent.modelData.icon;ink:parent.ink}
+                Text {x:0;y:60;width:130;height:24;horizontalAlignment:Text.AlignHCenter;text:theme.translate(theme.language,parent.modelData.name);color:parent.ink;font.family:theme.fontFamily;font.pixelSize:18;elide:Text.ElideRight}
             }
         }
         MouseArea {
-            objectName:"radialSectors";x:menu.side===0?0:-390;y:-390;width:390;height:390
-            property real lastAngle:0;property bool dragged:false;property real velocity:0;property double lastTime:0
-            function angleAt(mouse){let dx=menu.side===0?mouse.x:390-mouse.x;return Math.atan2(mouse.y-390,dx)*180/Math.PI}
-            onPressed:function(mouse){spin.stop();lastAngle=angleAt(mouse);dragged=false;velocity=0;lastTime=Date.now()}
-            onPositionChanged:function(mouse){if(!pressed)return;let now=Date.now(),a=angleAt(mouse),d=a-lastAngle;if(Math.abs(d)>.2){dragged=true;menu.position-=d/30;velocity=-d/Math.max(10,now-lastTime)*1000/30}lastAngle=a;lastTime=now}
-            onReleased:function(mouse){
-                if(dragged){menu.targetPosition=Math.round(menu.position+Math.max(-5,Math.min(5,velocity*.14)));spin.duration=450;spin.to=menu.targetPosition;spin.restart();return}
-                let dx=menu.side===0?mouse.x:390-mouse.x,dy=mouse.y-390,r=Math.sqrt(dx*dx+dy*dy)
-                if(r<188||r>390){menu.dismiss("");return}
-                let slot=Math.round((angleAt(mouse)+45)/30)
-                if(slot===0)menu.chooseCurrent();else menu.rotateSteps(slot)
+            objectName:"radialSectors";x:5;y:5;width:710;height:710;enabled:!menu.animating
+            onClicked:function(mouse){
+                let dx=(mouse.x-355)*(menu.side===0?1:-1),dy=mouse.y-355
+                let r=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx)*180/Math.PI
+                if(r<185||r>350||angle< -100||angle>45){menu.dismiss("");return}
+                let i=Math.min(3,Math.floor((angle+100)/36.25));menu.targetPosition=i;menu.chooseCurrent()
             }
             onWheel:function(event){menu.rotateSteps(event.angleDelta.y<0?1:-1);event.accepted=true}
         }
     }
-    TouchButton {objectName:"radialCancel";x:menu.side===0?20:1504;y:624;width:76;height:76;radius:38;normalColor:"#A92621";iconName:"close";ink:"#FFFFFF";onClicked:menu.dismiss("")}
+    TouchButton {objectName:"radialCancel";x:menu.centerX-50;y:menu.centerY-50;width:100;height:100;radius:50;normalColor:"#A92621";iconName:"close";ink:"#FFFFFF";onClicked:menu.dismiss("")}
 }
