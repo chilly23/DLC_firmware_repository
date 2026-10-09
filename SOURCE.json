@@ -2,8 +2,8 @@
   "tag": "v1.14",
   "original_folder": "v1.14",
   "original_version": "1.14.0",
-  "imported_source_files": 136,
-  "snapshot_sha256": "efdcdcbc565a193be173745ef3583050f35ed99225fb64d8b8e88d098fad7e67",
+  "imported_source_files": 137,
+  "snapshot_sha256": "d48048e9b05859d105fe3f2fa69fb076aceb0ad2132e6ddc5b78893034454ff0",
   "excluded": [
     "Installed runtimes/packages",
     "Generated logs/captures/cache",
@@ -145,6 +145,7 @@
     "tests/verify_v16.py": "251be4a5a8b684a7cef4e18dbd52ea0765316635f2b8a236e1b4a14968a34322",
     "tests/verify_v17.py": "0db92f19eafffae3ea5634e17f956b68cb92165717a0f4b97998cf6931de18a2",
     "tests/verify_v18.py": "06f68c6c2798483b4ce0573300b4ec84c8d19a1cf9f88e3b93558f31bcd2e66e",
-    "tests/verify_zoom_paths.py": "9568e75008176744083a185fb597a535f487e136eab6aaf9a51e183e42f2bd5d"
+    "tests/verify_zoom_paths.py": "9568e75008176744083a185fb597a535f487e136eab6aaf9a51e183e42f2bd5d",
+    "qml/Colors.js": "9c279c0c41bd9d08d73d79dfea63dc13b30c2f3b4155d82c623059dbd830f79c"
   }
 }
